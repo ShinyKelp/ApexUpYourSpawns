@@ -89,7 +89,7 @@ namespace ApexUpYourSpawns
             };
 
 
-            defaultsSimpleButton = new OpSimpleButton(new Vector2(100f, 80f), new Vector2(60, 30), "Defaults");
+            defaultsSimpleButton = new OpSimpleButton(new Vector2(100f, 50f), new Vector2(60, 30), "Defaults");
             UIArrPlayerOptions = new UIelement[]
             {
                 new OpLabel(10f, 570f, "Options", true),
@@ -101,7 +101,7 @@ namespace ApexUpYourSpawns
                 new OpLabel(80f, 445f, "Centipede > Red centipede"),
                 new OpUpdown(redCentipedeChance, new Vector2(10f, 440f), 60f),
                 new OpLabel(80f, 410f, "Vulture > Miros Vulture"),
-                new OpUpdown(mirosVultureChance, new Vector2(15f, 405f), 60f),
+                new OpUpdown(mirosVultureChance, new Vector2(10f, 405f), 60f),
                 new OpLabel(80f, 375f, "Big Spider > Spitter Spider"),
                 new OpUpdown(spitterSpiderChance, new Vector2(10f, 370f), 60f),
                 new OpLabel(80f, 340f, "Scavenger > Elite Scavenger"),

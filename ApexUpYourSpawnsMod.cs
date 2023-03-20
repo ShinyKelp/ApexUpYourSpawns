@@ -13,7 +13,7 @@ using On;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.0.0")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.0.1")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -83,6 +83,8 @@ namespace ApexUpYourSpawns
             brotherLongLegsChance = (float)options.brotherLongLegsChance.Value / 100;
             daddyLongLegsChance = (float)options.daddyLongLegsChance.Value / 100;
             terrorLongLegsChance = (float)options.terrorLongLegsChance.Value / 100;
+            fireBugChance = (float)options.fireBugChance.Value / 100;
+            noodleFlyChance = (float) options.noodleFlyChance.Value / 100;
             giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
 
             extraYellows = options.yellowLizExtras.Value;
@@ -193,7 +195,7 @@ namespace ApexUpYourSpawns
                             foundType = increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.Vulture, extraVultures);
                             if (foundType)
                             {
-                                if (worldLoader.worldName == "OE" || worldLoader.worldName == "SI")
+                                if ((extraVultures > 0 || extraKings > 0) && (worldLoader.worldName == "OE" || worldLoader.worldName == "SI"))
                                     increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.Vulture, 2);
 
                                 if(worldLoader.worldName == "OE" || worldLoader.worldName == "SI")
@@ -210,7 +212,7 @@ namespace ApexUpYourSpawns
                                 foundType = increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.KingVulture, extraKings);
                             if (foundType)
                             {
-                                if (worldLoader.worldName == "SI")
+                                if ((extraVultures > 0 || extraKings > 0) && worldLoader.worldName == "SI")
                                     increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.KingVulture, 1);
                                 if (worldLoader.worldName == "OE" || worldLoader.worldName == "SI")
                                     replaceMultiSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.KingVulture, MoreSlugcatsEnums.CreatureTemplateType.MirosVulture,
@@ -223,7 +225,7 @@ namespace ApexUpYourSpawns
                                 continue;
                             }
 
-                            if (worldLoader.worldName == "SH")
+                            if (worldLoader.worldName == "SH" && mirosVultureChance > 0)
                             {
                                 foundType = increaseCreatureSpawner(simpleSpawner, MoreSlugcatsEnums.CreatureTemplateType.MirosVulture, 2, 1);
                                 if (foundType)
@@ -231,7 +233,6 @@ namespace ApexUpYourSpawns
                             }
 
                             //Scavengers
-                            
                             foundType = increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.Scavenger, extraScavengers);
                             if (foundType)
                             {
@@ -240,7 +241,7 @@ namespace ApexUpYourSpawns
                             }
 
                             //Longlegs
-                            foundType = replaceLongLegsSpawner(simpleSpawner, worldLoader.spawners);
+                            foundType = replaceLongLegsSpawner(simpleSpawner, worldLoader.spawners, worldLoader.worldName);
                             if (foundType)
                                 continue;
 
@@ -341,14 +342,18 @@ namespace ApexUpYourSpawns
             
             return isLizard || isYellow || isCyan || isAxo;
         }
-        private bool replaceLongLegsSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
+        private bool replaceLongLegsSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners, string region)
         {
             bool foundType;
             if (simpleSpawner.creatureType == CreatureTemplate.Type.JetFish || simpleSpawner.creatureType == CreatureTemplate.Type.LanternMouse
                 || simpleSpawner.creatureType == CreatureTemplate.Type.Snail)
             {
-                foundType = replaceMultiSpawner(simpleSpawner, spawners, simpleSpawner.creatureType, CreatureTemplate.Type.BrotherLongLegs,
-                    simpleSpawner.creatureType == CreatureTemplate.Type.JetFish ? brotherLongLegsChance : brotherLongLegsChance / 2);
+                float brotherChance = brotherLongLegsChance;
+                if (region == "VS")
+                    brotherChance = brotherChance * 2;
+                if (simpleSpawner.creatureType != CreatureTemplate.Type.JetFish)
+                    brotherChance = brotherChance / 2;
+                foundType = replaceMultiSpawner(simpleSpawner, spawners, simpleSpawner.creatureType, CreatureTemplate.Type.BrotherLongLegs, brotherChance);
                 if(replaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, CreatureTemplate.Type.DaddyLongLegs, daddyLongLegsChance))
                     replaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.DaddyLongLegs, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, terrorLongLegsChance);
                 return foundType;

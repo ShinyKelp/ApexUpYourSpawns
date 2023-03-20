@@ -1,8 +1,5 @@
 ﻿using BepInEx.Logging;
-using Menu;
 using Menu.Remix.MixedUI;
-using On.Menu;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace ApexUpYourSpawns
@@ -16,7 +13,7 @@ namespace ApexUpYourSpawns
             Logger = loggerSource;
             redLizardChance = this.config.Bind<int>("RedLizardChance", 8, new ConfigAcceptableRange<int>(0, 100));
             trainLizardChance = this.config.Bind<int>("TrainLizardChance", 20, new ConfigAcceptableRange<int>(0, 100));
-            redCentipedeChance = this.config.Bind<int>("RedCentipedeChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            redCentipedeChance = this.config.Bind<int>("RedCentipedeChance", 8, new ConfigAcceptableRange<int>(0, 100));
             mirosVultureChance = this.config.Bind<int>("MirosVultureChance", 15, new ConfigAcceptableRange<int>(0, 100));
             spitterSpiderChance = this.config.Bind<int>("SpitterSpiderChance", 15, new ConfigAcceptableRange<int>(0, 100));
             noodleFlyChance = this.config.Bind<int>("NoodleFlyChance", 12, new ConfigAcceptableRange<int>(0, 100));
@@ -29,11 +26,11 @@ namespace ApexUpYourSpawns
 
             yellowLizExtras = this.config.Bind<int>("ExtraYellowLizs", 3, new ConfigAcceptableRange<int>(0, 10));
             cyanLizExtras = this.config.Bind<int>("ExtraCyanLizs", 0, new ConfigAcceptableRange<int>(0, 10));
-            genericLizExtras = this.config.Bind<int>("ExtraLizards", 0, new ConfigAcceptableRange<int>(0, 10));
+            genericLizExtras = this.config.Bind<int>("ExtraLizards", 1, new ConfigAcceptableRange<int>(0, 10));
             waterLizExtras = this.config.Bind<int>("ExtraWaterLizs", 1, new ConfigAcceptableRange<int>(0, 10));
-            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 3, new ConfigAcceptableRange<int>(0, 10));
+            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 4, new ConfigAcceptableRange<int>(0, 10));
             scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 100));
-            vultureExtras = this.config.Bind<int>("ExtraVultures", 0, new ConfigAcceptableRange<int>(0, 10));
+            vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 10));
             vultureKingExtras = this.config.Bind<int>("ExtraKingVultures", 1, new ConfigAcceptableRange<int>(0, 10));
             centipedeExtras = this.config.Bind<int>("ExtraKCentipedes", 1, new ConfigAcceptableRange<int>(0, 10));
             centiWingExtras = this.config.Bind<int>("ExtraCentiwings", 1, new ConfigAcceptableRange<int>(0, 10));

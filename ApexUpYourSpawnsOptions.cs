@@ -27,14 +27,15 @@ namespace ApexUpYourSpawns
             terrorLongLegsChance = this.config.Bind<int>("MotherLongLegsChance", 10, new ConfigAcceptableRange<int>(0, 100));
             giantJellyfishChance = this.config.Bind<int>("GiantJellyfishChance", 10, new ConfigAcceptableRange<int>(0, 100));
             leechLizardChance = this.config.Bind<int>("LeechLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
-            aquapedeChance = this.config.Bind<int>("AquapedeChance", 20, new ConfigAcceptableRange<int>(0, 100));
+            waterPredatorChance = this.config.Bind<int>("AquapedeChance", 20, new ConfigAcceptableRange<int>(0, 100));
             yeekLizardChance = this.config.Bind<int>("YeekLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
             caramelLizChance = this.config.Bind<int>("CaramelLizChance", 15, new ConfigAcceptableRange<int>(0, 100));
             strawberryLizChance = this.config.Bind<int>("StrawberryLizChance", 5, new ConfigAcceptableRange<int>(0, 100));
             cyanLizChance = this.config.Bind<int>("CyanLizChance", 0, new ConfigAcceptableRange<int>(0, 100));
             jungleLeechChance = this.config.Bind<int>("JungleLeechChance", 0, new ConfigAcceptableRange<int>(0, 100));
             motherSpiderChance = this.config.Bind<int>("MotherSpiderChance", 10, new ConfigAcceptableRange<int>(0, 100));
-            stowawayChance = this.config.Bind<int>("StowawayChance", 4, new ConfigAcceptableRange<int>(0, 100));
+            stowawayChance = this.config.Bind<int>("StowawayChance", 3, new ConfigAcceptableRange<int>(0, 100));
+            inspectorChance = this.config.Bind<int>("InspectorChance", 8, new ConfigAcceptableRange<int>(0, 100));
             sporantulaChance = this.config.Bind<int>("SporantulaChance", 4, new ConfigAcceptableRange<int>(0, 100));
 
             yellowLizExtras = this.config.Bind<int>("ExtraYellowLizs", 2, new ConfigAcceptableRange<int>(0, 10));
@@ -51,7 +52,7 @@ namespace ApexUpYourSpawns
             bigSpiderExtras = this.config.Bind<int>("ExtraBigSpiders", 2, new ConfigAcceptableRange<int>(0, 10));
             dropwigExtras = this.config.Bind<int>("ExtraDropwigs", 1, new ConfigAcceptableRange<int>(0, 10));
             eggbugExtras = this.config.Bind<int>("ExtraEggbugs", 1, new ConfigAcceptableRange<int>(0, 10));
-            mirosExtras = this.config.Bind<int>("ExtraMirosBirds", 4, new ConfigAcceptableRange<int>(0, 10));
+            mirosExtras = this.config.Bind<int>("ExtraMirosBirds", 2, new ConfigAcceptableRange<int>(0, 10));
             spiderExtras = this.config.Bind<int>("ExtraSpiders", 0, new ConfigAcceptableRange<int>(0, 10));
             leechExtras = this.config.Bind<int>("ExtraLeeches", 0, new ConfigAcceptableRange<int>(0, 10));
             kelpExtras = this.config.Bind<int>("ExtraKelps", 1, new ConfigAcceptableRange<int>(0, 10));
@@ -74,7 +75,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> terrorLongLegsChance;
         public readonly Configurable<int> giantJellyfishChance;
         public readonly Configurable<int> leechLizardChance;
-        public readonly Configurable<int> aquapedeChance;
+        public readonly Configurable<int> waterPredatorChance;
         public readonly Configurable<int> yeekLizardChance;
         public readonly Configurable<int> caramelLizChance;
         public readonly Configurable<int> strawberryLizChance;
@@ -82,6 +83,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> jungleLeechChance;
         public readonly Configurable<int> motherSpiderChance;
         public readonly Configurable<int> stowawayChance;
+        public readonly Configurable<int> inspectorChance;
         public readonly Configurable<int> sporantulaChance;
 
         public readonly Configurable<int> yellowLizExtras;
@@ -117,7 +119,7 @@ namespace ApexUpYourSpawns
 
         public override void Initialize()
         {
-            float sbs = 830f;   //Size of scrollbox.
+            float sbs = 870f;   //Size of scrollbox.
             var opTab = new OpTab(this, "Options");
             this.Tabs = new[]
             {
@@ -140,13 +142,13 @@ namespace ApexUpYourSpawns
 
             UIArrPlayerOptions = new UIelement[]
             {
-                new OpLabel(80f, sbs-30f, "Lizard > Red lizard"),
+                new OpLabel(80f, sbs-30f, "Lizard > Red Lizard"),
                 new OpUpdown(redLizardChance, new Vector2(10f, sbs-35f), 60f),
-                new OpLabel(80f, sbs-65f, "Red lizard > Train lizard"),
+                new OpLabel(80f, sbs-65f, "Red lizard > Train Lizard"),
                 new OpUpdown(trainLizardChance, new Vector2(10f, sbs-70f), 60f),
                 new OpLabel(80f, sbs-100f, "Small Cent > Large Centipede"),
                 new OpUpdown(largeCentipedeChance, new Vector2(10f, sbs-105f), 60f),
-                new OpLabel(80f, sbs-135f, "Large Cent > Red centipede"),
+                new OpLabel(80f, sbs-135f, "Large Cent > Red Centipede"),
                 new OpUpdown(redCentipedeChance, new Vector2(10f, sbs-140f), 60f),
                 new OpLabel(80f, sbs-170f, "Vulture > Miros Vulture"),
                 new OpUpdown(mirosVultureChance, new Vector2(10f, sbs-175f), 60f),
@@ -164,12 +166,12 @@ namespace ApexUpYourSpawns
                 new OpUpdown(terrorLongLegsChance, new Vector2(10f, sbs-385f), 60f),
                 new OpLabel(80f, sbs-415f, "Jellyfish > Giant Jellyfish"),
                 new OpUpdown(giantJellyfishChance, new Vector2(10f, sbs-420f), 60f),
-                new OpLabel(80f, sbs-450f, "Leeches > Water lizard"),
+                new OpLabel(80f, sbs-450f, "Leeches > Water Lizard"),
                 new OpUpdown(leechLizardChance, new Vector2(10f, sbs-455f), 60f),
-                new OpLabel(80f, sbs-485f, "Yeek > Caramel/Strawberry liz"),
+                new OpLabel(80f, sbs-485f, "Yeek > Caramel/Strawberry Liz"),
                 new OpUpdown(yeekLizardChance, new Vector2(10f, sbs-490f), 60f),
-                new OpLabel(80f, sbs-520f, "Jetfish > Aquapede"),
-                new OpUpdown(aquapedeChance, new Vector2(10f, sbs-525f), 60f),
+                new OpLabel(80f, sbs-520f, "Jetfish > Water predators"),
+                new OpUpdown(waterPredatorChance, new Vector2(10f, sbs-525f), 60f),
                 new OpLabel(80f, sbs-555f, "Pink > Strawberry Lizard"),
                 new OpUpdown(strawberryLizChance, new Vector2(10f, sbs-560f), 60f),
                 new OpLabel(80f, sbs-590f, "Green > Caramel Lizard"),
@@ -182,18 +184,19 @@ namespace ApexUpYourSpawns
                 new OpUpdown(motherSpiderChance, new Vector2(10f, sbs-700f), 60f),
                 new OpLabel(80f, sbs-730f, "Leech > Jungle Leech"),
                 new OpUpdown(jungleLeechChance, new Vector2(10f, sbs-735f), 60f),
-                new OpLabel(80f, sbs-765f, "Ceiling Fruits > Stowawaybug trap"),
+                new OpLabel(80f, sbs-765f, "Ceiling Fruits > Stowawaybug Trap"),
                 new OpUpdown(stowawayChance, new Vector2(10f, sbs-770f), 60f),
-                
-                
+                new OpLabel(80f, sbs-800f, "Longlegs > Inspector"),
+                new OpUpdown(inspectorChance, new Vector2(10f, sbs-805f), 60f),
+
 
                 new OpLabel(400f, sbs-30f, "Lizards"),
                 new OpUpdown(genericLizExtras, new Vector2(330f, sbs-35f), 60f),
-                new OpLabel(400f, sbs-65f, "Yellow lizards"),
+                new OpLabel(400f, sbs-65f, "Yellow Lizards"),
                 new OpUpdown(yellowLizExtras, new Vector2(330f, sbs-70f), 60f),
-                new OpLabel(400f, sbs-100f, "Cyan lizards"),
+                new OpLabel(400f, sbs-100f, "Cyan Lizards"),
                 new OpUpdown(cyanLizExtras, new Vector2(330f, sbs-105f), 60f),
-                new OpLabel(400f, sbs-135f, "Water lizards"),
+                new OpLabel(400f, sbs-135f, "Water Lizards"),
                 new OpUpdown(waterLizExtras, new Vector2(330f, sbs-140f), 60f),
                 new OpLabel(400f, sbs-170f, "Shelter failure spawns"),
                 new OpUpdown(precycleSalExtras, new Vector2(330f, sbs-175f), 60f),
@@ -201,7 +204,7 @@ namespace ApexUpYourSpawns
                 new OpUpdown(scavengerExtras, new Vector2(330f, sbs-210f), 60f),
                 new OpLabel(400f, sbs-240f, "Vultures"),
                 new OpUpdown(vultureExtras, new Vector2(330f, sbs-245f), 60f),
-                new OpLabel(400f, sbs-275f, "King vultures"),
+                new OpLabel(400f, sbs-275f, "King Vultures"),
                 new OpUpdown(vultureKingExtras, new Vector2(330f, sbs-280f), 60f),
                 new OpLabel(400f, sbs-310f, "Centipedes"),
                 new OpUpdown(centipedeExtras, new Vector2(330f, sbs-315f), 60f),
@@ -230,8 +233,8 @@ namespace ApexUpYourSpawns
 
             UIDependentOptions = new UIelement[]
             {
-                new OpLabel(80f, sbs-800f, "Small Insects > Sporantulas"),
-                new OpUpdown(sporantulaChance, new Vector2(10f, sbs-805f), 60f),
+                new OpLabel(80f, sbs-835f, "Small Insects > Sporantulas"),
+                new OpUpdown(sporantulaChance, new Vector2(10f, sbs-840f), 60f),
                 new OpLabel(400f, sbs-695f, "Extra Sporantulas"),
                 new OpUpdown(sporantulaExtras, new Vector2(330f, sbs-700f), 60f),
             };

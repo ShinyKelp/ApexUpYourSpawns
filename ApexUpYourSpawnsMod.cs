@@ -12,7 +12,7 @@ using System.Security.AccessControl;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.1.2")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.1.4")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -217,6 +217,7 @@ namespace ApexUpYourSpawns
 
         private void GenerateCustomPopulation(On.WorldLoader.orig_GeneratePopulation orig, WorldLoader worldLoader, bool fresh)
         {
+
             try
             {
                 if (fresh)
@@ -231,16 +232,18 @@ namespace ApexUpYourSpawns
                         if (worldLoader.spawners[i] is World.SimpleSpawner simpleSpawner)
                         {
                             /*
+                            Debug.Log("\n");
                             Debug.Log("SPAWNER DATA: " + simpleSpawner.ToString());
                             Debug.Log("CREATURE: " + simpleSpawner.creatureType);
                             Debug.Log("INDEX: " + simpleSpawner.inRegionSpawnerIndex);
                             Debug.Log("DEN: " + simpleSpawner.den.ToString());
                             Debug.Log("DEN ROOM: " + simpleSpawner.den.ResolveRoomName());
                             Debug.Log("AMOUNT: " + simpleSpawner.amount);
-                            Debug.Log("STRING DATA: " + simpleSpawner.spawnDataString);
+                            Debug.Log("SPAWN DATA STRING: " + simpleSpawner.spawnDataString);
                             if (simpleSpawner.nightCreature)
                                     Debug.Log("IS NIGHT CREATURE.");
                             //*/
+
                             //Precycle spawns
                             if (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle"))
                             {
@@ -269,14 +272,17 @@ namespace ApexUpYourSpawns
                                 replaceMultiSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.Centipede, CreatureTemplate.Type.RedCentipede,
                                     (worldLoader.worldName == "VS" || worldLoader.worldName == "SB") ? redCentipedeChance / 2 : redCentipedeChance);
                                 if (hasSporantulaMod && simpleSpawner.amount > 1)
-                                    addSporantulaSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.Centipede, sporantulaChance);
-                                if(worldLoader.worldName == "SH" && simpleSpawner.den.ResolveRoomName() == "SH_H01" && UnityEngine.Random.value < inspectorChance * 10f)
                                 {
-                                    World.SimpleSpawner spawner = CopySpawner(simpleSpawner);
-                                    spawner.amount = UnityEngine.Random.value < inspectorChance * 10 ? 2 : 1;
-                                    spawner.creatureType = MoreSlugcatsEnums.CreatureTemplateType.Inspector;
-                                    spawner.inRegionSpawnerIndex = worldLoader.spawners.Count;
-                                    worldLoader.spawners.Add(spawner);
+                                    addSporantulaSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.Centipede, sporantulaChance);
+                                }
+                                if (worldLoader.worldName == "SH" && simpleSpawner.den.ResolveRoomName() == "SH_H01" && UnityEngine.Random.value < inspectorChance * 10f)
+                                {
+                                    World.SimpleSpawner i_spawner = CopySpawner(simpleSpawner);
+                                    i_spawner.amount = UnityEngine.Random.value < inspectorChance * 10 ? 2 : 1;
+                                    i_spawner.creatureType = MoreSlugcatsEnums.CreatureTemplateType.Inspector;
+                                    i_spawner.inRegionSpawnerIndex = worldLoader.spawners.Count;
+                                    i_spawner.spawnDataString = "{Ignorecycle}";
+                                    worldLoader.spawners.Add(i_spawner);
                                 }
                                     
                                 continue;
@@ -291,10 +297,14 @@ namespace ApexUpYourSpawns
                             if (foundType) 
                                 continue;
 
-                            //Aquapedes (jetfish replacement)
-                            foundType = replaceMultiSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.JetFish, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, (worldLoader.worldName == "SB" || worldLoader.worldName == "VS") ? waterPredatorChance * 2 : waterPredatorChance);
+                            //Jetfish replacements (aquapedes, longlegs in shoreline)
+                            foundType = increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.JetFish, ((worldLoader.worldName == "LM" || worldLoader.worldName == "SB" || worldLoader.worldName == "VS") && waterPredatorChance > 0f) ? 1 : 0);
                             if (foundType)
+                            {
+                                replaceMultiSpawner(simpleSpawner, worldLoader.spawners, CreatureTemplate.Type.JetFish, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti,
+                                         (worldLoader.worldName == "SB" || worldLoader.worldName == "VS") ? waterPredatorChance * 2 : waterPredatorChance);
                                 continue;
+                            }
 
                             //(Big)Spiders
                             foundType = increaseCreatureSpawner(simpleSpawner, CreatureTemplate.Type.BigSpider, extraSpiders);
@@ -337,6 +347,7 @@ namespace ApexUpYourSpawns
                                     World.SimpleSpawner inspectorSpawner = CopySpawner(simpleSpawner);
                                     inspectorSpawner.amount = 1;
                                     inspectorSpawner.creatureType = MoreSlugcatsEnums.CreatureTemplateType.Inspector;
+                                    inspectorSpawner.spawnDataString = "{Ignorecycle}";
                                     inspectorSpawner.inRegionSpawnerIndex = worldLoader.spawners.Count;
                                     worldLoader.spawners.Add(inspectorSpawner);
                                 }
@@ -427,17 +438,19 @@ namespace ApexUpYourSpawns
                             //Tubeworms (check for inspector room)
                             if(simpleSpawner.creatureType == CreatureTemplate.Type.TubeWorm)
                             {
-                                if (worldLoader.worldName == "LC" && simpleSpawner.den.ResolveRoomName() == "LC_station01" && simpleSpawner.amount == 2 && UnityEngine.Random.value < inspectorChance * 10);
+                                if (worldLoader.worldName == "LC" && simpleSpawner.den.ResolveRoomName() == "LC_station01" 
+                                    && simpleSpawner.amount == 2 && UnityEngine.Random.value < inspectorChance * 10)
                                 {
                                     World.SimpleSpawner spawner = CopySpawner(simpleSpawner);
                                     spawner.amount = 1;
-                                    spawner.spawnDataString = "";
+                                    spawner.spawnDataString = "{Ignorecycle}";
                                     spawner.creatureType = MoreSlugcatsEnums.CreatureTemplateType.Inspector;
                                     spawner.inRegionSpawnerIndex = worldLoader.spawners.Count;
                                     worldLoader.spawners.Add(spawner);
                                 }
                                 continue;
                             }
+
 
                             //Mods
                             //Sporantula
@@ -472,7 +485,7 @@ namespace ApexUpYourSpawns
                             foundType = replaceFireBugLineage(lineage);
                             if (foundType)
                                 continue;
-                            foundType = replaceCreatureLineage(lineage, CreatureTemplate.Type.JetFish, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, (worldLoader.worldName == "SB" || worldLoader.worldName == "VS")? waterPredatorChance*2 : waterPredatorChance);
+                            foundType = replaceCreatureLineage(lineage, CreatureTemplate.Type.JetFish, (worldLoader.worldName == "SL")? CreatureTemplate.Type.BrotherLongLegs : MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, (worldLoader.worldName == "SB" || worldLoader.worldName == "VS")? waterPredatorChance*2 : (worldLoader.worldName == "SL")? waterPredatorChance/2 : waterPredatorChance);
                             if (foundType)
                                 continue;
                             
@@ -487,7 +500,27 @@ namespace ApexUpYourSpawns
             }
 
             Debug.Log("FINISHED SETTING UP SPAWNS.");
-            Debug.Log("SPAWN COUNT: " + worldLoader.spawners.Count);
+            Debug.Log("SPAWN AMOUNT: " + worldLoader.spawners.Count);
+
+            /*
+            Debug.Log("FINAL SPAWNS:");
+            foreach(World.CreatureSpawner cSpawner in worldLoader.spawners)
+            {
+                if(cSpawner is World.SimpleSpawner simpleSpawner)
+                {
+                    Debug.Log("\n");
+                    Debug.Log("SPAWNER DATA: " + simpleSpawner.ToString());
+                    Debug.Log("CREATURE: " + simpleSpawner.creatureType);
+                    Debug.Log("INDEX: " + simpleSpawner.inRegionSpawnerIndex);
+                    Debug.Log("DEN: " + simpleSpawner.den.ToString());
+                    Debug.Log("DEN ROOM: " + simpleSpawner.den.ResolveRoomName());
+                    Debug.Log("AMOUNT: " + simpleSpawner.amount);
+                    Debug.Log("SPAWN DATA STRING: " + simpleSpawner.spawnDataString);
+                    if (simpleSpawner.nightCreature)
+                        Debug.Log("IS NIGHT CREATURE.");
+                }
+            }//*/
+
             orig(worldLoader, fresh);
 
         }
@@ -499,7 +532,7 @@ namespace ApexUpYourSpawns
                 if (UnityEngine.Random.value < waterPredatorChance * 2)
                 {
                     World.SimpleSpawner spawner = CopySpawner(simpleSpawner);
-                    spawner.spawnDataString = "";
+                    spawner.spawnDataString = " ";
                     spawner.amount = 1;
                     spawner.inRegionSpawnerIndex = spawners.Count;
                     spawners.Add(spawner);
@@ -591,8 +624,8 @@ namespace ApexUpYourSpawns
             if (simpleSpawner.creatureType == CreatureTemplate.Type.LanternMouse || simpleSpawner.creatureType == CreatureTemplate.Type.Snail)
             {
                 float brotherChance = brotherLongLegsChance;
-                if (region == "VS" || region == "CC")
-                    brotherChance = brotherChance * 2;
+                if (region == "VS" || region == "CC" || region == "LM")
+                    brotherChance *= 2;
 
                 replaceMultiSpawner(simpleSpawner, spawners, simpleSpawner.creatureType, CreatureTemplate.Type.BrotherLongLegs, brotherChance);
                 if(replaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, CreatureTemplate.Type.DaddyLongLegs, daddyLongLegsChance))
@@ -876,10 +909,11 @@ namespace ApexUpYourSpawns
                         || lineage.creatureTypes[i] == MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs.Index)
                         break;
                 }
-                if (foundType)
+                if (foundType && UnityEngine.Random.value < chance)
                 {
-                    World.SimpleSpawner inspectorSpawner = new World.SimpleSpawner(lineage.region, spawners.Count, lineage.den, MoreSlugcatsEnums.CreatureTemplateType.Inspector, "", 1);
-                    spawners.Add(inspectorSpawner);
+                    World.SimpleSpawner inSpawner = new World.SimpleSpawner(lineage.region, spawners.Count, lineage.den, MoreSlugcatsEnums.CreatureTemplateType.Inspector, "{Ignorecycle}", 1);
+                    inSpawner.nightCreature = false;
+                    spawners.Add(inSpawner);
                 }
                 return foundType;
             }

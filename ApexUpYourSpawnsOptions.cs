@@ -59,7 +59,13 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> aquapedeExtras;
         public readonly Configurable<int> bigSpiderExtras;
         public readonly Configurable<int> dropwigExtras;
-        public readonly Configurable<int> critterExtras;
+        public readonly Configurable<int> eggbugExtras;
+        public readonly Configurable<int> cicadaExtras;
+        public readonly Configurable<int> lmiceExtras;
+        public readonly Configurable<int> snailExtras;
+        public readonly Configurable<int> jetfishExtras;
+        public readonly Configurable<int> smallCentExtras;
+        public readonly Configurable<int> yeekExtras;
         public readonly Configurable<int> mirosExtras;
         public readonly Configurable<int> spiderExtras;
         public readonly Configurable<int> leechExtras;
@@ -127,7 +133,7 @@ namespace ApexUpYourSpawns
             cyanLizExtras = this.config.Bind<int>("ExtraCyanLizs", 0, new ConfigAcceptableRange<int>(0, 10));
             genericLizExtras = this.config.Bind<int>("ExtraLizards", 0, new ConfigAcceptableRange<int>(0, 10));
             waterLizExtras = this.config.Bind<int>("ExtraWaterLizs", 0, new ConfigAcceptableRange<int>(0, 10));
-            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 2, new ConfigAcceptableRange<int>(0, 10));
+            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 1, new ConfigAcceptableRange<int>(0, 10));
             scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 100));
             vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 10));
             centipedeExtras = this.config.Bind<int>("ExtraKCentipedes", 0, new ConfigAcceptableRange<int>(0, 10));
@@ -135,7 +141,13 @@ namespace ApexUpYourSpawns
             aquapedeExtras = this.config.Bind<int>("ExtraAquaPedes", 0, new ConfigAcceptableRange<int>(0, 10));
             bigSpiderExtras = this.config.Bind<int>("ExtraBigSpiders", 2, new ConfigAcceptableRange<int>(0, 10));
             dropwigExtras = this.config.Bind<int>("ExtraDropwigs", 1, new ConfigAcceptableRange<int>(0, 10));
-            critterExtras = this.config.Bind<int>("ExtraCritters", 1, new ConfigAcceptableRange<int>(0, 10));
+            eggbugExtras = this.config.Bind<int>("ExtraEggbugs", 1, new ConfigAcceptableRange<int>(0, 10));
+            cicadaExtras = this.config.Bind<int>("ExtraCicadas", 1, new ConfigAcceptableRange<int>(0, 10));
+            snailExtras = this.config.Bind<int>("ExtraSnails", 0, new ConfigAcceptableRange<int>(0, 10));
+            jetfishExtras = this.config.Bind<int>("ExtraJetfish", 1, new ConfigAcceptableRange<int>(0, 10));
+            lmiceExtras = this.config.Bind<int>("ExtraLMice", 0, new ConfigAcceptableRange<int>(0, 10));
+            smallCentExtras = this.config.Bind<int>("ExtraSmallCents", 0, new ConfigAcceptableRange<int>(0, 10));
+            yeekExtras = this.config.Bind<int>("ExtraYeek", 0, new ConfigAcceptableRange<int>(0, 10));
             mirosExtras = this.config.Bind<int>("ExtraMirosBirds", 2, new ConfigAcceptableRange<int>(0, 10));
             spiderExtras = this.config.Bind<int>("ExtraSpiders", 0, new ConfigAcceptableRange<int>(0, 10));
             leechExtras = this.config.Bind<int>("ExtraLeeches", 0, new ConfigAcceptableRange<int>(0, 10));
@@ -143,7 +155,7 @@ namespace ApexUpYourSpawns
             leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 1, new ConfigAcceptableRange<int>(0, 10));
             //Mod dependent
             sporantulaExtras = this.config.Bind<int>("ExtraSporantulas", 3, new ConfigAcceptableRange<int>(0, 10));
-            scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 1, new ConfigAcceptableRange<int>(0, 10));
+            scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 10));
             waterSpitterExtras = this.config.Bind<int>("ExtraWaterSpitters", 0, new ConfigAcceptableRange<int>(0, 10));
 
 
@@ -199,7 +211,13 @@ namespace ApexUpYourSpawns
             labelsMap.Add(aquapedeExtras, "Aquapedes");
             labelsMap.Add(bigSpiderExtras, "Big Spiders");
             labelsMap.Add(dropwigExtras, "Dropwigs");
-            labelsMap.Add(critterExtras, "Critters");
+            labelsMap.Add(eggbugExtras, "Eggbugs");
+            labelsMap.Add(cicadaExtras, "Cicadas");
+            labelsMap.Add(smallCentExtras, "Small Centipedes");
+            labelsMap.Add(snailExtras, "Snails");
+            labelsMap.Add(jetfishExtras, "Jetfish");
+            labelsMap.Add(lmiceExtras, "Lantern Mice");
+            labelsMap.Add(yeekExtras, "Yeeks");
             labelsMap.Add(mirosExtras, "Miros Birds");
             labelsMap.Add(spiderExtras, "Small Spiders");
             labelsMap.Add(leechExtras, "Leeches");
@@ -275,8 +293,9 @@ namespace ApexUpYourSpawns
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
                 genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras, precycleSalExtras, scavengerExtras,
-                vultureExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras,
-                dropwigExtras, critterExtras, mirosExtras, spiderExtras, leechExtras, kelpExtras, leviathanExtras
+                vultureExtras, smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras,
+                dropwigExtras, spiderExtras, leechExtras, kelpExtras, mirosExtras, leviathanExtras,
+                eggbugExtras, cicadaExtras, lmiceExtras, snailExtras, jetfishExtras, yeekExtras
             };
 
             //Set the mod configs

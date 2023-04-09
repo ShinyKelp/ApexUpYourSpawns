@@ -13,6 +13,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<bool> fillLineages;
         public readonly Configurable<bool> forceFreshSpawns;
 
+        //Replacements
         public readonly Configurable<int> redLizardChance;
         public readonly Configurable<int> redCentipedeChance;
         public readonly Configurable<int> largeCentipedeChance;
@@ -46,7 +47,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> waterSpitterChance;
         public readonly Configurable<int> fatFireFlyChance;
 
-
+        //Extra spawns
         public readonly Configurable<int> yellowLizExtras;
         public readonly Configurable<int> cyanLizExtras;
         public readonly Configurable<int> genericLizExtras;
@@ -71,26 +72,24 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> leechExtras;
         public readonly Configurable<int> kelpExtras;
         public readonly Configurable<int> leviathanExtras;
+        public readonly Configurable<int> nightCreatureExtras;
         //Mod dependent
         public readonly Configurable<int> sporantulaExtras;
         public readonly Configurable<int> scutigeraExtras;
         public readonly Configurable<int> waterSpitterExtras;
 
-
-        private OpSimpleButton defaultsSimpleButton;
-        private OpSimpleButton nullsSimpleButton;
+        private OpSimpleButton defaultsSimpleButton, nullsSimpleButton;
         private OpCheckBox fillLineageCheck, forceFreshCheck;
-
         private OpScrollBox scrollBox;
 
         private UIelement[] UIFixed, UIBaseGameOptions, UIDependentOptions;
 
-        private ApexUpYourSpawnsMod mod;
+        private ApexUpYourSpawnsMod apexMod;
 
         public ApexUpYourSpawnsOptions(ApexUpYourSpawnsMod modInstance, ManualLogSource loggerSource)
         {
             Logger = loggerSource;
-            mod = modInstance;
+            apexMod = modInstance;
 
             fillLineages = this.config.Bind<bool>("FillLineages", false);
             forceFreshSpawns = this.config.Bind<bool>("ForceFreshSpawns", false);
@@ -153,6 +152,7 @@ namespace ApexUpYourSpawns
             leechExtras = this.config.Bind<int>("ExtraLeeches", 0, new ConfigAcceptableRange<int>(0, 10));
             kelpExtras = this.config.Bind<int>("ExtraKelps", 1, new ConfigAcceptableRange<int>(0, 10));
             leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 1, new ConfigAcceptableRange<int>(0, 10));
+            nightCreatureExtras = this.config.Bind<int>("ExtraNightCreatures", 1, new ConfigAcceptableRange<int>(0, 10));
             //Mod dependent
             sporantulaExtras = this.config.Bind<int>("ExtraSporantulas", 3, new ConfigAcceptableRange<int>(0, 10));
             scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 10));
@@ -190,7 +190,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap");
 
             //Mod dependent replacements
-            labelsMap.Add(inspectorChance, "LongLegs > Inspector Invasion");
+            labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector Invasion");
             labelsMap.Add(sporantulaChance, "Small Insects > Sporantula Invasion");
             labelsMap.Add(scutigeraChance, "Centipede > Scutigera");
             labelsMap.Add(redHorrorCentiChance, "Red Centipede > Red Horror Centi");
@@ -223,6 +223,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(leechExtras, "Leeches");
             labelsMap.Add(kelpExtras, "Monster Kelp");
             labelsMap.Add(leviathanExtras, "Leviathans");
+            labelsMap.Add(nightCreatureExtras, "Night Creatures");
             //Mod-dependant extras
             labelsMap.Add(sporantulaExtras, "Sporantulas");
             labelsMap.Add(scutigeraExtras, "Scutigeras");
@@ -292,37 +293,37 @@ namespace ApexUpYourSpawns
 
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
-                genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras, precycleSalExtras, scavengerExtras,
-                vultureExtras, smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras,
-                dropwigExtras, spiderExtras, leechExtras, kelpExtras, mirosExtras, leviathanExtras,
-                eggbugExtras, cicadaExtras, lmiceExtras, snailExtras, jetfishExtras, yeekExtras
+                genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras, scavengerExtras, vultureExtras, 
+                smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, 
+                spiderExtras, leechExtras, kelpExtras, mirosExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
+                lmiceExtras, snailExtras, jetfishExtras, yeekExtras, precycleSalExtras, nightCreatureExtras,
             };
 
             //Set the mod configs
             List<Configurable<int>> enabledModsRepConfigs = new List<Configurable<int>>();
             List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
-            if (mod.hasSporantula)
+            if (apexMod.hasSporantula)
             {
                 enabledModsRepConfigs.Add(sporantulaChance);
                 enabledModsExtraConfigs.Add(sporantulaExtras);
             }
-            if (mod.hasAngryInspectors)
+            if (apexMod.hasAngryInspectors)
                 enabledModsRepConfigs.Add(inspectorChance);
-            if (mod.hasScutigera)
+            if (apexMod.hasScutigera)
             {
                 enabledModsRepConfigs.Add(scutigeraChance);
                 enabledModsExtraConfigs.Add(scutigeraExtras);
             }
-            if (mod.hasRedHorrorCentipede)
+            if (apexMod.hasRedHorrorCentipede)
                 enabledModsRepConfigs.Add(redHorrorCentiChance);
-            if (mod.hasExplosiveDLL || mod.hasMoreDLLs)
+            if (apexMod.hasExplosiveDLL || apexMod.hasMoreDLLs)
                 enabledModsRepConfigs.Add(longlegsVariantChance);
-            if (mod.hasWaterSpitter)
+            if (apexMod.hasWaterSpitter)
             {
                 enabledModsRepConfigs.Add(waterSpitterChance);
                 enabledModsExtraConfigs.Add(waterSpitterExtras);
             }
-            if (mod.hasFatFirefly)
+            if (apexMod.hasFatFirefly)
                 enabledModsRepConfigs.Add(fatFireFlyChance);
                 
 
@@ -387,7 +388,7 @@ namespace ApexUpYourSpawns
         }
 
 
-        private void setDefaults()
+        private void SetDefaults()
         {
             for(int i = 0; i < UIBaseGameOptions.Length; i++)
                 if (UIBaseGameOptions[i] is OpUpdown op)
@@ -402,7 +403,7 @@ namespace ApexUpYourSpawns
 
         }
 
-        private void setNulls()
+        private void SetNulls()
         {
             string aux;
             for (int i = 0; i < UIBaseGameOptions.Length; i++)
@@ -431,11 +432,11 @@ namespace ApexUpYourSpawns
             //hook is not possible.
             if (defaultsSimpleButton._held)
             {
-                setDefaults();
+                SetDefaults();
             }
             if (nullsSimpleButton._held)
             {
-                setNulls();
+                SetNulls();
             }
         }
 

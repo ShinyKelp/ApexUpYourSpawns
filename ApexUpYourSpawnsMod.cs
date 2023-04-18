@@ -221,7 +221,7 @@ namespace ApexUpYourSpawns
         private void ReplaceGiantJellyfish(On.JellyFish.orig_PlaceInRoom orig, JellyFish self, Room room)
         {
 
-            if (!room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
+            if (game.IsStorySession && !room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
             {
                 AbstractCreature myBigJelly = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.BigJelly), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
                 BigJellyFish myJelly = new BigJellyFish(myBigJelly, game.world);
@@ -233,7 +233,7 @@ namespace ApexUpYourSpawns
 
         private void ReplaceStowawayBugBlueFruit(On.DangleFruit.orig_PlaceInRoom orig, DangleFruit self, Room room)
         {
-            if(!room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance)
+            if(game.IsStorySession && !room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance)
             {
                 self.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
                 DangleFruit.Stalk stalk = new DangleFruit.Stalk(self, room, self.firstChunk.pos);
@@ -241,8 +241,8 @@ namespace ApexUpYourSpawns
                 AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.StowawayBug), 
                     null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y + 3, 0), game.GetNewID());
 
-                Vector2 pos = new Vector2(self.abstractPhysicalObject.pos.x * 20.1f, (self.abstractPhysicalObject.pos.y) * 20.1f + stalk.ropeLength);
-
+                Vector2 pos = new Vector2((self.abstractPhysicalObject.pos.x+1) * 20f - 10f, (self.abstractPhysicalObject.pos.y+1) * 20f - 20f + stalk.ropeLength);
+                
                 (myStowawayAbstract.state as StowawayBugState).HomePos = new Vector2(pos.x, pos.y);
                 pos.y -= 60f;
                 (myStowawayAbstract.state as StowawayBugState).aimPos = pos;
@@ -261,14 +261,14 @@ namespace ApexUpYourSpawns
 
         private void ReplaceStowawayBugGooieDuck(On.MoreSlugcats.GooieDuck.orig_PlaceInRoom orig, GooieDuck self, Room room)
         {
-            if (!room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance * 2)
+            if (game.IsStorySession && !room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance * 2)
             {
                 DangleFruit fruit = new DangleFruit(self.abstractPhysicalObject);
                 fruit.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
                 DangleFruit.Stalk stalk = new DangleFruit.Stalk(fruit, room, fruit.firstChunk.pos);
-
                 AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.StowawayBug), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y + 3, 0), game.GetNewID());
-                Vector2 pos = new Vector2(self.abstractPhysicalObject.pos.x * 20.1f, (self.abstractPhysicalObject.pos.y) * 20.1f + stalk.ropeLength);
+                Vector2 pos = new Vector2((self.abstractPhysicalObject.pos.x + 1) * 20f - 10f, (self.abstractPhysicalObject.pos.y + 1) * 20f - 20f + stalk.ropeLength);
+                
                 (myStowawayAbstract.state as StowawayBugState).HomePos = new Vector2(pos.x, pos.y);
                 pos.y -= 60f;
                 (myStowawayAbstract.state as StowawayBugState).aimPos = pos;
@@ -284,6 +284,7 @@ namespace ApexUpYourSpawns
 
         private void GenerateCustomPopulation(On.WorldLoader.orig_GeneratePopulation orig, WorldLoader worldLoader, bool fresh)
         {
+
             if (forceFreshSpawns && !fresh)
             {
                 fresh = true;
@@ -293,6 +294,7 @@ namespace ApexUpYourSpawns
                     {
                         abstractRoom.creatures.Clear();
                         abstractRoom.entitiesInDens.Clear();
+                        Debug.Log(abstractRoom.index);
                     }
                 }
             }
@@ -309,7 +311,7 @@ namespace ApexUpYourSpawns
                     Debug.Log("ORIGINAL SPAWN COUNT: " + worldLoader.spawners.Count);
                     Debug.Log("\n");
                     UnityEngine.Random.InitState(Mathf.RoundToInt(Time.time * 10f));
-                    HandleAllSpawners(worldLoader.spawners, worldLoader.worldName);
+                    HandleAllSpawners(worldLoader, worldLoader.spawners, worldLoader.worldName, worldLoader.world.firstRoomIndex);
                     Debug.Log("Finished setting up spawns.");
                     Debug.Log("FINAL SPAWN COUNT: " + worldLoader.spawners.Count);
                 }
@@ -324,19 +326,24 @@ namespace ApexUpYourSpawns
 
         }
         
-        private void HandleAllSpawners(List<World.CreatureSpawner> spawners, string region)
+        private void HandleAllSpawners(WorldLoader worldLoader, List<World.CreatureSpawner> spawners, string region, int firstRoomIndex)
         {
             int originalSpawnerCount = spawners.Count;
             for (int i = 0; i < spawners.Count; i++)
             {
+                if(spawners[i].den.room < worldLoader.world.firstRoomIndex || 
+                    spawners[i].den.room >= worldLoader.world.firstRoomIndex + worldLoader.world.NumberOfRooms){
+                    Debug.Log("!!! ERROR SPAWNER FOUND !!!");
+                    LogSpawner(spawners[i], i);
+                    continue;
+                }
                 //Log Spawners
-                /*
                 if (i > 0)
                 {
                     Debug.Log("==AFTER TRANSFORMATIONS==");
-                    LogSpawner(spawners[i - 1], i - 1);
+                    LogSpawner(spawners[i - 1], i - 1, worldLoader.abstractRooms[spawners[i - 1].den.room - firstRoomIndex].subregionName);
                 }
-                LogSpawner(spawners[i], i);
+                LogSpawner(spawners[i], i, worldLoader.abstractRooms[spawners[i].den.room - firstRoomIndex].subregionName);
                 //*/
                 if (spawners[i] is World.SimpleSpawner simpleSpawner)
                 {   
@@ -349,8 +356,8 @@ namespace ApexUpYourSpawns
                         IncreaseCreatureSpawner(simpleSpawner, extraNightCreatures);
                         if (hasAngryInspectors) 
                         {
-                            if(((region == "LC") && simpleSpawner.den.ResolveRoomName() != "OffScreenDen_LC") || 
-                                (region == "UW" && simpleSpawner.den.ResolveRoomName() != "OffScreenDen_UW"))
+                            if((region == "LC" && simpleSpawner.den.ResolveRoomName() != "LCOffScreenDen") || 
+                                (region == "UW" && simpleSpawner.den.ResolveRoomName() != "UWOffScreenDen"))
                             {
                                 bool addedSpawner =
                                 AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, inspectorChance / 2, true);
@@ -368,7 +375,7 @@ namespace ApexUpYourSpawns
 
                     if (IsCentipede(simpleSpawner))
                     {
-                        if (hasAngryInspectors && region == "SH" && simpleSpawner.den.ResolveRoomName() == "SH_H01" 
+                        if (hasAngryInspectors && worldLoader.abstractRooms[spawners[i].den.room - firstRoomIndex].subregionName == "Memory Crypts"
                             && simpleSpawner.creatureType == CreatureTemplate.Type.Centipede)
                             AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, inspectorChance * 4);
                         HandleCentipedeSpawner(simpleSpawner, spawners, region);
@@ -391,7 +398,7 @@ namespace ApexUpYourSpawns
                             IncreaseCreatureSpawner(simpleSpawner, extraSpiders*2);
                         else
                         {
-                            IncreaseCreatureSpawner(simpleSpawner, extraSpiders);
+                            IncreaseCreatureSpawner(simpleSpawner, region == "SB"? extraSpiders-1 : extraSpiders);
                             ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.SpitterSpider, spitterSpiderChance);
                         }
                         //Sporantula
@@ -440,7 +447,9 @@ namespace ApexUpYourSpawns
                     
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.Scavenger)
                     {
-                        IncreaseCreatureSpawner(simpleSpawner, extraScavengers);
+                        IncreaseCreatureSpawner(simpleSpawner, (game.IsStorySession && 
+                            game.GetStorySession.saveState.saveStateNumber == MoreSlugcatsEnums.SlugcatStatsName.Artificer) ?
+                            extraScavengers/2 : extraScavengers);
                         ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite, eliteScavengerChance);
                         continue;
                     }
@@ -697,7 +706,7 @@ namespace ApexUpYourSpawns
             if(simpleSpawner.creatureType == CreatureTemplate.Type.SmallCentipede)
             {
                 wasSmallCentipedes = true;
-                IncreaseCreatureSpawner(simpleSpawner, (region == "OE" || region == "SB")? extraSmallCents-1 : extraSmallCents);
+                IncreaseCreatureSpawner(simpleSpawner, (region == "OE" || region == "SB" || region == "VS")? extraSmallCents-1 : extraSmallCents);
                 if(!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("AlternateForm"))
                     ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Centiwing, largeCentipedeChance);
                 else
@@ -707,7 +716,7 @@ namespace ApexUpYourSpawns
             if (simpleSpawner.creatureType == CreatureTemplate.Type.Centipede)
             {
                 if(!wasSmallCentipedes)
-                    IncreaseCreatureSpawner(simpleSpawner, extraCentipedes);
+                    IncreaseCreatureSpawner(simpleSpawner, (region == "SB" || region == "VS")? extraCentipedes-1 : extraCentipedes);
                 bool replacedFull =
                 ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.RedCentipede, (region == "VS" || region == "SB") ? redCentipedeChance / 2 : redCentipedeChance);
                 //Scugitera chance
@@ -788,7 +797,7 @@ namespace ApexUpYourSpawns
 
         }
         
-        private void HandleLongLegsSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners, string region)
+        private void HandleLongLegsSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners, string region, string subregion = "")
         {
             if (!(StaticWorld.creatureTemplates[simpleSpawner.creatureType.Index].TopAncestor().type == CreatureTemplate.Type.DaddyLongLegs))
             {
@@ -805,7 +814,9 @@ namespace ApexUpYourSpawns
                 else
                 {
                     float localBrotherChance = brotherLongLegsChance;
-                    if (region == "VS" || region == "CC" || region == "LM" || simpleSpawner.creatureType == CreatureTemplate.Type.JetFish)
+                    if (subregion == "Sump Tunnel" || subregion == "The Gutter" || region == "LM" || 
+                        (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle")) || 
+                        simpleSpawner.creatureType == CreatureTemplate.Type.JetFish)
                         localBrotherChance *= 2;
                     ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, localBrotherChance);
                 }
@@ -1241,7 +1252,7 @@ namespace ApexUpYourSpawns
             return newSpawner;
         }
         
-        private void LogSpawner(World.CreatureSpawner spawner, int arrayIndex = -1)
+        private void LogSpawner(World.CreatureSpawner spawner, int arrayIndex = -1, string subregion = "")
         {
             if(spawner is World.SimpleSpawner simpleSpawner)
             {
@@ -1249,6 +1260,7 @@ namespace ApexUpYourSpawns
                 Debug.Log("ID: " + simpleSpawner.SpawnerID);
                 Debug.Log("Creature: " + simpleSpawner.creatureType);
                 Debug.Log("Amount: " + simpleSpawner.amount);
+                Debug.Log("Subregion: " + subregion);
                 Debug.Log("In region index: " + simpleSpawner.inRegionSpawnerIndex);
                 if(arrayIndex != -1)
                     Debug.Log("Spawner array index: " + arrayIndex);
@@ -1270,12 +1282,17 @@ namespace ApexUpYourSpawns
                     Debug.Log("Creature " + (j + 1) + " : " + lineage.creatureTypes[j] + " (" +
                         auxStr + ")");
                 }
-                    
+                Debug.Log("Subregion: " + subregion);
                 Debug.Log("In region index: " + lineage.inRegionSpawnerIndex);
                 if (arrayIndex != -1)
                     Debug.Log("Spawner array index: " + arrayIndex);
                 Debug.Log("Den: " + lineage.den.ToString());
                 Debug.Log("Den room: " + lineage.den.ResolveRoomName());
+                Debug.Log("Spawn data strings: ");
+                for (int j = 0; j < lineage.spawnData.Length; ++j)
+                {
+                    Debug.Log("Creature " + j + " : " + lineage.spawnData[j]);
+                }
             }
             Debug.Log("\n");
 

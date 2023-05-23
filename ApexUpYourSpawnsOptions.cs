@@ -12,6 +12,7 @@ namespace ApexUpYourSpawns
 
         public readonly Configurable<bool> fillLineages;
         public readonly Configurable<bool> forceFreshSpawns;
+        public readonly Configurable<bool> balancedSpawns;
 
         //Replacements
         public readonly Configurable<int> redLizardChance;
@@ -46,6 +47,11 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> longlegsVariantChance;
         public readonly Configurable<int> waterSpitterChance;
         public readonly Configurable<int> fatFireFlyChance;
+        public readonly Configurable<int> sludgeLizardChance;
+        public readonly Configurable<int> snailSludgeLizardChance;
+        public readonly Configurable<int> mintLizardChance;
+        public readonly Configurable<int> ryanLizardChance;
+        public readonly Configurable<int> yellowLimeLizardChance;
 
         //Extra spawns
         public readonly Configurable<int> yellowLizExtras;
@@ -77,9 +83,10 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> sporantulaExtras;
         public readonly Configurable<int> scutigeraExtras;
         public readonly Configurable<int> waterSpitterExtras;
+        public readonly Configurable<int> sludgeLizardExtras;
 
         private OpSimpleButton defaultsSimpleButton, nullsSimpleButton;
-        private OpCheckBox fillLineageCheck, forceFreshCheck;
+        private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
         private OpScrollBox scrollBox;
 
         private UIelement[] UIFixed, UIBaseGameOptions, UIDependentOptions;
@@ -93,7 +100,9 @@ namespace ApexUpYourSpawns
 
             fillLineages = this.config.Bind<bool>("FillLineages", false);
             forceFreshSpawns = this.config.Bind<bool>("ForceFreshSpawns", false);
+            balancedSpawns = this.config.Bind<bool>("BalancedSpawns", true);
 
+            //Replacements
             redLizardChance = this.config.Bind<int>("RedLizardChance", 6, new ConfigAcceptableRange<int>(0, 100));
             trainLizardChance = this.config.Bind<int>("TrainLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
             largeCentipedeChance = this.config.Bind<int>("LargeCentipedeChance", 0, new ConfigAcceptableRange<int>(0, 100));
@@ -127,38 +136,43 @@ namespace ApexUpYourSpawns
             longlegsVariantChance = this.config.Bind<int>("LongLegsVariantChance", 5, new ConfigAcceptableRange<int>(0, 100));
             waterSpitterChance = this.config.Bind<int>("WaterSpitterChance", 10, new ConfigAcceptableRange<int>(0, 100));
             fatFireFlyChance = this.config.Bind<int>("FatFireFlyChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            sludgeLizardChance = this.config.Bind<int>("SludgeLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            snailSludgeLizardChance = this.config.Bind<int>("SnailSludgeLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            mintLizardChance = this.config.Bind<int>("MintLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            ryanLizardChance = this.config.Bind<int>("RyanLizardChance", 4, new ConfigAcceptableRange<int>(0, 100));
+            yellowLimeLizardChance = this.config.Bind<int>("YellowLimeLizardChance", 16, new ConfigAcceptableRange<int>(0, 100));
 
-            yellowLizExtras = this.config.Bind<int>("ExtraYellowLizs", 2, new ConfigAcceptableRange<int>(0, 10));
-            cyanLizExtras = this.config.Bind<int>("ExtraCyanLizs", 0, new ConfigAcceptableRange<int>(0, 10));
-            genericLizExtras = this.config.Bind<int>("ExtraLizards", 0, new ConfigAcceptableRange<int>(0, 10));
-            waterLizExtras = this.config.Bind<int>("ExtraWaterLizs", 0, new ConfigAcceptableRange<int>(0, 10));
-            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 1, new ConfigAcceptableRange<int>(0, 10));
-            scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 100));
-            vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 10));
-            centipedeExtras = this.config.Bind<int>("ExtraKCentipedes", 0, new ConfigAcceptableRange<int>(0, 10));
-            centiWingExtras = this.config.Bind<int>("ExtraCentiwings", 0, new ConfigAcceptableRange<int>(0, 10));
-            aquapedeExtras = this.config.Bind<int>("ExtraAquaPedes", 0, new ConfigAcceptableRange<int>(0, 10));
-            bigSpiderExtras = this.config.Bind<int>("ExtraBigSpiders", 2, new ConfigAcceptableRange<int>(0, 10));
-            dropwigExtras = this.config.Bind<int>("ExtraDropwigs", 1, new ConfigAcceptableRange<int>(0, 10));
-            eggbugExtras = this.config.Bind<int>("ExtraEggbugs", 1, new ConfigAcceptableRange<int>(0, 10));
-            cicadaExtras = this.config.Bind<int>("ExtraCicadas", 1, new ConfigAcceptableRange<int>(0, 10));
-            snailExtras = this.config.Bind<int>("ExtraSnails", 0, new ConfigAcceptableRange<int>(0, 10));
-            jetfishExtras = this.config.Bind<int>("ExtraJetfish", 1, new ConfigAcceptableRange<int>(0, 10));
-            lmiceExtras = this.config.Bind<int>("ExtraLMice", 0, new ConfigAcceptableRange<int>(0, 10));
-            smallCentExtras = this.config.Bind<int>("ExtraSmallCents", 0, new ConfigAcceptableRange<int>(0, 10));
-            yeekExtras = this.config.Bind<int>("ExtraYeek", 0, new ConfigAcceptableRange<int>(0, 10));
-            mirosExtras = this.config.Bind<int>("ExtraMirosBirds", 2, new ConfigAcceptableRange<int>(0, 10));
-            spiderExtras = this.config.Bind<int>("ExtraSpiders", 0, new ConfigAcceptableRange<int>(0, 10));
-            leechExtras = this.config.Bind<int>("ExtraLeeches", 0, new ConfigAcceptableRange<int>(0, 10));
-            kelpExtras = this.config.Bind<int>("ExtraKelps", 1, new ConfigAcceptableRange<int>(0, 10));
-            leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 1, new ConfigAcceptableRange<int>(0, 10));
-            nightCreatureExtras = this.config.Bind<int>("ExtraNightCreatures", 1, new ConfigAcceptableRange<int>(0, 10));
+            //Extras
+            yellowLizExtras = this.config.Bind<int>("ExtraYellowLizs", 25, new ConfigAcceptableRange<int>(0, 100));
+            cyanLizExtras = this.config.Bind<int>("ExtraCyanLizs", 2, new ConfigAcceptableRange<int>(0, 100));
+            genericLizExtras = this.config.Bind<int>("ExtraLizards", 4, new ConfigAcceptableRange<int>(0, 100));
+            waterLizExtras = this.config.Bind<int>("ExtraWaterLizs", 10, new ConfigAcceptableRange<int>(0, 100));
+            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 10, new ConfigAcceptableRange<int>(0, 100));
+            scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 20));
+            vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 20));
+            centipedeExtras = this.config.Bind<int>("ExtraCentipedes", 0, new ConfigAcceptableRange<int>(0, 100));
+            centiWingExtras = this.config.Bind<int>("ExtraCentiwings", 0, new ConfigAcceptableRange<int>(0, 100));
+            aquapedeExtras = this.config.Bind<int>("ExtraAquaPedes", 5, new ConfigAcceptableRange<int>(0, 100));
+            bigSpiderExtras = this.config.Bind<int>("ExtraBigSpiders", 25, new ConfigAcceptableRange<int>(0, 100));
+            dropwigExtras = this.config.Bind<int>("ExtraDropwigs", 10, new ConfigAcceptableRange<int>(0, 100));
+            eggbugExtras = this.config.Bind<int>("ExtraEggbugs", 10, new ConfigAcceptableRange<int>(0, 100));
+            cicadaExtras = this.config.Bind<int>("ExtraCicadas", 10, new ConfigAcceptableRange<int>(0, 100));
+            snailExtras = this.config.Bind<int>("ExtraSnails", 3, new ConfigAcceptableRange<int>(0, 100));
+            jetfishExtras = this.config.Bind<int>("ExtraJetfish", 6, new ConfigAcceptableRange<int>(0, 100));
+            lmiceExtras = this.config.Bind<int>("ExtraLMice", 3, new ConfigAcceptableRange<int>(0, 100));
+            smallCentExtras = this.config.Bind<int>("ExtraSmallCents", 8, new ConfigAcceptableRange<int>(0, 100));
+            yeekExtras = this.config.Bind<int>("ExtraYeek", 8, new ConfigAcceptableRange<int>(0, 100));
+            mirosExtras = this.config.Bind<int>("ExtraMirosBirds", 2, new ConfigAcceptableRange<int>(0, 20));
+            spiderExtras = this.config.Bind<int>("ExtraSpiders", 0, new ConfigAcceptableRange<int>(0, 20));
+            leechExtras = this.config.Bind<int>("ExtraLeeches", 0, new ConfigAcceptableRange<int>(0, 20));
+            kelpExtras = this.config.Bind<int>("ExtraKelps", 6, new ConfigAcceptableRange<int>(0, 100));
+            leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 4, new ConfigAcceptableRange<int>(0, 100));
+            nightCreatureExtras = this.config.Bind<int>("ExtraNightCreatures", 10, new ConfigAcceptableRange<int>(0, 100));
             //Mod dependent
-            sporantulaExtras = this.config.Bind<int>("ExtraSporantulas", 3, new ConfigAcceptableRange<int>(0, 10));
-            scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 10));
-            waterSpitterExtras = this.config.Bind<int>("ExtraWaterSpitters", 0, new ConfigAcceptableRange<int>(0, 10));
-
-
+            sporantulaExtras = this.config.Bind<int>("ExtraSporantulas", 25, new ConfigAcceptableRange<int>(0, 100));
+            scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 100));
+            waterSpitterExtras = this.config.Bind<int>("ExtraWaterSpitters", 0, new ConfigAcceptableRange<int>(0, 100));
+            sludgeLizardExtras = this.config.Bind<int>("ExtraSludgeLizards", 8, new ConfigAcceptableRange<int>(0, 100));
         }
 
         private void SetDictionary(Dictionary<Configurable<int>, string> labelsMap)
@@ -177,7 +191,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(daddyLongLegsChance, "Brother > DaddyLongLegs");
             labelsMap.Add(terrorLongLegsChance, "Daddy > MotherLongLegs");
             labelsMap.Add(giantJellyfishChance, "Jellyfish > Giant Jellyfish");
-            labelsMap.Add(leechLizardChance, "Leeches > Aquatic Lizard");
+            labelsMap.Add(leechLizardChance, "Leeches > Aquatic Lizard (Mult)");
             labelsMap.Add(yeekLizardChance, "Yeek > Caramel/Strawberry Liz");
             labelsMap.Add(waterPredatorChance, "Jetfish > Water Predators");
             labelsMap.Add(strawberryLizChance, "Pink > Strawberry Lizard");
@@ -185,49 +199,55 @@ namespace ApexUpYourSpawns
             labelsMap.Add(cyanLizChance, "Blue > Cyan Lizard");
             labelsMap.Add(eelLizChance, "Salamander > Eel Lizard");
             labelsMap.Add(spitterSpiderChance, "Big Spider > Spitter Spider");
-            labelsMap.Add(motherSpiderChance, "Small Spiders > Mother Spider");
+            labelsMap.Add(motherSpiderChance, "Small Spiders > Mother Spider (Mult)");
             labelsMap.Add(jungleLeechChance, "Leech > Jungle Leech");
             labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap");
 
             //Mod dependent replacements
-            labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector Invasion");
-            labelsMap.Add(sporantulaChance, "Small Insects > Sporantula Invasion");
+            labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
+            labelsMap.Add(sporantulaChance, "Small Insects > Sporantula (Inv)");
             labelsMap.Add(scutigeraChance, "Centipede > Scutigera");
             labelsMap.Add(redHorrorCentiChance, "Red Centipede > Red Horror Centi");
             labelsMap.Add(longlegsVariantChance, "LongLegs > LongLegs Variant");
             labelsMap.Add(waterSpitterChance, "Aquatic Lizards > Water Spitter");
             labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
+            labelsMap.Add(sludgeLizardChance, "Water Lizards > Sludge Lizard");
+            labelsMap.Add(snailSludgeLizardChance, "Snails > Sludge Lizard (Mult)");
+            labelsMap.Add(mintLizardChance, "Ground Lizards > Mint Lizard");
+            labelsMap.Add(ryanLizardChance, "Cyan Lizard > Ryan Lizard");
+            labelsMap.Add(yellowLimeLizardChance, "Yellow Lizard > YellowLime Lizard");
 
             //Extras
-            labelsMap.Add(yellowLizExtras, "Yellow Lizards");
-            labelsMap.Add(cyanLizExtras, "Cyan Lizards");
-            labelsMap.Add(genericLizExtras, "Lizards");
-            labelsMap.Add(waterLizExtras, "Aquatic Lizards");
-            labelsMap.Add(precycleSalExtras, "Shelter Failure Spawns");
+            labelsMap.Add(yellowLizExtras, "Yellow Lizards (/10)");
+            labelsMap.Add(cyanLizExtras, "Cyan Lizards (/10)");
+            labelsMap.Add(genericLizExtras, "Lizards (/10)");
+            labelsMap.Add(waterLizExtras, "Aquatic Lizards (/10)");
+            labelsMap.Add(precycleSalExtras, "Shelter Failure Spawns (/10)");
             labelsMap.Add(scavengerExtras, "Scavengers");
             labelsMap.Add(vultureExtras, "Vultures");
-            labelsMap.Add(centipedeExtras, "Centipedes");
-            labelsMap.Add(centiWingExtras, "Centiwings");
-            labelsMap.Add(aquapedeExtras, "Aquapedes");
-            labelsMap.Add(bigSpiderExtras, "Big Spiders");
-            labelsMap.Add(dropwigExtras, "Dropwigs");
-            labelsMap.Add(eggbugExtras, "Eggbugs");
-            labelsMap.Add(cicadaExtras, "Cicadas");
-            labelsMap.Add(smallCentExtras, "Small Centipedes");
-            labelsMap.Add(snailExtras, "Snails");
-            labelsMap.Add(jetfishExtras, "Jetfish");
-            labelsMap.Add(lmiceExtras, "Lantern Mice");
-            labelsMap.Add(yeekExtras, "Yeeks");
+            labelsMap.Add(centipedeExtras, "Centipedes (/10)");
+            labelsMap.Add(centiWingExtras, "Centiwings (/10)");
+            labelsMap.Add(aquapedeExtras, "Aquapedes (/10)");
+            labelsMap.Add(bigSpiderExtras, "Big Spiders (/10)");
+            labelsMap.Add(dropwigExtras, "Dropwigs (/10)");
+            labelsMap.Add(eggbugExtras, "Eggbugs (/10)");
+            labelsMap.Add(cicadaExtras, "Cicadas (/10)");
+            labelsMap.Add(smallCentExtras, "Small Centipedes (/10)");
+            labelsMap.Add(snailExtras, "Snails (/10)");
+            labelsMap.Add(jetfishExtras, "Jetfish (/10)");
+            labelsMap.Add(lmiceExtras, "Lantern Mice (/10)");
+            labelsMap.Add(yeekExtras, "Yeeks (/10)");
             labelsMap.Add(mirosExtras, "Miros Birds");
             labelsMap.Add(spiderExtras, "Small Spiders");
             labelsMap.Add(leechExtras, "Leeches");
-            labelsMap.Add(kelpExtras, "Monster Kelp");
+            labelsMap.Add(kelpExtras, "Monster Kelp (/10)");
             labelsMap.Add(leviathanExtras, "Leviathans");
-            labelsMap.Add(nightCreatureExtras, "Night Creatures");
+            labelsMap.Add(nightCreatureExtras, "Night Creatures (/10)");
             //Mod-dependant extras
-            labelsMap.Add(sporantulaExtras, "Sporantulas");
-            labelsMap.Add(scutigeraExtras, "Scutigeras");
-            labelsMap.Add(waterSpitterExtras, "Water Spitters");
+            labelsMap.Add(sporantulaExtras, "Sporantulas (/10)");
+            labelsMap.Add(scutigeraExtras, "Scutigeras (/10)");
+            labelsMap.Add(waterSpitterExtras, "Water Spitters (/10)");
+            labelsMap.Add(sludgeLizardExtras, "Sludge Lizards (/10)");
 
         }
 
@@ -243,38 +263,53 @@ namespace ApexUpYourSpawns
                 opTab
             };
 
-            defaultsSimpleButton = new OpSimpleButton(new Vector2(50f, 10f), new Vector2(60, 30), "Defaults")
+            defaultsSimpleButton = new OpSimpleButton(new Vector2(10f, 10f), new Vector2(60, 30), "Defaults")
             {
                 description = "Set options to default (just a recommended template)"
             };
             //defaultsSimpleButton.OnClick += setDefaults(); //Currently bugged. Dual-Iron's PUBLIC library fix won't work for me either.
-            nullsSimpleButton = new OpSimpleButton(new Vector2(120f, 10f), new Vector2(60, 30), "Nulls")
+            nullsSimpleButton = new OpSimpleButton(new Vector2(80f, 10f), new Vector2(60, 30), "Nulls")
             {
                 description = "Set options to null (no changes)"
             };
 
-            fillLineageCheck = new OpCheckBox(fillLineages, new Vector2(230f, 13f))
+            fillLineageCheck = new OpCheckBox(fillLineages, new Vector2(160f, 13f))
             {
-                description = "Empty slots in lineages will be filled, leading to always having a creature per lineage."
+                description = "Empty slots in lineages will be filled, so every lineage will have a creature every cycle."
             };
 
-            forceFreshCheck = new OpCheckBox(forceFreshSpawns, new Vector2(330f, 13f))
+            balancedSpawnsCheck = new OpCheckBox(balancedSpawns, new Vector2(262f, 13f))
+            {
+                description = "To balance creature density, certain configs will behave differently in certain regions."
+            };
+
+            forceFreshCheck = new OpCheckBox(forceFreshSpawns, new Vector2(394f, 13f))
             {
                 description = "Spawns will be reset and randomized every cycle."
             };
 
+            
+
             UIFixed = new UIelement[]
             {
                 new OpLabel(10f, 570f, "Options", true),
-                new OpLabel(-2f, 543f, "Apex Replacements (% chance)", true),
-                new OpLabel(325f, 543f, "Extra spawns (up to, per den)", true),
+                new OpLabel(-2f, 543f, "Apex Replacements (% chance)", true){
+                    description = "Mult: Each DEN has a chance to be replaced instead of each individual creature.\n" +
+                    "Inv: Invasion. Original creature is not replaced."
+                },
+                new OpLabel(325f, 543f, "Extra spawns (up to, per den)", true){
+                    description = "\\10: Value is divided by 10. Decimals determine chance of one extra addition.\n" +
+                    "Example: 11 becomes 1.1 => either 0 or 1, with a 10% chance of one extra."
+                },
 
                 defaultsSimpleButton,
                 nullsSimpleButton,
                 fillLineageCheck,
-                new OpLabel(257f, 16f, "Fill Lineages"),
+                new OpLabel(187f, 16f, "Fill Lineages"),
+                balancedSpawnsCheck,
+                new OpLabel(289f, 16f, "Balanced spawns"),
                 forceFreshCheck,
-                new OpLabel(357f, 16f, "Randomize every cycle")
+                new OpLabel(421f, 16f, "Randomize every cycle"),  
             };
 
 
@@ -287,16 +322,18 @@ namespace ApexUpYourSpawns
             {
                 redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance, 
                 leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, kingVultureChance, mirosVultureChance, 
-                eliteScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, brotherLongLegsChance, 
-                daddyLongLegsChance, terrorLongLegsChance, giantJellyfishChance, flyingPredatorChance, waterPredatorChance, stowawayChance
+                eliteScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, 
+                brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, 
+                flyingPredatorChance, waterPredatorChance, giantJellyfishChance, stowawayChance
             };
 
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
-                genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras, scavengerExtras, vultureExtras, 
+                genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras,  
                 smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, 
-                spiderExtras, leechExtras, kelpExtras, mirosExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
+                kelpExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
                 lmiceExtras, snailExtras, jetfishExtras, yeekExtras, precycleSalExtras, nightCreatureExtras,
+                scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras
             };
 
             //Set the mod configs
@@ -325,6 +362,18 @@ namespace ApexUpYourSpawns
             }
             if (apexMod.hasFatFirefly)
                 enabledModsRepConfigs.Add(fatFireFlyChance);
+            if (apexMod.hasSludgeLizard)
+            {
+                enabledModsRepConfigs.Add(sludgeLizardChance);
+                enabledModsRepConfigs.Add(snailSludgeLizardChance);
+                enabledModsExtraConfigs.Add(sludgeLizardExtras);
+            }
+            if (apexMod.hasLizardVariants)
+            {
+                enabledModsRepConfigs.Add(mintLizardChance);
+                enabledModsRepConfigs.Add(ryanLizardChance);
+                enabledModsRepConfigs.Add(yellowLimeLizardChance);
+            }
                 
 
             //Adjust scrollbox's size accordingly
@@ -394,7 +443,6 @@ namespace ApexUpYourSpawns
                 if (UIBaseGameOptions[i] is OpUpdown op)
                 {
                     op.Reset();
-                    Debug.Log("DEFAULT VALUE: " + op.defaultValue);
                 }
 
             for (int i = 0; i < UIDependentOptions.Length; i++)

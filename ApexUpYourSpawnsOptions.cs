@@ -39,6 +39,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> jungleLeechChance;
         public readonly Configurable<int> motherSpiderChance;
         public readonly Configurable<int> stowawayChance;
+        public readonly Configurable<int> kingScavengerChance;
         //Mod dependent
         public readonly Configurable<int> inspectorChance;
         public readonly Configurable<int> sporantulaChance;
@@ -84,6 +85,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> scutigeraExtras;
         public readonly Configurable<int> waterSpitterExtras;
         public readonly Configurable<int> sludgeLizardExtras;
+        public readonly Configurable<int> mintLizardExtras;
 
         private OpSimpleButton defaultsSimpleButton, nullsSimpleButton;
         private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
@@ -127,6 +129,7 @@ namespace ApexUpYourSpawns
             jungleLeechChance = this.config.Bind<int>("JungleLeechChance", 0, new ConfigAcceptableRange<int>(0, 100));
             motherSpiderChance = this.config.Bind<int>("MotherSpiderChance", 10, new ConfigAcceptableRange<int>(0, 100));
             stowawayChance = this.config.Bind<int>("StowawayChance", 3, new ConfigAcceptableRange<int>(0, 100));
+            kingScavengerChance = this.config.Bind<int>("KingScavengerChance", 5, new ConfigAcceptableRange<int>(0, 100));
 
             //Mod dependent
             inspectorChance = this.config.Bind<int>("InspectorChance", 8, new ConfigAcceptableRange<int>(0, 100));
@@ -173,6 +176,7 @@ namespace ApexUpYourSpawns
             scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 100));
             waterSpitterExtras = this.config.Bind<int>("ExtraWaterSpitters", 0, new ConfigAcceptableRange<int>(0, 100));
             sludgeLizardExtras = this.config.Bind<int>("ExtraSludgeLizards", 8, new ConfigAcceptableRange<int>(0, 100));
+            mintLizardExtras = this.config.Bind<int>("ExtraSMintLizards", 4, new ConfigAcceptableRange<int>(0, 100));
         }
 
         private void SetDictionary(Dictionary<Configurable<int>, string> labelsMap)
@@ -202,6 +206,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(motherSpiderChance, "Small Spiders > Mother Spider (Mult)");
             labelsMap.Add(jungleLeechChance, "Leech > Jungle Leech");
             labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap");
+            labelsMap.Add(kingScavengerChance, "Elite > King Scavenger");
 
             //Mod dependent replacements
             labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
@@ -248,6 +253,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(scutigeraExtras, "Scutigeras (/10)");
             labelsMap.Add(waterSpitterExtras, "Water Spitters (/10)");
             labelsMap.Add(sludgeLizardExtras, "Sludge Lizards (/10)");
+            labelsMap.Add(mintLizardExtras, "Mint Lizards (/10)");
 
         }
 
@@ -299,7 +305,7 @@ namespace ApexUpYourSpawns
                 },
                 new OpLabel(325f, 543f, "Extra spawns (up to, per den)", true){
                     description = "\\10: Value is divided by 10. Decimals determine chance of one extra addition.\n" +
-                    "Example: 11 becomes 1.1 => either 0 or 1, with a 10% chance of one extra."
+                    "Example: 11 becomes 1.1 => up to 2 extras, but 2 is very unlikely."
                 },
 
                 defaultsSimpleButton,
@@ -322,7 +328,7 @@ namespace ApexUpYourSpawns
             {
                 redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance, 
                 leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, kingVultureChance, mirosVultureChance, 
-                eliteScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, 
+                eliteScavengerChance, kingScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, 
                 brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, 
                 flyingPredatorChance, waterPredatorChance, giantJellyfishChance, stowawayChance
             };
@@ -373,8 +379,10 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(mintLizardChance);
                 enabledModsRepConfigs.Add(ryanLizardChance);
                 enabledModsRepConfigs.Add(yellowLimeLizardChance);
+                enabledModsExtraConfigs.Add(mintLizardExtras);
+
             }
-                
+
 
             //Adjust scrollbox's size accordingly
             if (enabledModsRepConfigs.Count + UIReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIExtraConfigs.Length)

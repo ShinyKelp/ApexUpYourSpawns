@@ -55,11 +55,18 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> yellowLimeLizardChance;
 
         //Extra spawns
+        public readonly Configurable<int> greenLizExtras;
+        public readonly Configurable<int> pinkLizExtras;
+        public readonly Configurable<int> blueLizExtras;
+        public readonly Configurable<int> whiteLizExtras;
+        public readonly Configurable<int> blackLizExtras;
         public readonly Configurable<int> yellowLizExtras;
+        public readonly Configurable<int> salExtras;
         public readonly Configurable<int> cyanLizExtras;
-        public readonly Configurable<int> genericLizExtras;
-        public readonly Configurable<int> waterLizExtras;
-        public readonly Configurable<int> precycleSalExtras;
+        public readonly Configurable<int> zoopLizExtras;
+        public readonly Configurable<int> caramelLizExtras;
+        public readonly Configurable<int> eelLizExtras;
+        public readonly Configurable<int> precycleCreatureExtras;
         public readonly Configurable<int> scavengerExtras;
         public readonly Configurable<int> vultureExtras;
         public readonly Configurable<int> centipedeExtras;
@@ -87,7 +94,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> sludgeLizardExtras;
         public readonly Configurable<int> mintLizardExtras;
 
-        private OpSimpleButton defaultsSimpleButton, nullsSimpleButton;
+        private OpSimpleButton defaultsSimpleButton, nullsSimpleButton, replacementDescription, extrasDescription, replacementDescription2, extrasDescription2;
         private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
         private OpScrollBox scrollBox;
 
@@ -146,11 +153,18 @@ namespace ApexUpYourSpawns
             yellowLimeLizardChance = this.config.Bind<int>("YellowLimeLizardChance", 16, new ConfigAcceptableRange<int>(0, 100));
 
             //Extras
+            greenLizExtras = this.config.Bind<int>("ExtraGreenLizs", 4, new ConfigAcceptableRange<int>(0, 100));
+            blueLizExtras = this.config.Bind<int>("ExtraBlueLizs", 6, new ConfigAcceptableRange<int>(0, 100));
+            pinkLizExtras = this.config.Bind<int>("ExtraPinkLizs", 8, new ConfigAcceptableRange<int>(0, 100));
+            whiteLizExtras = this.config.Bind<int>("ExtraWhiteLizs", 4, new ConfigAcceptableRange<int>(0, 100));
+            blackLizExtras = this.config.Bind<int>("ExtraBlackLizs", 4, new ConfigAcceptableRange<int>(0, 100));
             yellowLizExtras = this.config.Bind<int>("ExtraYellowLizs", 25, new ConfigAcceptableRange<int>(0, 100));
+            salExtras = this.config.Bind<int>("ExtraSals", 12, new ConfigAcceptableRange<int>(0, 100));
             cyanLizExtras = this.config.Bind<int>("ExtraCyanLizs", 2, new ConfigAcceptableRange<int>(0, 100));
-            genericLizExtras = this.config.Bind<int>("ExtraLizards", 4, new ConfigAcceptableRange<int>(0, 100));
-            waterLizExtras = this.config.Bind<int>("ExtraWaterLizs", 10, new ConfigAcceptableRange<int>(0, 100));
-            precycleSalExtras = this.config.Bind<int>("ExtraPrecycleSalamanders", 10, new ConfigAcceptableRange<int>(0, 100));
+            caramelLizExtras = this.config.Bind<int>("ExtraCaramelLizs", 4, new ConfigAcceptableRange<int>(0, 100));
+            zoopLizExtras = this.config.Bind<int>("ExtraZoopLizs", 8, new ConfigAcceptableRange<int>(0, 100));
+            eelLizExtras = this.config.Bind<int>("ExtraEelLizs", 4, new ConfigAcceptableRange<int>(0, 100));
+            precycleCreatureExtras = this.config.Bind<int>("ExtraPrecycleCreatures", 10, new ConfigAcceptableRange<int>(0, 100));
             scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 20));
             vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 20));
             centipedeExtras = this.config.Bind<int>("ExtraCentipedes", 0, new ConfigAcceptableRange<int>(0, 100));
@@ -191,22 +205,22 @@ namespace ApexUpYourSpawns
             labelsMap.Add(eliteScavengerChance, "Scavenger > Elite Scavenger");
             labelsMap.Add(fireBugChance, "Eggbug > Firebug");
             labelsMap.Add(flyingPredatorChance, "Cicada > Flying Predators");
-            labelsMap.Add(brotherLongLegsChance, "L.Mice/Snail/??? > LongLegs");
+            labelsMap.Add(brotherLongLegsChance, "L.Mice/Snail/??? > LongLegs (Den)");
             labelsMap.Add(daddyLongLegsChance, "Brother > DaddyLongLegs");
             labelsMap.Add(terrorLongLegsChance, "Daddy > MotherLongLegs");
-            labelsMap.Add(giantJellyfishChance, "Jellyfish > Giant Jellyfish");
-            labelsMap.Add(leechLizardChance, "Leeches > Aquatic Lizard (Mult)");
+            labelsMap.Add(giantJellyfishChance, "Jellyfish > Giant Jellyfish (*)");
+            labelsMap.Add(leechLizardChance, "Leeches > Aquatic Lizard (Den)");
             labelsMap.Add(yeekLizardChance, "Yeek > Caramel/Strawberry Liz");
-            labelsMap.Add(waterPredatorChance, "Jetfish > Water Predators");
+            labelsMap.Add(waterPredatorChance, "Jetfish > Aquatic Predators");
             labelsMap.Add(strawberryLizChance, "Pink > Strawberry Lizard");
             labelsMap.Add(caramelLizChance, "Green > Caramel Lizard");
             labelsMap.Add(cyanLizChance, "Blue > Cyan Lizard");
             labelsMap.Add(eelLizChance, "Salamander > Eel Lizard");
             labelsMap.Add(spitterSpiderChance, "Big Spider > Spitter Spider");
-            labelsMap.Add(motherSpiderChance, "Small Spiders > Mother Spider (Mult)");
+            labelsMap.Add(motherSpiderChance, "Small Spiders > Mother Spider (Den)");
             labelsMap.Add(jungleLeechChance, "Leech > Jungle Leech");
-            labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap");
-            labelsMap.Add(kingScavengerChance, "Elite > King Scavenger");
+            labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap (*)");
+            labelsMap.Add(kingScavengerChance, "Elite > King Scavenger (*)");
 
             //Mod dependent replacements
             labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
@@ -217,17 +231,24 @@ namespace ApexUpYourSpawns
             labelsMap.Add(waterSpitterChance, "Aquatic Lizards > Water Spitter");
             labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
             labelsMap.Add(sludgeLizardChance, "Water Lizards > Sludge Lizard");
-            labelsMap.Add(snailSludgeLizardChance, "Snails > Sludge Lizard (Mult)");
+            labelsMap.Add(snailSludgeLizardChance, "Snails > Sludge Lizard (Den)");
             labelsMap.Add(mintLizardChance, "Ground Lizards > Mint Lizard");
             labelsMap.Add(ryanLizardChance, "Cyan Lizard > Ryan Lizard");
             labelsMap.Add(yellowLimeLizardChance, "Yellow Lizard > YellowLime Lizard");
 
             //Extras
             labelsMap.Add(yellowLizExtras, "Yellow Lizards (/10)");
+            labelsMap.Add(blueLizExtras, "Blue Lizards (/10)");
+            labelsMap.Add(greenLizExtras, "Green Lizards (/10)");
+            labelsMap.Add(pinkLizExtras, "Pink Lizards (/10)");
+            labelsMap.Add(whiteLizExtras, "White Lizards (/10)");
+            labelsMap.Add(blackLizExtras, "Black Lizards (/10)");
+            labelsMap.Add(salExtras, "Salamanders (/10)");
             labelsMap.Add(cyanLizExtras, "Cyan Lizards (/10)");
-            labelsMap.Add(genericLizExtras, "Lizards (/10)");
-            labelsMap.Add(waterLizExtras, "Aquatic Lizards (/10)");
-            labelsMap.Add(precycleSalExtras, "Shelter Failure Spawns (/10)");
+            labelsMap.Add(caramelLizExtras, "Caramel Lizards (/10)");
+            labelsMap.Add(eelLizExtras, "Eel Lizards (/10)");
+            labelsMap.Add(zoopLizExtras, "Strawberry Lizards (/10)");
+            labelsMap.Add(precycleCreatureExtras, "Shelter Failure Spawns (/10)");
             labelsMap.Add(scavengerExtras, "Scavengers");
             labelsMap.Add(vultureExtras, "Vultures");
             labelsMap.Add(centipedeExtras, "Centipedes (/10)");
@@ -260,8 +281,9 @@ namespace ApexUpYourSpawns
 
         public override void Initialize()
         {
-            //Constants
-            float sbs = 900f;   //Base size of scrollbox. Manually adjusted.
+            float scrollBoxSize;
+
+            
 
             var opTab = new OpTab(this, "Options");
             this.Tabs = new[]
@@ -294,20 +316,38 @@ namespace ApexUpYourSpawns
                 description = "Spawns will be reset and randomized every cycle."
             };
 
-            
+
+            replacementDescription = new OpSimpleButton(new Vector2(137, 543), new Vector2(16, 16), "i")
+            {
+                description = "% chance to replace a creature with another.\n" + 
+                "*: Creature is not from a spawner. Replacements vary between cycles."
+            };
+            extrasDescription = new OpSimpleButton(new Vector2(457, 543), new Vector2(16, 16), "i")
+            {
+                description = "Increase the creature amount of each den by random value from 0 to X.\n" + 
+                "Does not apply to lineages."
+            };
+
+            replacementDescription2 = new OpSimpleButton(new Vector2(167, 543), new Vector2(16, 16), "i")
+            {
+                description = "Den: Each DEN has a chance to be replaced instead of each individual creature.\n" +
+                    "Inv: Invasion. Original creature is not replaced."
+            };
+            extrasDescription2 = new OpSimpleButton(new Vector2(487, 543), new Vector2(16, 16), "i")
+            {
+                description = "\\10: Value is divided by 10. Decimals determine chance of one extra addition.\n" +
+                    "Example: 11 becomes 1.1 => 0, 1 or 2 extras; but 2 is very unlikely."
+            };
 
             UIFixed = new UIelement[]
             {
-                new OpLabel(10f, 570f, "Options", true),
-                new OpLabel(-2f, 543f, "Apex Replacements (% chance)", true){
-                    description = "Mult: Each DEN has a chance to be replaced instead of each individual creature.\n" +
-                    "Inv: Invasion. Original creature is not replaced."
-                },
-                new OpLabel(325f, 543f, "Extra spawns (up to, per den)", true){
-                    description = "\\10: Value is divided by 10. Decimals determine chance of one extra addition.\n" +
-                    "Example: 11 becomes 1.1 => up to 2 extras, but 2 is very unlikely."
-                },
-
+                new OpLabel(10f, 574f, "Options", true),
+                new OpLabel(-2f, 543f, "Replacements", true),
+                new OpLabel(325f, 543f, "Extra spawns", true),
+                replacementDescription,
+                extrasDescription,
+                replacementDescription2,
+                extrasDescription2,
                 defaultsSimpleButton,
                 nullsSimpleButton,
                 fillLineageCheck,
@@ -317,8 +357,6 @@ namespace ApexUpYourSpawns
                 forceFreshCheck,
                 new OpLabel(421f, 16f, "Randomize every cycle"),  
             };
-
-
 
             //Set the base game configs
             Dictionary<Configurable<int>, string> labelsMap = new Dictionary<Configurable<int>, string>();
@@ -335,10 +373,11 @@ namespace ApexUpYourSpawns
 
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
-                genericLizExtras, yellowLizExtras, cyanLizExtras, waterLizExtras,  
+                greenLizExtras, pinkLizExtras, blueLizExtras, whiteLizExtras, blackLizExtras, yellowLizExtras, 
+                salExtras, cyanLizExtras, caramelLizExtras, eelLizExtras, zoopLizExtras,  
                 smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, 
                 kelpExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
-                lmiceExtras, snailExtras, jetfishExtras, yeekExtras, precycleSalExtras, nightCreatureExtras,
+                lmiceExtras, snailExtras, jetfishExtras, yeekExtras, precycleCreatureExtras, nightCreatureExtras,
                 scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras
             };
 
@@ -386,8 +425,8 @@ namespace ApexUpYourSpawns
 
             //Adjust scrollbox's size accordingly
             if (enabledModsRepConfigs.Count + UIReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIExtraConfigs.Length)
-                sbs += enabledModsRepConfigs.Count * 45f;
-            else sbs += enabledModsExtraConfigs.Count * 45f;
+                scrollBoxSize = 60f +  (enabledModsRepConfigs.Count + UIReplacementConfigs.Length) * 35f;
+            else scrollBoxSize = 60f + (enabledModsExtraConfigs.Count + UIExtraConfigs.Length) * 35f;
 
             int replaceLength = UIReplacementConfigs.Length * 2;
             int extraLength = UIExtraConfigs.Length * 2;
@@ -399,16 +438,16 @@ namespace ApexUpYourSpawns
             for(int i = 0; i < UIReplacementConfigs.Length; ++i)
             {
                 labelsMap.TryGetValue(UIReplacementConfigs[i], out auxString);
-                UIBaseGameOptions[i*2] = new OpLabel(80f, sbs-30f-(35f*i), auxString);
-                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIReplacementConfigs[i], new Vector2(10f, sbs-35f-(35f*i)), 60f);
+                UIBaseGameOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*i), auxString);
+                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIReplacementConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
             //Set the base extras
             for(int i = 0; i < UIExtraConfigs.Length; ++i)
             {
                 labelsMap.TryGetValue(UIExtraConfigs[i], out auxString);
-                UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, sbs-30f-(35f*i), auxString);
-                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIExtraConfigs[i], new Vector2(330f, sbs-35f-(35f*i)), 60f);
+                UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*i), auxString);
+                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
             //Set the mod-dependant configs
@@ -420,19 +459,19 @@ namespace ApexUpYourSpawns
             for(int i = 0; i < enabledModsRepConfigs.Count; ++i)
             {
                 labelsMap.TryGetValue(enabledModsRepConfigs[i], out auxString);
-                UIDependentOptions[i*2] = new OpLabel(80f, sbs-30f-(35f*(i+UIReplacementConfigs.Length)), auxString);
-                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, sbs-35f-(35f*(i+UIReplacementConfigs.Length))), 60f);
+                UIDependentOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*(i+UIReplacementConfigs.Length)), auxString);
+                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*(i+UIReplacementConfigs.Length))), 60f);
             }
 
             //Set the mod dependent extra configs
             for (int i = 0; i < enabledModsExtraConfigs.Count; ++i)
             {
                 labelsMap.TryGetValue(enabledModsExtraConfigs[i], out auxString);
-                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, sbs-30f-(35f*(i+UIExtraConfigs.Length)), auxString);
-                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, sbs-35f-(35f*(i+UIExtraConfigs.Length))), 60f);
+                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*(i+UIExtraConfigs.Length)), auxString);
+                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*(i+UIExtraConfigs.Length))), 60f);
             }
 
-            scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 480f), sbs, false, false, true);
+            scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 480f), scrollBoxSize, false, false, true);
             opTab.AddItems(UIFixed);
             opTab._AddItem(scrollBox);
             scrollBox.AddItems(UIBaseGameOptions);
@@ -456,7 +495,6 @@ namespace ApexUpYourSpawns
             for (int i = 0; i < UIDependentOptions.Length; i++)
                 if (UIDependentOptions[i] is OpUpdown op)
                     op.Reset();
-
         }
 
         private void SetNulls()

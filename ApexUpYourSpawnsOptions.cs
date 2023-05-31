@@ -40,6 +40,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> motherSpiderChance;
         public readonly Configurable<int> stowawayChance;
         public readonly Configurable<int> kingScavengerChance;
+        public readonly Configurable<int> hunterLongLegsChance;
         //Mod dependent
         public readonly Configurable<int> inspectorChance;
         public readonly Configurable<int> sporantulaChance;
@@ -137,6 +138,7 @@ namespace ApexUpYourSpawns
             motherSpiderChance = this.config.Bind<int>("MotherSpiderChance", 10, new ConfigAcceptableRange<int>(0, 100));
             stowawayChance = this.config.Bind<int>("StowawayChance", 3, new ConfigAcceptableRange<int>(0, 100));
             kingScavengerChance = this.config.Bind<int>("KingScavengerChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            hunterLongLegsChance = this.config.Bind<int>("HunterLongLegsChance", 20, new ConfigAcceptableRange<int>(0, 100));
 
             //Mod dependent
             inspectorChance = this.config.Bind<int>("InspectorChance", 8, new ConfigAcceptableRange<int>(0, 100));
@@ -167,7 +169,7 @@ namespace ApexUpYourSpawns
             precycleCreatureExtras = this.config.Bind<int>("ExtraPrecycleCreatures", 10, new ConfigAcceptableRange<int>(0, 100));
             scavengerExtras = this.config.Bind<int>("ExtraScavengers", 4, new ConfigAcceptableRange<int>(0, 20));
             vultureExtras = this.config.Bind<int>("ExtraVultures", 1, new ConfigAcceptableRange<int>(0, 20));
-            centipedeExtras = this.config.Bind<int>("ExtraCentipedes", 0, new ConfigAcceptableRange<int>(0, 100));
+            centipedeExtras = this.config.Bind<int>("ExtraCentipedes", 3, new ConfigAcceptableRange<int>(0, 100));
             centiWingExtras = this.config.Bind<int>("ExtraCentiwings", 0, new ConfigAcceptableRange<int>(0, 100));
             aquapedeExtras = this.config.Bind<int>("ExtraAquaPedes", 5, new ConfigAcceptableRange<int>(0, 100));
             bigSpiderExtras = this.config.Bind<int>("ExtraBigSpiders", 25, new ConfigAcceptableRange<int>(0, 100));
@@ -221,6 +223,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(jungleLeechChance, "Leech > Jungle Leech");
             labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap (*)");
             labelsMap.Add(kingScavengerChance, "Elite > King Scavenger (*)");
+            labelsMap.Add(hunterLongLegsChance, "Slugpup > HunterLongLegs (*)");
 
             //Mod dependent replacements
             labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
@@ -367,7 +370,7 @@ namespace ApexUpYourSpawns
                 redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance, 
                 leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, kingVultureChance, mirosVultureChance, 
                 eliteScavengerChance, kingScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, 
-                brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, 
+                brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, hunterLongLegsChance, 
                 flyingPredatorChance, waterPredatorChance, giantJellyfishChance, stowawayChance
             };
 

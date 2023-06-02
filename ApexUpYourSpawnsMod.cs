@@ -16,7 +16,7 @@ using Mono.Cecil.Cil;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.3.0")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.3.0.1")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -38,6 +38,8 @@ namespace ApexUpYourSpawns
         private int extraSporantulas, extraScutigeras, extraWaterSpitters, extraSludgeLizards, extraMintLizards;
 
         private bool IsInit;
+
+        private bool logSpawners;
 
         public bool hasSporantula, hasAngryInspectors, hasRedHorrorCentipede, hasScutigera, hasWaterSpitter, hasExplosiveDLL, hasMoreDLLs, hasFatFirefly,
             hasSludgeLizard, hasLizardVariants;
@@ -102,7 +104,10 @@ namespace ApexUpYourSpawns
                 bannedRooms.Add("SB_E04");
                 bannedRooms.Add("SB_C06");
 
-                lastWasError = hasSporantula = hasAngryInspectors = hasRedHorrorCentipede = hasScutigera = hasWaterSpitter = hasMoreDLLs = hasExplosiveDLL = false;
+                logSpawners = false;
+                lastWasError = false;
+
+                hasSporantula = hasAngryInspectors = hasRedHorrorCentipede = hasScutigera = hasWaterSpitter = hasMoreDLLs = hasExplosiveDLL = false;
                 foreach(ModManager.Mod mod in ModManager.ActiveMods)
                 {
                     if (mod.name == "Sporantula")
@@ -579,17 +584,20 @@ namespace ApexUpYourSpawns
                     continue;
                 }
                 //Log Spawners
-                if (!lastWasError)
+                if (logSpawners)
                 {
-                    if (i > 0)
+                    if (!lastWasError)
                     {
-                        Debug.Log("==AFTER TRANSFORMATIONS==");
-                        LogSpawner(spawners[i - 1], i - 1);
+                        if (i > 0)
+                        {
+                            Debug.Log("==AFTER TRANSFORMATIONS==");
+                            LogSpawner(spawners[i - 1], i - 1);
+                        }
+                        LogSpawner(spawners[i], i);
                     }
-                    LogSpawner(spawners[i], i);
+                    else
+                        lastWasError = false;
                 }
-                else
-                    lastWasError = false;
                 //*/
                 if (spawners[i] is World.SimpleSpawner simpleSpawner)
                 {   

@@ -270,7 +270,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(spiderExtras, "Small Spiders");
             labelsMap.Add(leechExtras, "Leeches");
             labelsMap.Add(kelpExtras, "Monster Kelp (/10)");
-            labelsMap.Add(leviathanExtras, "Leviathans");
+            labelsMap.Add(leviathanExtras, "Leviathans (/10)");
             labelsMap.Add(nightCreatureExtras, "Night Creatures (/10)");
             //Mod-dependant extras
             labelsMap.Add(sporantulaExtras, "Sporantulas (/10)");

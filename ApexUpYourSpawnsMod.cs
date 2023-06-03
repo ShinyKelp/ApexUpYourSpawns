@@ -16,7 +16,7 @@ using Mono.Cecil.Cil;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.3.0.1")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.3.0.2")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -32,11 +32,17 @@ namespace ApexUpYourSpawns
             extraCentiwings, extraAquapedes, extraPrecycleSals, extraDropwigs, extraMiros, extraSmallSpiders, extraLeeches, extraKelp, extraLeviathans,
             extraEggbugs, extraCicadas, extraLMice, extraSnails, extraJetfish, extraYeeks, extraNightCreatures;
 
+        #region Modded Creature variables
+
+        //Struct with object references. They cannot be primitives since they must access the values in-game, not during mod init.
+        
+
         //Mod dependent
         private float inspectorChance, sporantulaChance, scutigeraChance, redHorrorCentiChance, longlegsVariantChance, waterSpitterChance, fatFireFlyChance,
             sludgeLizardChance, snailSludgeLizardChance, mintLizardChance, ryanLizardChance, yellowLimeLizardChance;
         private int extraSporantulas, extraScutigeras, extraWaterSpitters, extraSludgeLizards, extraMintLizards;
 
+        #endregion
         private bool IsInit;
 
         private bool logSpawners;
@@ -94,6 +100,7 @@ namespace ApexUpYourSpawns
                 IL.Scavenger.Act += ScavKingActCanGoIntoPipes;
 
                 IL.World.SpawnPupNPCs += World_SpawnPupNPCs;
+                IL.AbstractRoom.RealizeRoom += AbstractRoom_RealizeRoom;
 
                 if(bannedRooms is null)
                     bannedRooms = new HashSet<string>();
@@ -174,8 +181,32 @@ namespace ApexUpYourSpawns
             }
         }
 
+
+
         #region HunterLongLegs replacement crash handling
 
+        private void AbstractRoom_RealizeRoom(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdloc(2),
+                x => x.MatchLdfld<AbstractCreature>("state"),
+                x => x.MatchIsinst<PlayerNPCState>(),
+                x => x.MatchLdcI4(1),
+                x => x.MatchStfld<PlayerState>("foodInStomach")
+                );
+            c.RemoveRange(5);
+            c.Emit(OpCodes.Ldloc, 2);
+            c.EmitDelegate<Action<AbstractCreature>>((abstractCreature) =>
+            {
+                if (!(abstractCreature.state is null) && abstractCreature.state is PlayerNPCState npcState)
+                {
+                    npcState.foodInStomach = 1;
+                }
+                else
+                    Debug.Log("Prevented Slugpup -> HunterLongLegs crash.");
+            });
+        }
         private void World_SpawnPupNPCs(ILContext il)
         {
             ILCursor c = new ILCursor(il);

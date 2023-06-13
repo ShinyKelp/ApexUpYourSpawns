@@ -41,19 +41,6 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> stowawayChance;
         public readonly Configurable<int> kingScavengerChance;
         public readonly Configurable<int> hunterLongLegsChance;
-        //Mod dependent
-        public readonly Configurable<int> inspectorChance;
-        public readonly Configurable<int> sporantulaChance;
-        public readonly Configurable<int> scutigeraChance;
-        public readonly Configurable<int> redHorrorCentiChance;
-        public readonly Configurable<int> longlegsVariantChance;
-        public readonly Configurable<int> waterSpitterChance;
-        public readonly Configurable<int> fatFireFlyChance;
-        public readonly Configurable<int> sludgeLizardChance;
-        public readonly Configurable<int> snailSludgeLizardChance;
-        public readonly Configurable<int> mintLizardChance;
-        public readonly Configurable<int> ryanLizardChance;
-        public readonly Configurable<int> yellowLimeLizardChance;
 
         //Extra spawns
         public readonly Configurable<int> greenLizExtras;
@@ -88,12 +75,34 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> kelpExtras;
         public readonly Configurable<int> leviathanExtras;
         public readonly Configurable<int> nightCreatureExtras;
+
         //Mod dependent
+        //Replacements
+        public readonly Configurable<int> inspectorChance;
+        public readonly Configurable<int> sporantulaChance;
+        public readonly Configurable<int> scutigeraChance;
+        public readonly Configurable<int> redRedHorrorCentiChance;
+        public readonly Configurable<int> wingRedHorrorCentiChance;
+        public readonly Configurable<int> mExplosiveLongLegsChance;
+        public readonly Configurable<int> explosionLongLegsChance;
+        public readonly Configurable<int> mZappyLongLegsChance;
+        public readonly Configurable<int> waterSpitterChance;
+        public readonly Configurable<int> fatFireFlyChance;
+        public readonly Configurable<int> sludgeLizardChance;
+        public readonly Configurable<int> snailSludgeLizardChance;
+        public readonly Configurable<int> mintLizardChance;
+        public readonly Configurable<int> ryanLizardChance;
+        public readonly Configurable<int> yellowLimeLizardChance;
+        //Extras
         public readonly Configurable<int> sporantulaExtras;
         public readonly Configurable<int> scutigeraExtras;
         public readonly Configurable<int> waterSpitterExtras;
         public readonly Configurable<int> sludgeLizardExtras;
         public readonly Configurable<int> mintLizardExtras;
+
+
+        
+        
 
         private OpSimpleButton defaultsSimpleButton, nullsSimpleButton, replacementDescription, extrasDescription, replacementDescription2, extrasDescription2;
         private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
@@ -144,8 +153,12 @@ namespace ApexUpYourSpawns
             inspectorChance = this.config.Bind<int>("InspectorChance", 8, new ConfigAcceptableRange<int>(0, 100));
             sporantulaChance = this.config.Bind<int>("SporantulaChance", 4, new ConfigAcceptableRange<int>(0, 100));
             scutigeraChance = this.config.Bind<int>("ScutigeraChance", 15, new ConfigAcceptableRange<int>(0, 100));
-            redHorrorCentiChance = this.config.Bind<int>("RedHorrorCentiChance", 10, new ConfigAcceptableRange<int>(0, 100));
-            longlegsVariantChance = this.config.Bind<int>("LongLegsVariantChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            redRedHorrorCentiChance = this.config.Bind<int>("RedRedHorrorCentiChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            wingRedHorrorCentiChance = this.config.Bind<int>("WingRedHorrorCentiChance", 4, new ConfigAcceptableRange<int>(0, 100));
+
+            mExplosiveLongLegsChance = this.config.Bind<int>("MExplosiveLongLegsChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            mZappyLongLegsChance = this.config.Bind<int>("ZappyLongLegsChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            explosionLongLegsChance = this.config.Bind<int>("ExplosionLongLegsChance", 5, new ConfigAcceptableRange<int>(0, 100));
             waterSpitterChance = this.config.Bind<int>("WaterSpitterChance", 10, new ConfigAcceptableRange<int>(0, 100));
             fatFireFlyChance = this.config.Bind<int>("FatFireFlyChance", 10, new ConfigAcceptableRange<int>(0, 100));
             sludgeLizardChance = this.config.Bind<int>("SludgeLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
@@ -229,8 +242,11 @@ namespace ApexUpYourSpawns
             labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
             labelsMap.Add(sporantulaChance, "Small Insects > Sporantula (Inv)");
             labelsMap.Add(scutigeraChance, "Centipede > Scutigera");
-            labelsMap.Add(redHorrorCentiChance, "Red Centipede > Red Horror Centi");
-            labelsMap.Add(longlegsVariantChance, "LongLegs > LongLegs Variant");
+            labelsMap.Add(redRedHorrorCentiChance, "Red Centipede > Red Horror Centi");
+            labelsMap.Add(wingRedHorrorCentiChance, "Centiwing > Red Horror Centi");
+            labelsMap.Add(mExplosiveLongLegsChance, "LongLegs > Explosive DLL");
+            labelsMap.Add(explosionLongLegsChance, "LongLegs > Explosion DLL");
+            labelsMap.Add(mZappyLongLegsChance, "LongLegs > Zappy DLL");
             labelsMap.Add(waterSpitterChance, "Aquatic Lizards > Water Spitter");
             labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
             labelsMap.Add(sludgeLizardChance, "Water Lizards > Sludge Lizard");
@@ -387,30 +403,41 @@ namespace ApexUpYourSpawns
             //Set the mod configs
             List<Configurable<int>> enabledModsRepConfigs = new List<Configurable<int>>();
             List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
-            if (apexMod.hasSporantula)
+            if (apexMod.activeMods.Contains("Sporantula"))
             {
                 enabledModsRepConfigs.Add(sporantulaChance);
                 enabledModsExtraConfigs.Add(sporantulaExtras);
             }
             if (apexMod.hasAngryInspectors)
                 enabledModsRepConfigs.Add(inspectorChance);
-            if (apexMod.hasScutigera)
+            if (apexMod.activeMods.Contains("Scutigera"))
             {
                 enabledModsRepConfigs.Add(scutigeraChance);
                 enabledModsExtraConfigs.Add(scutigeraExtras);
             }
-            if (apexMod.hasRedHorrorCentipede)
-                enabledModsRepConfigs.Add(redHorrorCentiChance);
-            if (apexMod.hasExplosiveDLL || apexMod.hasMoreDLLs)
-                enabledModsRepConfigs.Add(longlegsVariantChance);
-            if (apexMod.hasWaterSpitter)
+            if (apexMod.activeMods.Contains("Red Horror Centipede"))
+            {
+                enabledModsRepConfigs.Add(redRedHorrorCentiChance);
+                enabledModsRepConfigs.Add(wingRedHorrorCentiChance);
+            }
+            if(apexMod.activeMods.Contains("More Dlls"))
+            {
+                enabledModsRepConfigs.Add(mExplosiveLongLegsChance);
+                enabledModsRepConfigs.Add(mZappyLongLegsChance);
+            }
+            if(apexMod.activeMods.Contains("Explosive DLLs"))
+            {
+                enabledModsRepConfigs.Add(explosionLongLegsChance);
+            }
+
+            if (apexMod.activeMods.Contains("Water Spitter"))
             {
                 enabledModsRepConfigs.Add(waterSpitterChance);
                 enabledModsExtraConfigs.Add(waterSpitterExtras);
             }
-            if (apexMod.hasFatFirefly)
+            if (apexMod.activeMods.Contains("Fat Firefly"))
                 enabledModsRepConfigs.Add(fatFireFlyChance);
-            if (apexMod.hasSludgeLizard)
+            if (apexMod.activeMods.Contains("Sludge Lizard"))
             {
                 enabledModsRepConfigs.Add(sludgeLizardChance);
                 enabledModsRepConfigs.Add(snailSludgeLizardChance);

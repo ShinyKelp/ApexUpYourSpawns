@@ -81,17 +81,17 @@ namespace ApexUpYourSpawns
         //Replacements
         public Configurable<int> inspectorChance, sporantulaChance, scutigeraChance, redRedHorrorCentiChance, wingRedHorrorCentiChance,
             mExplosiveLongLegsChance, explosionLongLegsChance, mZappyLongLegsChance, waterSpitterChance, fatFireFlyChance, sludgeLizardChance,
-            snailSludgeLizardChance, mintLizardChance, ryanLizardChance, yellowLimeLizardChance, auburnLizardChance, grassProwlerChance,
-            gunkLizardChance, jackalChance, monsterCentipedeChance, nihilipedeChance, tunnelLizardChance, maleTunnelLizardChance,
-            pinkBabyTunnelLizardChance, smallLizInvasionBabyTunnelLizChance, lizorInvChance, voltLizardChance, magentaLizardChance,
+            snailSludgeLizardChance, mintLizardChance, ryanLizardChance, yellowLimeLizardChance, lizorInvChance, voltLizardChance, magentaLizardChance,
             yellowTangerineLizardInvChance, cyanTangerineLizardInvChance, chameleonLizarcChance, skyBlueLizardChance,
             cherryLizardChance, strawberryRaspberryLizardChance, redRaspberryLizardChance, surfaceSwimmerChance, bounceBallChance,
             rainbowLongLegsChance, brownLizardChance, rotzardChance, universalLizardChance, gildedLizardChance, scalizardSchance, 
-            nightmareLizardChance, turquoiseLizardChance, amoebaLizardChance, gargolemLizardChance;
+            nightmareLizardChance, turquoiseLizardChance, amoebaLizardChance, gargolemLizardChance, motherLizardChance, lostYoungLizardChance,
+            snowSpiderChance;
 
         //Extras
         public Configurable<int> sporantulaExtras, scutigeraExtras, waterSpitterExtras, sludgeLizardExtras, mintLizardExtras,
-            babyTunnelLizExtras, lizorsExtras, tangerineLizExtras, cherryLizExtras, surfaceSwimmerExtras, bounceBallExtras;
+            lizorsExtras, tangerineLizExtras, cherryLizExtras, surfaceSwimmerExtras, bounceBallExtras, snowSpiderExtras,
+            youngLizardExtras;
 
 
         private OpSimpleButton defaultsSimpleButton, nullsSimpleButton, replacementDescription, extrasDescription, replacementDescription2, extrasDescription2;
@@ -428,7 +428,7 @@ namespace ApexUpYourSpawns
                 scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 100));
             }
 
-            if (activeMods.Contains("Red Horror Centi"))
+            if (activeMods.Contains("Red Horror Centipede"))
             {
                 redRedHorrorCentiChance = this.config.Bind<int>("RedRedHorrorCentiChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 wingRedHorrorCentiChance = this.config.Bind<int>("WingRedHorrorCentiChance", 4, new ConfigAcceptableRange<int>(0, 100));
@@ -471,21 +471,6 @@ namespace ApexUpYourSpawns
                 ryanLizardChance = this.config.Bind<int>("RyanLizardChance", 4, new ConfigAcceptableRange<int>(0, 100));
                 yellowLimeLizardChance = this.config.Bind<int>("YellowLimeLizardChance", 16, new ConfigAcceptableRange<int>(0, 100));
                 mintLizardExtras = this.config.Bind<int>("ExtraSMintLizards", 4, new ConfigAcceptableRange<int>(0, 100));
-            }
-
-            if (activeMods.Contains("Triluminary"))
-            {
-                auburnLizardChance = this.config.Bind<int>("AuburnLizardChance", 12, new ConfigAcceptableRange<int>(0, 100));
-                grassProwlerChance = this.config.Bind<int>("GrassProwlerChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                gunkLizardChance = this.config.Bind<int>("GunkLizardChance", 12, new ConfigAcceptableRange<int>(0, 100));
-                jackalChance = this.config.Bind<int>("JackalChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                monsterCentipedeChance = this.config.Bind<int>("MonsterCentipedeChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                nihilipedeChance = this.config.Bind<int>("NihilipedeChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                tunnelLizardChance = this.config.Bind<int>("TunnelLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
-                maleTunnelLizardChance = this.config.Bind<int>("MaleTunnelLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                pinkBabyTunnelLizardChance = this.config.Bind<int>("PinkBabyTunnelLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
-                smallLizInvasionBabyTunnelLizChance = this.config.Bind<int>("SmallLizInvasionBabyTunnelLizChance", 5, new ConfigAcceptableRange<int>(0, 100));
-                babyTunnelLizExtras = this.config.Bind<int>("ExtraBabyTunelLiz", 0, new ConfigAcceptableRange<int>(0, 100));
             }
 
             if (activeMods.Contains("The Lizard Mod"))
@@ -535,8 +520,17 @@ namespace ApexUpYourSpawns
                 gargolemLizardChance = this.config.Bind<int>("GargolemLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
 
             }
-        }
 
+            if (activeMods.Contains("Solace"))
+            {
+                motherLizardChance = this.config.Bind<int>("MotherLizardChance", 3, new ConfigAcceptableRange<int>(0, 100));
+                youngLizardExtras = this.config.Bind<int>("YoungLizardExtras", 0, new ConfigAcceptableRange<int>(0, 100));
+                lostYoungLizardChance = this.config.Bind<int>("LostYoungLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
+                snowSpiderChance = this.config.Bind<int>("SnowSpiderChance", 10, new ConfigAcceptableRange<int>(0, 100));
+                snowSpiderExtras = this.config.Bind<int>("SnowSpiderExtras", 4, new ConfigAcceptableRange<int>(0, 100));
+
+            }
+        }
 
         private void SetModConfigs(Dictionary<Configurable<int>, string> labelsMap, List<Configurable<int>> enabledModsRepConfigs, List<Configurable<int>> enabledModsExtraConfigs)
         {
@@ -564,7 +558,7 @@ namespace ApexUpYourSpawns
                 enabledModsExtraConfigs.Add(scutigeraExtras);
             }
 
-            if (activeMods.Contains("Red Horror Centi"))
+            if (activeMods.Contains("Red Horror Centipede"))
             {
                 labelsMap.Add(redRedHorrorCentiChance, "Red Centipede > Red Horror Centi");
                 labelsMap.Add(wingRedHorrorCentiChance, "Centiwing > Red Horror Centi");
@@ -621,32 +615,6 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(ryanLizardChance);
                 enabledModsRepConfigs.Add(yellowLimeLizardChance);
                 enabledModsExtraConfigs.Add(mintLizardExtras);
-            }
-
-            if (activeMods.Contains("Triluminary"))
-            {
-                labelsMap.Add(auburnLizardChance, "Wall lizards > Auburn Lizard");
-                labelsMap.Add(grassProwlerChance, "Grounded Lizards > Grass Prowler");
-                labelsMap.Add(gunkLizardChance, "Lizards > Gunk Lizard");
-                labelsMap.Add(jackalChance, "Red Lizard > Jackal");
-                labelsMap.Add(monsterCentipedeChance, "Centiwing > Monster Centipede");
-                labelsMap.Add(nihilipedeChance, "Aquapede > Nihilipede");
-                labelsMap.Add(tunnelLizardChance, "Large Lizards > Adult Tunnel Liz");
-                labelsMap.Add(maleTunnelLizardChance, "Noodleflies > Male Tunnel Liz");
-                labelsMap.Add(pinkBabyTunnelLizardChance, "Pink Lizard > Baby Tunnel Liz");
-                labelsMap.Add(smallLizInvasionBabyTunnelLizChance, "Small Lizards > Baby Tunnel Liz (Inv)");
-                labelsMap.Add(babyTunnelLizExtras, "Baby Tunnel Lizs (/10)");
-                enabledModsRepConfigs.Add(auburnLizardChance);
-                enabledModsRepConfigs.Add(grassProwlerChance);
-                enabledModsRepConfigs.Add(gunkLizardChance);
-                enabledModsRepConfigs.Add(jackalChance);
-                enabledModsRepConfigs.Add(monsterCentipedeChance);
-                enabledModsRepConfigs.Add(nihilipedeChance);
-                enabledModsRepConfigs.Add(tunnelLizardChance);
-                enabledModsRepConfigs.Add(maleTunnelLizardChance);
-                enabledModsRepConfigs.Add(pinkBabyTunnelLizardChance);
-                enabledModsRepConfigs.Add(smallLizInvasionBabyTunnelLizChance);
-                enabledModsExtraConfigs.Add(babyTunnelLizExtras);
             }
 
             if (activeMods.Contains("The Lizard Mod"))
@@ -721,6 +689,21 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(turquoiseLizardChance);
                 enabledModsRepConfigs.Add(amoebaLizardChance);
                 enabledModsRepConfigs.Add(gargolemLizardChance);
+            }
+
+            if (activeMods.Contains("Solace"))
+            {
+                labelsMap.Add(youngLizardExtras, "Young Lizards (/10)");
+                labelsMap.Add(lostYoungLizardChance, "Small Lizards > Lost Young Lizard");
+                labelsMap.Add(motherLizardChance, "Grounded Lizards > Mother Lizard (+ youngs)");
+                labelsMap.Add(snowSpiderChance, "Big Spider > Snow Spider");
+                labelsMap.Add(snowSpiderExtras, "Snow Spiders (/10)");
+
+                enabledModsRepConfigs.Add(motherLizardChance);
+                enabledModsRepConfigs.Add(lostYoungLizardChance);
+                enabledModsRepConfigs.Add(snowSpiderChance);
+                enabledModsExtraConfigs.Add(youngLizardExtras);
+                enabledModsExtraConfigs.Add(snowSpiderExtras);
             }
         }
 

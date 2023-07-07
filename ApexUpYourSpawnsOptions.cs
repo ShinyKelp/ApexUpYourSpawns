@@ -30,6 +30,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> terrorLongLegsChance;
         public readonly Configurable<int> giantJellyfishChance;
         public readonly Configurable<int> leechLizardChance;
+        public readonly Configurable<int> seaLeechAquapedeChance;
         public readonly Configurable<int> waterPredatorChance;
         public readonly Configurable<int> yeekLizardChance;
         public readonly Configurable<int> caramelLizChance;
@@ -192,6 +193,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(terrorLongLegsChance, "Daddy > MotherLongLegs");
             labelsMap.Add(giantJellyfishChance, "Jellyfish > Giant Jellyfish (*)");
             labelsMap.Add(leechLizardChance, "Leeches > Aquatic Lizard (Den)");
+            labelsMap.Add(leechLizardChance, "Sea Leeches > Aquapede (Den)");
             labelsMap.Add(yeekLizardChance, "Yeek > Caramel/Strawberry Liz");
             labelsMap.Add(waterPredatorChance, "Jetfish > Aquatic Predators");
             labelsMap.Add(strawberryLizChance, "Pink > Strawberry Lizard");
@@ -330,10 +332,10 @@ namespace ApexUpYourSpawns
             Configurable<int>[] UIReplacementConfigs = new Configurable<int>[]
             {
                 redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance, 
-                leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, kingVultureChance, mirosVultureChance, 
-                eliteScavengerChance, kingScavengerChance, spitterSpiderChance, motherSpiderChance, jungleLeechChance, fireBugChance, 
-                brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, hunterLongLegsChance, 
-                flyingPredatorChance, waterPredatorChance, giantJellyfishChance, stowawayChance
+                leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance, 
+                kingVultureChance, mirosVultureChance, eliteScavengerChance, kingScavengerChance, spitterSpiderChance, 
+                motherSpiderChance, jungleLeechChance, fireBugChance, brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, 
+                hunterLongLegsChance, flyingPredatorChance, waterPredatorChance, giantJellyfishChance, stowawayChance
             };
 
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]

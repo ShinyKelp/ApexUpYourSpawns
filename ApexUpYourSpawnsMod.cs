@@ -25,8 +25,8 @@ namespace ApexUpYourSpawns
 
         private float redLizardChance, trainLizardChance, largeCentipedeChance, redCentipedeChance, spitterSpiderChance, kingVultureChance,
             mirosVultureChance, eliteScavengerChance, brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, flyingPredatorChance,
-            fireBugChance, giantJellyfishChance, leechLizardChance, yeekLizardChance, waterPredatorChance, caramelLizChance, strawberryLizChance,
-            cyanLizChance, eelLizChance, jungleLeechChance, motherSpiderChance, stowawayChance, kingScavengerChance, hunterLongLegsChance;
+            fireBugChance, giantJellyfishChance, leechLizardChance, seaLeechAquapedeChance, yeekLizardChance, waterPredatorChance, caramelLizChance, 
+            strawberryLizChance, cyanLizChance, eelLizChance, jungleLeechChance, motherSpiderChance, stowawayChance, kingScavengerChance, hunterLongLegsChance;
 
         private int extraGreens, extraPinks, extraBlues, extraWhites, extraBlacks, extraYellows, extraCyans, extraSals, extraCaramels, extraZoops, extraEellizs, 
             extraSpiders, extraVultures, extraScavengers, extraSmallCents, extraCentipedes,
@@ -244,6 +244,7 @@ namespace ApexUpYourSpawns
             fireBugChance = (float)options.fireBugChance.Value / 100;
             flyingPredatorChance = (float)options.flyingPredatorChance.Value / 100;
             leechLizardChance = (float)options.leechLizardChance.Value / 100;
+            seaLeechAquapedeChance = (float)options.seaLeechAquapedeChance.Value / 100;
             yeekLizardChance = (float)options.yeekLizardChance.Value / 100;
             waterPredatorChance = (float)options.waterPredatorChance.Value / 100;
             giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
@@ -1905,24 +1906,19 @@ namespace ApexUpYourSpawns
         {
             if (!(StaticWorld.GetCreatureTemplate(simpleSpawner.creatureType)?.TopAncestor().type == CreatureTemplate.Type.DaddyLongLegs))
             {
-                if(region == "UW" || region == "CL")
-                {
+                
+                if (region == "UW" || region == "CL")
                     ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.DaddyLongLegs, balancedSpawns ? brotherLongLegsChance * 2 : brotherLongLegsChance);
-                }
-                else if (balancedSpawns && region == "GW" && simpleSpawner.creatureType == CreatureTemplate.Type.BigSpider &&
-                    (slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Artificer ||
-                    slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Spear))
-                {
-                    ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, brotherLongLegsChance * 2);
-                }
+                else if (balancedSpawns && region == "GW" && simpleSpawner.creatureType == CreatureTemplate.Type.BigSpider)
+                    ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, 
+                        (slugcatName.ToString() == "Artificer" || slugcatName.ToString() == "Spear")? brotherLongLegsChance*2:brotherLongLegsChance);
                 else
                 {
-                    float localBrotherChance = brotherLongLegsChance;
-                    if (subregion == "Sump Tunnel" || subregion == "The Gutter" || region == "LM" || 
-                        (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle")) || 
-                        simpleSpawner.creatureType == CreatureTemplate.Type.JetFish)
+                    float localBrotherChance = simpleSpawner.creatureType == CreatureTemplate.Type.JetFish ? waterPredatorChance : brotherLongLegsChance;
+                    if (balancedSpawns && (subregion == "Sump Tunnel" || subregion == "The Gutter" || region == "LM" ||
+                        (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle"))))
                         localBrotherChance *= 2;
-                    ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, balancedSpawns? brotherLongLegsChance : localBrotherChance);
+                    ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, localBrotherChance);
                 }
             }
 
@@ -1949,13 +1945,13 @@ namespace ApexUpYourSpawns
         {
             IncreaseCreatureSpawner(simpleSpawner, (region == "SL" && balancedSpawns) ? extraJetfish - 10 : extraJetfish, true);
             if (waterPredatorChance > 0 && (region == "LM" || region == "SB" || region == "VS") && balancedSpawns)
-                IncreaseCreatureSpawner(simpleSpawner, 10, true);
+                IncreaseCreatureSpawner(simpleSpawner, 12, true);
 
             float localWaterPredatorChance = waterPredatorChance;
             if (region == "SB" || region == "VS")
                 localWaterPredatorChance *= 2f;
             else if (region == "SL")
-                localWaterPredatorChance *= 0.8f;
+                localWaterPredatorChance *= 0.6f;
 
             bool replacedFull;
             replacedFull = ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, balancedSpawns? localWaterPredatorChance : waterPredatorChance);
@@ -2008,6 +2004,7 @@ namespace ApexUpYourSpawns
             if (simpleSpawner.creatureType == CreatureTemplate.Type.SeaLeech)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraLeeches);
+                AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, seaLeechAquapedeChance, true, true);
                 AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, leechLizardChance, true, true);
             }
         }

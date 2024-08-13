@@ -48,6 +48,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> hunterLongLegsChance;
         public readonly Configurable<int> jetfishSalamanderChance;
         public readonly Configurable<int> cicadaNoodleFlyChance;
+        public readonly Configurable<int> monsterKelpChance;
 
         //Extra spawns
         public readonly Configurable<int> greenLizExtras;
@@ -92,20 +93,24 @@ namespace ApexUpYourSpawns
             snailSludgeLizardChance, mintLizardChance, ryanLizardChance, yellowLimeLizardChance, lizorInvChance, voltLizardChance, magentaLizardChance,
             yellowTangerineLizardInvChance, cyanTangerineLizardInvChance, chameleonLizarcChance, skyBlueLizardChance,
             cherryLizardChance, strawberryRaspberryLizardChance, redRaspberryLizardChance, surfaceSwimmerChance, bounceBallChance,
-            rainbowLongLegsChance, brownLizardChance, rotzardChance, universalLizardChance, gildedLizardChance, scalizardSchance, 
+            rainbowLongLegsChance, brownLizardChance, rotzardChance, universalLizardChance, gildedLizardChance, scalizardSchance,
             nightmareLizardChance, turquoiseLizardChance, amoebaLizardChance, gargolemLizardChance, motherLizardChance, lostYoungLizardChance,
             snowSpiderChance, jadeLizDenChance, jadeLizInvChance, cherryBombLizDenChance, cherryBombLizInvChance, yellowCrazyLizDenChance,
             yellowCrazyLizInvChance, outspectorChance, inspectorOutspectorInvChance, icyBlueFreezerInvChance,
             icyBlueBlueChance, icyBlueYellowChance, freezerLizChance, cyanwingChance, wingCyanwingChance,
             jetfishBabyAquapedeChance, babyAquapedeInvChance, aquapedeBabyAquaChance, nightTerrorChance, brotherLittleLongLegChance,
             critterLittleLongLegsChance, spearSnailChance, critterHoverflyChance, drainMiteChance, bombVultureChance, toxicSpiderChance,
-            fatNootChance, scroungerChance, bllMimicstarfishChance, critterMimicstarfishChance, chillipedeChance, noodleEaterChance, thornbugChance, miniLeviathanChance;
+            fatNootChance, scroungerChance, bllMimicstarfishChance, critterMimicstarfishChance, chillipedeChance, noodleEaterChance, thornbugChance, miniLeviathanChance,
+            polliwogChance, silverLizChance, hunterSeekerWhiteChance, hunterSeekerCyanChance, centiElectricLizChance,
+            lizardElectricLizChance, albinoVultureChance, vultureEchoLeviChance, spiderWeaverChance, sSwimmerWeaverChance, blizzorChance, salamanderSalamoleChance,
+            blackSalamolechance;
 
         //Extras
         public Configurable<int> sporantulaExtras, scutigeraExtras, waterSpitterExtras, sludgeLizardExtras, mintLizardExtras,
             lizorsExtras, tangerineLizExtras, cherryLizExtras, surfaceSwimmerExtras, bounceBallExtras, snowSpiderExtras,
             youngLizardExtras, jadeLizExtras, yellowCrazyLizExtras, outspectorExtras, icyBlueLizExtras, babyAquapedeExtras,
-            littleLongLegsExtras, hoverflyExtras, drainMiteExtras, scroungerExtras, noodleEaterExtras, thornbugExtras, miniLeviathanExtras;
+            littleLongLegsExtras, hoverflyExtras, drainMiteExtras, scroungerExtras, noodleEaterExtras, thornbugExtras, miniLeviathanExtras,
+            polliwogExtras, silverLizExtras, hunterSeekerExtras, echoLeviExtras, bubbleWeaverExtras, blizzorExtras, salamoleExtras;
 
         private Configurable<string> comboBoxConfig, presetTextConfig;
 
@@ -165,6 +170,7 @@ namespace ApexUpYourSpawns
             hunterLongLegsChance = this.config.Bind<int>("HunterLongLegsChance", 20, new ConfigAcceptableRange<int>(0, 100));
             jetfishSalamanderChance = this.config.Bind<int>("JetFishSalamanderChance", 6, new ConfigAcceptableRange<int>(0, 100));
             cicadaNoodleFlyChance = this.config.Bind<int>("CicadaNoodleflyChance", 4, new ConfigAcceptableRange<int>(0, 100));
+            monsterKelpChance = this.config.Bind<int>("MonsterKelpChance", 5, new ConfigAcceptableRange<int>(0, 100));
 
             //Extras
             greenLizExtras = this.config.Bind<int>("ExtraGreenLizs", 4, new ConfigAcceptableRange<int>(0, 100));
@@ -236,6 +242,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(stowawayChance, "Ceiling Fruits > Stowawaybug Trap (*)");
             labelsMap.Add(kingScavengerChance, "Elite > King Scavenger (*)");
             labelsMap.Add(hunterLongLegsChance, "Slugpup > HunterLongLegs (*)");
+            labelsMap.Add(monsterKelpChance, "Pole Plant > Monster Kelp");
 
             //Extras
             labelsMap.Add(yellowLizExtras, "Yellow Lizards (/10)");
@@ -267,7 +274,7 @@ namespace ApexUpYourSpawns
             labelsMap.Add(mirosExtras, "Miros Birds");
             labelsMap.Add(spiderExtras, "Small Spiders");
             labelsMap.Add(leechExtras, "Leeches");
-            labelsMap.Add(tubeWormExtras, "Grappleworms");
+            labelsMap.Add(tubeWormExtras, "Grappleworms (/10)");
             labelsMap.Add(kelpExtras, "Monster Kelp (/10)");
             labelsMap.Add(leviathanExtras, "Leviathans (/10)");
             labelsMap.Add(nightCreatureExtras, "Night Creatures (/10)");
@@ -300,6 +307,10 @@ namespace ApexUpYourSpawns
             }
             else
                 Directory.CreateDirectory(Custom.RootFolderDirectory() + "/ApexUpYourSpawns");
+
+            if(!Directory.Exists(Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates"))
+                Directory.CreateDirectory(Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates");
+
 
             Vector2 presetsPos = new Vector2(220, 535);
 
@@ -402,16 +413,29 @@ namespace ApexUpYourSpawns
             List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
             SetModConfigs(labelsMap, enabledModsRepConfigs, enabledModsExtraConfigs);
 
-            Configurable<int>[] UIReplacementConfigs = new Configurable<int>[]
-            {
-                redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance, 
-                leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance, 
-                kingVultureChance, mirosVultureChance, eliteScavengerChance, kingScavengerChance,
-                cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
-                spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance, 
-                brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, 
-                hunterLongLegsChance, giantJellyfishChance, stowawayChance
-            };
+            Configurable<int>[] UIReplacementConfigs;
+            if (apexMod.activeMods.Contains("ShinyKelp.ScavengerTweaks"))
+                UIReplacementConfigs = new Configurable<int>[]
+                {
+                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
+                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
+                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
+                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
+                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
+                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
+                    hunterLongLegsChance, giantJellyfishChance, stowawayChance, kingScavengerChance
+                };
+            else
+                UIReplacementConfigs = new Configurable<int>[]
+                {
+                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
+                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
+                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
+                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
+                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
+                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
+                    hunterLongLegsChance, giantJellyfishChance, stowawayChance
+                };
 
             Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
@@ -673,7 +697,7 @@ namespace ApexUpYourSpawns
             {
                 toxicSpiderChance = this.config.Bind<int>("ToxicSpiderChance", 20, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("ShinyKelp.FatNoodleFly") || activeMods.Contains("myr.moss_fields"))
+            if (activeMods.Contains("ShinyKelp.Udonfly") || activeMods.Contains("myr.moss_fields"))
             {
                 fatNootChance = this.config.Bind<int>("FatNoodleflyChance", 10, new ConfigAcceptableRange<int>(0, 100));
             }
@@ -702,6 +726,51 @@ namespace ApexUpYourSpawns
             {
                 miniLeviathanChance = this.config.Bind<int>("MiniLeviChance", 25, new ConfigAcceptableRange<int>(0, 100));
                 miniLeviathanExtras = this.config.Bind<int>("MiniLeviExtras", 3, new ConfigAcceptableRange<int>(0, 20));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            {
+                polliwogChance = this.config.Bind<int>("PolliwogChance", 10, new ConfigAcceptableRange<int>(0, 100));
+                polliwogExtras = this.config.Bind<int>("PolliwogExtras", 8, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            {
+                hunterSeekerCyanChance = this.config.Bind<int>("HunterSeekerCyanChance", 6, new ConfigAcceptableRange<int>(0, 100));
+                hunterSeekerWhiteChance = this.config.Bind<int>("HunterSeekerWhiteChance", 6, new ConfigAcceptableRange<int>(0, 100));
+                hunterSeekerExtras = this.config.Bind<int>("HunterSeekerExtras", 2, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            {
+                silverLizChance = this.config.Bind<int>("SilverLizardChance", 15, new ConfigAcceptableRange<int>(0, 100));
+                silverLizExtras = this.config.Bind<int>("SilverLizardExtras", 2, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("ShinyKelp.AlbinoKings"))
+            {
+                albinoVultureChance = this.config.Bind<int>("AlbinoVultureChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("bebra.gregtech_lizard"))
+            {
+                centiElectricLizChance = this.config.Bind<int>("CentiElectricLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
+                lizardElectricLizChance = this.config.Bind<int>("LizElectricLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            {
+                vultureEchoLeviChance = this.config.Bind<int>("VultureEchoLeviChance", 10, new ConfigAcceptableRange<int>(0, 100));
+                echoLeviExtras = this.config.Bind<int>("EchoLeviExtras", 0, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("bry.bubbleweavers"))
+            {
+                spiderWeaverChance = this.config.Bind<int>("SpiderWeaverChance", 10, new ConfigAcceptableRange<int>(0, 100));
+                if(activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+                    sSwimmerWeaverChance = this.config.Bind<int>("SSwimmerWeaverChance", 15, new ConfigAcceptableRange<int>(0, 100));
+                bubbleWeaverExtras = this.config.Bind<int>("SpiderWeaverExtras", 4, new ConfigAcceptableRange<int>(0, 100));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            {
+                blizzorChance = this.config.Bind<int>("BlizzorChance", 7, new ConfigAcceptableRange<int>(0, 100));
+                salamanderSalamoleChance = this.config.Bind<int>("SalamanderSalamoleChance", 5, new ConfigAcceptableRange<int>(0, 100));
+                blackSalamolechance = this.config.Bind<int>("BlackSalamoleChance", 5, new ConfigAcceptableRange<int>(0, 100));
+                blizzorExtras = this.config.Bind<int>("BlizzorExtras", 2, new ConfigAcceptableRange<int>(0, 20));
+                salamoleExtras = this.config.Bind<int>("SalamoleExtras", 10, new ConfigAcceptableRange<int>(0, 20));
             }
         }
 
@@ -969,7 +1038,7 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(toxicSpiderChance, "Spitter > Toxic Spider");
                 enabledModsRepConfigs.Add(toxicSpiderChance);
             }
-            if (activeMods.Contains("ShinyKelp.FatNoodleFly") || activeMods.Contains("myr.moss_fields"))
+            if (activeMods.Contains("ShinyKelp.Udonfly") || activeMods.Contains("myr.moss_fields"))
             {
                 labelsMap.Add(fatNootChance, "Noodlefly > Fat Noodlefly");
                 enabledModsRepConfigs.Add(fatNootChance);
@@ -1008,6 +1077,74 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(miniLeviathanExtras, "Mini Leviathan");
                 enabledModsRepConfigs.Add(miniLeviathanChance);
                 enabledModsExtraConfigs.Add(miniLeviathanExtras);
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            {
+                labelsMap.Add(polliwogChance, "Salamander > Polliwog");
+                labelsMap.Add(polliwogExtras, "Polliwog (/10)");
+                enabledModsRepConfigs.Add(polliwogChance);
+                enabledModsExtraConfigs.Add(polliwogExtras);
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            {
+                labelsMap.Add(hunterSeekerCyanChance, "Cyan Liz > Hunter Seeker");
+                labelsMap.Add(hunterSeekerWhiteChance, "White Liz > Hunter Seeker");
+                labelsMap.Add(hunterSeekerExtras, "Hunter Seeker (/10)");
+                enabledModsRepConfigs.Add(hunterSeekerCyanChance);
+                enabledModsRepConfigs.Add(hunterSeekerWhiteChance);
+                enabledModsExtraConfigs.Add(hunterSeekerExtras);
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            {
+                labelsMap.Add(silverLizChance, "Grounded Lizards > Silver Liz");
+                labelsMap.Add(silverLizExtras, "Silver Lizard (/10)");
+                enabledModsRepConfigs.Add(silverLizChance);
+                enabledModsExtraConfigs.Add(silverLizExtras);
+            }
+            if (activeMods.Contains("ShinyKelp.AlbinoKings"))
+            {
+                labelsMap.Add(albinoVultureChance, "Vultures > Albino Vultures");
+                enabledModsRepConfigs.Add(albinoVultureChance);
+            }
+            if (activeMods.Contains("bebra.gregtech_lizard"))
+            {
+                labelsMap.Add(centiElectricLizChance, "Centipedes > Electric Lizard (Inv)");
+                labelsMap.Add(lizardElectricLizChance, "Lizards > Electric Lizard (Inv)");
+                enabledModsRepConfigs.Add(centiElectricLizChance);
+                enabledModsRepConfigs.Add(lizardElectricLizChance);
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            {
+                labelsMap.Add(vultureEchoLeviChance, "Vultures > Echo Leviathan (Den)");
+                enabledModsRepConfigs.Add(vultureEchoLeviChance);
+                labelsMap.Add(echoLeviExtras, "Echo Leviathans (/10)");
+                enabledModsExtraConfigs.Add(echoLeviExtras);
+            }
+            if (activeMods.Contains("bry.bubbleweavers"))
+            {
+                labelsMap.Add(spiderWeaverChance, "Spitter Spider > Bubble Weaver");
+                labelsMap.Add(bubbleWeaverExtras, "Bubble Weaver (/10)");
+                enabledModsRepConfigs.Add(spiderWeaverChance);
+                enabledModsExtraConfigs.Add(bubbleWeaverExtras);
+                if (activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+                {
+                    labelsMap.Add(sSwimmerWeaverChance, "Surface Swimmer > Spider Weaver (Inv)");
+                    enabledModsRepConfigs.Add(sSwimmerWeaverChance);
+                }
+
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            {
+                labelsMap.Add(blizzorChance, "Miros Bird > Blizzor");
+                labelsMap.Add(blizzorExtras, "Blizzor");
+                labelsMap.Add(salamanderSalamoleChance, "Salamander > Mole Salamander");
+                labelsMap.Add(blackSalamolechance, "Black liz > Mole Salamander");
+                labelsMap.Add(salamoleExtras, "Mole Salamander (/10)");
+                enabledModsRepConfigs.Add(salamanderSalamoleChance);
+                enabledModsRepConfigs.Add(blackSalamolechance);
+                enabledModsRepConfigs.Add(blizzorChance);
+                enabledModsExtraConfigs.Add(blizzorExtras);
+                enabledModsExtraConfigs.Add(salamoleExtras);
             }
         }
 

@@ -10,6 +10,10 @@ using Steamworks;
 using System.Runtime.Serialization;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
+using System.Globalization;
+using System.IO;
+using RWCustom;
+using System.Linq;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -27,7 +31,9 @@ namespace ApexUpYourSpawns
             mirosVultureChance, eliteScavengerChance, brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, cicadaCentiwingChance, cicadaNoodleflyChance,
             fireBugChance, giantJellyfishChance, leechLizardChance, seaLeechAquapedeChance, yeekLizardChance, aquapedeChance, caramelLizChance,
             strawberryLizChance, cyanLizChance, eelLizChance, jungleLeechChance, motherSpiderChance, tubeWormBigSpiderChance,
-            stowawayChance, kingScavengerChance, hunterLongLegsChance, jetfishSalamanderChance;
+            stowawayChance, kingScavengerChance, jetfishSalamanderChance, monsterKelpChance;
+
+        private static float hunterLongLegsChance;
 
         private int extraGreens, extraPinks, extraBlues, extraWhites, extraBlacks, extraYellows, extraCyans, extraSals, extraCaramels, extraZoops, extraEellizs,
             extraSpiders, extraVultures, extraScavengers, extraSmallCents, extraCentipedes,
@@ -148,7 +154,10 @@ namespace ApexUpYourSpawns
 
         private RainWorldGame game;
 
-        private static HashSet<string> supportedMods = new HashSet<string>(
+        Dictionary<string, List<World.Lineage>> lineagesToSave = new Dictionary<string, List<World.Lineage>>();
+        Dictionary<string, List<World.SimpleSpawner>> spawnersToSave = new Dictionary<string, List<World.SimpleSpawner>>();
+
+        private static readonly HashSet<string> supportedMods = new HashSet<string>(
                 new string[]
                 {
                     "lb-fgf-m4r-ik.bl-crit",
@@ -173,7 +182,7 @@ namespace ApexUpYourSpawns
                     "Outspector",
                     "theincandescent",
                     "ShinyKelp.ScavengerTweaks",
-
+                    "ShinyKelp.CustomRelationships",
                     "lurzard.pitchblack",
                     "spearsnail",
                     "Croken.bombardier-vulture",
@@ -182,19 +191,26 @@ namespace ApexUpYourSpawns
                     "themast",
                     "drainmites",
                     "myr.moss_fields",
-                    "ShinyKelp.FatNoodleFly",
+                    "ShinyKelp.Udonfly",
                     "shrimb.scroungers",
                     "lb-fgf-m4r-ik.noodle-eater",
                     "lb-fgf-m4r-ik.cool-thorn-bug",
                     "lb-fgf-m4r-ik.mini-levi",
-                    "Croken.Mimicstarfish"
+                    "Croken.Mimicstarfish",
 
+                    "lb-fgf-m4r-ik.coral-reef",
+                    "lb-fgf-m4r-ik.scorched-district",
+                    "lb-fgf-m4r-ik.undersea-lizard",
+                    "ShinyKelp.AlbinoKings",
+                    "lb-fgf-m4r-ik.golden-region-jam",
+                    "bebra.gregtech_lizard",
+                    "bry.bubbleweavers",
+                    "lb-fgf-m4r-ik.tronsx-region-code"
                 }
             );
         private void OnEnable()
         {
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
-
             options = new ApexUpYourSpawnsOptions(this, Logger);
             lastWasError = false;
             hasUpdatedRefs = false;
@@ -216,7 +232,6 @@ namespace ApexUpYourSpawns
                 modCreatureExtras = new Dictionary<CreatureTemplate.Type, ModCreatureExtras>();
             if (activeMods is null)
                 activeMods = new HashSet<string>();
-
             logSpawners = false;
         }
 
@@ -234,19 +249,13 @@ namespace ApexUpYourSpawns
                 On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
                 On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
                 On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
-                On.AbstractCreature.ctor += ReplaceSlugpupForHLL;
-                On.Scavenger.ctor += KingCtor;
-                On.Room.ReadyForAI += AddScavKings;
-                
-                On.ScavengerAI.Update += TrickKingIntoSquad;
-                On.ScavengerAI.DecideBehavior += TrickKingIntoSquad1;
-                On.ScavengerAbstractAI.AbstractBehavior += ScavKingAbsAICanGoIntoPipes;
-                On.StaticWorld.InitStaticWorld += ScavKingCanTravelLikeElites;
-                IL.Scavenger.Act += ScavKingActCanGoIntoPipes;
-                
-                IL.World.SpawnPupNPCs += PreventPupCrash;
-                IL.AbstractRoom.RealizeRoom += AbstractRoom_RealizeRoom;
+                On.WinState.CycleCompleted += SaveSpawnersOnCycleComplete;
+                On.RainWorldGame.GoToDeathScreen += RainWorldGame_GoToDeathScreen;
+                On.RainWorldGame.GoToStarveScreen += RainWorldGame_GoToStarveScreen;
+                On.Menu.CharacterSelectPage.AbandonButton_OnPressDone += CharacterSelectPage_AbandonButton_OnPressDone;
 
+                IL.AbstractRoom.RealizeRoom += ReplaceSlugpupForHLLRoom;
+                IL.World.SpawnPupNPCs += ReplaceSlugpupForHLL;
                 On.DaddyLongLegs.ctor += GiveHunterDaddyPupColor;
                 On.DaddyGraphics.ApplyPalette += GiveHunterDaddyPupPalette;
                 On.DaddyGraphics.HunterDummy.ApplyPalette += GiveHunterDaddyDummyPupPalette;
@@ -263,12 +272,12 @@ namespace ApexUpYourSpawns
 
                 if(activeMods.Contains("ShinyKelp.ScavengerTweaks"))
                 {
-                    On.Scavenger.ctor -= KingCtor;
-                    On.ScavengerAI.Update -= TrickKingIntoSquad;
-                    On.ScavengerAI.DecideBehavior -= TrickKingIntoSquad1;
-                    On.ScavengerAbstractAI.AbstractBehavior -= ScavKingAbsAICanGoIntoPipes;
-                    On.StaticWorld.InitStaticWorld -= ScavKingCanTravelLikeElites;
-                    IL.Scavenger.Act -= ScavKingActCanGoIntoPipes;
+                    On.Room.ReadyForAI += AddScavKings;
+                }
+
+                if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+                {
+                    On.LizardGraphics.ctor += ForceBlackMoleSalamander;
                 }
 
                 MachineConnector.SetRegisteredOI("ShinyKelp.ApexUpYourSpawns", this.options);
@@ -318,6 +327,7 @@ namespace ApexUpYourSpawns
             hunterLongLegsChance = (float)options.hunterLongLegsChance.Value / 100;
             jetfishSalamanderChance = (float)options.jetfishSalamanderChance.Value / 100;
             cicadaNoodleflyChance = (float)options.cicadaNoodleFlyChance.Value / 100;
+            monsterKelpChance = (float)options.monsterKelpChance.Value / 100;
 
             //Mod dependant
             if (activeMods.Contains("ShinyKelp.AngryInspectors"))
@@ -395,6 +405,20 @@ namespace ApexUpYourSpawns
 
             if (!(bannedRooms is null))
                 bannedRooms.Clear();
+
+            if (!(lineagesToSave is null))
+            {
+                foreach (List<World.Lineage> lins in lineagesToSave.Values)
+                    lins.Clear();
+                lineagesToSave.Clear();
+            }
+            if (!(spawnersToSave is null))
+            {
+                foreach (List<World.SimpleSpawner> spw in spawnersToSave.Values)
+                    spw.Clear();
+                spawnersToSave.Clear();
+            }
+
         }
 
         private void SetUpModDependencies()
@@ -417,7 +441,6 @@ namespace ApexUpYourSpawns
             options.InitModConfigs();
 
             //DO NOT TRY TO USE StaticWorld.GetCreatureTemplate. IT DOES NOT WORK AT MOD LOADING TIME. USE new CreatureTemplate.Type("name")
-
             if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit"))
             {
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
@@ -427,8 +450,10 @@ namespace ApexUpYourSpawns
                 localMultipliers.Add("CicadaA", .5f);
                 localMultipliers.Add("CicadaB", .5f);
                 localMultipliers.Add("AquaCenti", 0f);
+                localMultipliers.Add("Woven Nest", 0.2f);
+                CreatureTemplate.Type sporType = new CreatureTemplate.Type("Sporantula");
                 ModCreatureReplacement sporantulaRep = new ModCreatureReplacement(
-                    new CreatureTemplate.Type("Sporantula"),
+                    sporType,
                     options.sporantulaChance,
                     true,
                     false,
@@ -441,7 +466,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.BigSpider, sporantulaRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaA, sporantulaRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaB, sporantulaRep);
-                modCreatureExtras.Add(new CreatureTemplate.Type("Sporantula"), new ModCreatureExtras(
+                modCreatureExtras.Add(sporType, new ModCreatureExtras(
                     options.sporantulaExtras
                     ));
             }
@@ -454,39 +479,55 @@ namespace ApexUpYourSpawns
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
                 localMultipliers.Add("GWArtificer", 2f);
                 localMultipliers.Add("GWSpear", 2f);
-
+                CreatureTemplate.Type scutType = new CreatureTemplate.Type("Scutigera");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Centipede,
                     new ModCreatureReplacement(
-                        new CreatureTemplate.Type("Scutigera"),
+                        scutType,
                         options.scutigeraChance,
                         localMultipliers
                     )   
                     );
-                modCreatureExtras.Add(new CreatureTemplate.Type("Scutigera"), new ModCreatureExtras(
+                modCreatureExtras.Add(scutType, new ModCreatureExtras(
                     options.scutigeraExtras
                     ));
 
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi"))
             {
+                Dictionary<string, int> localAdditionsRed = new Dictionary<string, int>();
+                localAdditionsRed.Add("SI", 10);
+                localAdditionsRed.Add("VS", 0);
+                localAdditionsRed.Add("OE", 10);
+                localAdditionsRed.Add("FR", 20);
+                localAdditionsRed.Add("!", -10);
+                CreatureTemplate.Type horrType = new CreatureTemplate.Type("RedHorrorCenti");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.RedCentipede,
                     new ModCreatureReplacement(
-                        new CreatureTemplate.Type("RedHorrorCenti"),
-                        options.redRedHorrorCentiChance
+                        horrType,
+                        options.redRedHorrorCentiChance, null, localAdditionsRed
                 ));
+
+                Dictionary<string, int> localAdditionsWing = new Dictionary<string, int>();
+                localAdditionsWing.Add("SI", 0);
+                localAdditionsWing.Add("LC", 10);
+                localAdditionsWing.Add("VS", 5);
+                localAdditionsWing.Add("SU", 0);
+                localAdditionsWing.Add("SD", 0);
+                localAdditionsWing.Add("!", -5);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Centiwing,
                     new ModCreatureReplacement(
-                        new CreatureTemplate.Type("RedHorrorCenti"),
-                        options.wingRedHorrorCentiChance
+                        horrType,
+                        options.wingRedHorrorCentiChance, null, localAdditionsWing
                 ));
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter"))
             {
+                CreatureTemplate.Type watType = new CreatureTemplate.Type("WaterSpitter");
                 ModCreatureReplacement wSpitter = new ModCreatureReplacement(
-                    new CreatureTemplate.Type("WaterSpitter"), options.waterSpitterChance);
+                    watType, options.waterSpitterChance);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, wSpitter);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, wSpitter);
-                modCreatureExtras.Add(new CreatureTemplate.Type("WaterSpitter"), new ModCreatureExtras(
+                modCreatureExtras.Add(watType, new ModCreatureExtras(
                     options.waterSpitterExtras, true));
             }
             if (activeMods.Contains("moredlls"))
@@ -517,7 +558,8 @@ namespace ApexUpYourSpawns
                 Dictionary<string, int> localAdditionsExp = new Dictionary<string, int>();
                 localAdditionsExp.Add("GWArtificer", 15);
                 localAdditionsExp.Add("GWSpear", 15);
-                localAdditionsExp.Add("GW", 15);
+                localAdditionsExp.Add("GW", 35);
+                localAdditionsExp.Add("BL", 15);
                 ModCreatureReplacement expDLL = new ModCreatureReplacement(
                         new CreatureTemplate.Type("ExplosiveDLL"),
                         options.explosionLongLegsChance,
@@ -529,15 +571,19 @@ namespace ApexUpYourSpawns
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature"))
             {
+                Dictionary<string, int> localAdditions = new Dictionary<string, int>();
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
-                localMultipliers.Add("GW", 2f);
+                localAdditions.Add("GW", 10);
+                localAdditions.Add("BL", 25);
                 localMultipliers.Add("Saint", .5f);
+                localMultipliers.Add("MS", 0.1f);
                 AddModCreatureToDictionary(modCreatureAncestorReplacements,
                     CreatureTemplate.Type.Vulture,
                     new ModCreatureReplacement(
                         new CreatureTemplate.Type("FatFireFly"),
                         options.fatFireFlyChance,
-                        localMultipliers
+                        localMultipliers,
+                        localAdditions
                         ));
             }
             if (activeMods.Contains("ShinyKelp.LizardVariants"))
@@ -550,15 +596,16 @@ namespace ApexUpYourSpawns
                         new CreatureTemplate.Type("YellowLimeLizard"),
                         options.yellowLimeLizardChance
                 ));
+                CreatureTemplate.Type mintType = new CreatureTemplate.Type("MintLizard");
 
                 ModCreatureReplacement mintLiz = new ModCreatureReplacement(
-                        new CreatureTemplate.Type("MintLizard"),
+                        mintType,
                         options.mintLizardChance
                 );
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, mintLiz);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, mintLiz);
-                modCreatureExtras.Add(new CreatureTemplate.Type("MintLizard"), new ModCreatureExtras(options.mintLizardExtras, true));
+                modCreatureExtras.Add(mintType, new ModCreatureExtras(options.mintLizardExtras, true));
 
                 hasLizardVariants = true;
             }
@@ -569,21 +616,21 @@ namespace ApexUpYourSpawns
                 localMultipliers.Add("SL", .5f);
                 Dictionary<string, int> localAdditions = new Dictionary<string, int>();
                 localAdditions.Add("The Gutter", 25);
-
-                ModCreatureReplacement sludLiz = new ModCreatureReplacement(new CreatureTemplate.Type("SludgeLizard"),
+                CreatureTemplate.Type sludType = new CreatureTemplate.Type("SludgeLizard");
+                ModCreatureReplacement sludLiz = new ModCreatureReplacement(sludType,
                     options.sludgeLizardChance, localMultipliers);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, sludLiz);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, sludLiz);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Snail, 
                     new ModCreatureReplacement(
-                        new CreatureTemplate.Type("SludgeLizard"),
+                        sludType,
                         options.snailSludgeLizardChance,
                         false,
                         true,
                         localMultipliers
                     ));
-                modCreatureExtras.Add(new CreatureTemplate.Type("SludgeLizard"), new ModCreatureExtras(
+                modCreatureExtras.Add(sludType, new ModCreatureExtras(
                         options.sludgeLizardExtras, 
                         true,
                         null,
@@ -663,22 +710,25 @@ namespace ApexUpYourSpawns
                 localSSMultipliers.Add("LM", 2f);
                 localSSMultipliers.Add("SU_A30", 2f);
 
+                CreatureTemplate.Type ssType = new CreatureTemplate.Type("SurfaceSwimmer");
+
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("SurfaceSwimmer"), options.surfaceSwimmerChance, localSSMultipliers));
+                    ssType, options.surfaceSwimmerChance, localSSMultipliers));
 
                 Dictionary<string, int> localSSAdds = new Dictionary<string, int>();
                 localSSAdds.Add("DS", 20);
                 localSSAdds.Add("SL", 20);
                 localSSAdds.Add("LM", 20);
 
-                modCreatureExtras.Add(new CreatureTemplate.Type("SurfaceSwimmer"), new ModCreatureExtras(
+                modCreatureExtras.Add(ssType, new ModCreatureExtras(
                     options.surfaceSwimmerExtras, true, null, localSSAdds));
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature"))
             {
+                CreatureTemplate.Type bType = new CreatureTemplate.Type("BouncingBall");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Snail, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("BouncingBall"), options.bounceBallChance));
-                modCreatureExtras.Add(new CreatureTemplate.Type("BouncingBall"), new ModCreatureExtras(
+                    bType, options.bounceBallChance));
+                modCreatureExtras.Add(bType, new ModCreatureExtras(
                     options.bounceBallExtras, true));
             }
             if (activeMods.Contains("rainbowlonglegs"))
@@ -752,13 +802,16 @@ namespace ApexUpYourSpawns
                 Dictionary<string, int> snowSpiderInts = new Dictionary<string, int>();
                 snowSpiderInts.Add("SH", 8);
                 snowSpiderInts.Add("SB", 8);
+                CreatureTemplate.Type snowType = new CreatureTemplate.Type("SnowSpider");
+                CreatureTemplate.Type lizType = new CreatureTemplate.Type("YoungLizard");
+
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BigSpider, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("SnowSpider"), options.snowSpiderChance, snowSpiderModifs));
+                    snowType, options.snowSpiderChance, snowSpiderModifs));
 
                 Dictionary<string, float> lostYoungModif = new Dictionary<string, float>();
                 lostYoungModif.Add("PinkLizard", .5f);
 
-                ModCreatureReplacement youngLizRep = new ModCreatureReplacement(new CreatureTemplate.Type("YoungLizard"),
+                ModCreatureReplacement youngLizRep = new ModCreatureReplacement(lizType,
                     options.lostYoungLizardChance, true, true, lostYoungModif);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, youngLizRep);
@@ -766,8 +819,8 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.PinkLizard, youngLizRep);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, youngLizRep);
 
-                modCreatureExtras.Add(new CreatureTemplate.Type("YoungLizard"), new ModCreatureExtras(options.youngLizardExtras));
-                modCreatureExtras.Add(new CreatureTemplate.Type("SnowSpider"), new ModCreatureExtras(options.snowSpiderExtras));
+                modCreatureExtras.Add(lizType, new ModCreatureExtras(options.youngLizardExtras));
+                modCreatureExtras.Add(snowType, new ModCreatureExtras(options.snowSpiderExtras));
             }
             if (activeMods.Contains("cherrylizard"))
             {
@@ -817,9 +870,10 @@ namespace ApexUpYourSpawns
             }
             if (activeMods.Contains("Outspector"))
             {
+                CreatureTemplate.Type outType = new CreatureTemplate.Type("Outspector");
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("Outspector"), options.outspectorChance));
-                modCreatureExtras.Add(new CreatureTemplate.Type("Outspector"), new ModCreatureExtras(
+                    outType, options.outspectorChance));
+                modCreatureExtras.Add(outType, new ModCreatureExtras(
                     options.outspectorExtras, true));
             }
             if (activeMods.Contains("theincandescent"))
@@ -831,12 +885,15 @@ namespace ApexUpYourSpawns
                 icyBlueBD.Add("SUIncandescent", 0.5f);
                 icyBlueBD.Add("Bitter Aerie", 2f);
 
-                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.YellowLizard, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("IcyBlueLizard"), options.icyBlueYellowChance, icyBlueBD)
-                    );
+                CreatureTemplate.Type icyType = new CreatureTemplate.Type("IcyBlueLizard");
+                CreatureTemplate.Type freezerType = new CreatureTemplate.Type("FreezerLizard");
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.YellowLizard, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("IcyBlueLizard"), options.icyBlueFreezerInvChance, true, true, icyBlueBD)
+                        icyType, options.icyBlueYellowChance, icyBlueBD)
+                    );
+
+                AddModCreatureToDictionary(modCreatureReplacements, freezerType, new ModCreatureReplacement(
+                        icyType, options.icyBlueFreezerInvChance, true, true, icyBlueBD)
                     );
 
                 Dictionary<string, float> icyBlueBD2 = new Dictionary<string, float>();
@@ -847,16 +904,16 @@ namespace ApexUpYourSpawns
                 icyBlueBD2.Add("Bitter Aerie", 2f);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("IcyBlueLizard"), options.icyBlueBlueChance, true, true, icyBlueBD2)
+                        icyType, options.icyBlueBlueChance, true, true, icyBlueBD2)
                     );
                 Dictionary<string, float> icyBlueBD3 = new Dictionary<string, float>();
                 icyBlueBD3.Add("Saint", 2f);
                 icyBlueBD.Add("!", 0f);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("IcyBlueLizard"), options.icyBlueBlueChance, false, true, icyBlueBD3)
+                        icyType, options.icyBlueBlueChance, false, true, icyBlueBD3)
                     );
 
-                modCreatureExtras.Add(new CreatureTemplate.Type("IcyBlueLizard"), new ModCreatureExtras(
+                modCreatureExtras.Add(icyType, new ModCreatureExtras(
                     options.icyBlueLizExtras, true));
 
 
@@ -866,10 +923,10 @@ namespace ApexUpYourSpawns
                 freezerBD.Add("SUIncandescent", 0.5f);
                 freezerBD.Add("Bitter Aerie", 2f);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("FreezerLizard"), options.freezerLizChance, false, true, freezerBD)
+                        freezerType, options.freezerLizChance, false, true, freezerBD)
                     );
-                AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("IcyBlueLizard"), new ModCreatureReplacement(
-                        new CreatureTemplate.Type("FreezerLizard"), options.freezerLizChance, false, true, freezerBD)
+                AddModCreatureToDictionary(modCreatureReplacements, icyType, new ModCreatureReplacement(
+                        freezerType, options.freezerLizChance, false, true, freezerBD)
                     );
 
                 Dictionary<string, float> cyanwingBD = new Dictionary<string, float>();
@@ -877,25 +934,31 @@ namespace ApexUpYourSpawns
                 cyanwingBD.Add("PreCycle", 0.5f);
                 cyanwingBD.Add("SISaint", 0.5f);
                 cyanwingBD.Add("SIIncandescent", 0.5f);
-                ModCreatureReplacement cyanwingRep = new ModCreatureReplacement(new CreatureTemplate.Type("Cyanwing"), options.cyanwingChance, false, true, cyanwingBD);
+
+                CreatureTemplate.Type cyanType = new CreatureTemplate.Type("Cyanwing");
+
+                ModCreatureReplacement cyanwingRep = new ModCreatureReplacement(cyanType, options.cyanwingChance, false, true, cyanwingBD);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Centipede, cyanwingRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SmallCentipede, cyanwingRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Centiwing, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("Cyanwing"), options.wingCyanwingChance, false, true, cyanwingBD
+                        cyanType, options.wingCyanwingChance, false, true, cyanwingBD
                     ));
 
                 Dictionary<string, int> babyAquapedeBD = new Dictionary<string, int>();
                 babyAquapedeBD.Add("Sump Tunnel", 45);
 
+                CreatureTemplate.Type aquaType = new CreatureTemplate.Type("InfantAquapede");
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("InfantAquapede"), options.babyAquapedeInvChance, true)
+                        aquaType, options.babyAquapedeInvChance, true)
                     );
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.JetFish, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("InfantAquapede"), options.jetfishBabyAquapedeChance, true, false, null, babyAquapedeBD)
+                        aquaType, options.jetfishBabyAquapedeChance, true, false, null, babyAquapedeBD)
                     );
-                modCreatureExtras.Add(new CreatureTemplate.Type("InfantAquapede"), new ModCreatureExtras(options.aquapedeExtras, true));
+                modCreatureExtras.Add(aquaType, new ModCreatureExtras(options.aquapedeExtras, true));
                 //Chillipede
-                ModCreatureReplacement chillRep = new ModCreatureReplacement(new CreatureTemplate.Type("Chillipede"), options.chillipedeChance);
+
+                CreatureTemplate.Type chillType = new CreatureTemplate.Type("Chillipede");
+                ModCreatureReplacement chillRep = new ModCreatureReplacement(chillType, options.chillipedeChance);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, chillRep);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, chillRep);
                 if(activeMods.Contains("ShinyKelp.LizardVariants"))
@@ -904,7 +967,7 @@ namespace ApexUpYourSpawns
                 Dictionary<string, float> subChillipedes = new Dictionary<string, float>();
                 subChillipedes.Add("SB", 1f);
                 subChillipedes.Add("!", 0f);
-                ModCreatureReplacement subChillRep = new ModCreatureReplacement(new CreatureTemplate.Type("Chillipede"), options.chillipedeChance, subChillipedes, null, true);
+                ModCreatureReplacement subChillRep = new ModCreatureReplacement(chillType, options.chillipedeChance, subChillipedes, null, true);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, subChillRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.WhiteLizard, subChillRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CyanLizard, subChillRep);
@@ -921,7 +984,7 @@ namespace ApexUpYourSpawns
                 }
                 if (updatedHailstorm)
                 {
-                    ModCreatureReplacement kelpChillRep = new ModCreatureReplacement(new CreatureTemplate.Type("Chillipede"), options.chillipedeChance, true);
+                    ModCreatureReplacement kelpChillRep = new ModCreatureReplacement(chillType, options.chillipedeChance, true);
                     AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.TentaclePlant, kelpChillRep);
 
                 }
@@ -935,8 +998,9 @@ namespace ApexUpYourSpawns
                 nightTerrorDict.Add("SB", 4);
                 nightTerrorDict.Add("Filtration", 4);
                 nightTerrorDict.Add("Night", 20);
+                CreatureTemplate.Type nightType = new CreatureTemplate.Type("NightTerror");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Centipede, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("NightTerror"), options.nightTerrorChance, false, false, null, nightTerrorDict));
+                    nightType, options.nightTerrorChance, false, false, null, nightTerrorDict));
 
                 //Night terror replace red cent in shaded/night
                 Dictionary<string, int> redCentRepDict = new Dictionary<string, int>();
@@ -944,7 +1008,7 @@ namespace ApexUpYourSpawns
                 redCentRepDict.Add("Night", 20);
                 redCentRepDict.Add("!", -10);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.RedCentipede, new ModCreatureReplacement(
-                        new CreatureTemplate.Type("NightTerror"), options.nightTerrorChance, false, false, null, redCentRepDict
+                        nightType, options.nightTerrorChance, false, false, null, redCentRepDict
                     ));
 
                 //Little longlegs
@@ -957,18 +1021,19 @@ namespace ApexUpYourSpawns
                 lllDict.Add("OA", 2f);
                 lllDict.Add("The Gutter", 2f);
 
+                CreatureTemplate.Type littleType = new CreatureTemplate.Type("LMiniLongLegs");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BrotherLongLegs, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("LMiniLongLegs"), options.brotherLittleLongLegChance, true, false, lllDict));
+                    littleType, options.brotherLittleLongLegChance, true, false, lllDict));
 
                 ModCreatureReplacement lllRep = new ModCreatureReplacement(
-                    new CreatureTemplate.Type("LMiniLongLegs"), options.critterLittleLongLegsChance, true, false, lllDict);
+                    littleType, options.critterLittleLongLegsChance, true, false, lllDict);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Snail, lllRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.LanternMouse, lllRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.TubeWorm, lllRep);
 
                 //Extras
-                modCreatureExtras.Add(new CreatureTemplate.Type("LMiniLongLegs"), new ModCreatureExtras(
+                modCreatureExtras.Add(littleType, new ModCreatureExtras(
                     options.littleLongLegsExtras, true));
 
             }
@@ -983,12 +1048,14 @@ namespace ApexUpYourSpawns
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || activeMods.Contains("themast"))
             {
-                ModCreatureReplacement hoverflyRep = new ModCreatureReplacement(new CreatureTemplate.Type("Hoverfly"), options.critterHoverflyChance);
+                CreatureTemplate.Type hoverType = new CreatureTemplate.Type("Hoverfly");
+                ModCreatureReplacement hoverflyRep = new ModCreatureReplacement(hoverType, options.critterHoverflyChance);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SmallNeedleWorm, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.LanternMouse, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.TubeWorm, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.Yeek, hoverflyRep);
+                modCreatureExtras.Add(hoverType, new ModCreatureExtras(options.hoverflyExtras));
             }
             if (activeMods.Contains("Croken.bombardier-vulture"))
             {
@@ -1008,25 +1075,12 @@ namespace ApexUpYourSpawns
             if (activeMods.Contains("drainmites"))
             {
                 Dictionary<string, float> drainmiteDict = new Dictionary<string, float>();
-                drainmiteDict.Add("!", 100f);
+                drainmiteDict.Add("!", 1f);
                 drainmiteDict.Add("PreCycle", 0f);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
                     new CreatureTemplate.Type("DrainMite"), options.drainMiteChance, true, true, drainmiteDict, null, true));
-                Dictionary<string, int> drainmiteAmountDict = new Dictionary<string, int>();
-                drainmiteAmountDict.Add("SizeMult", 0);
-                drainmiteAmountDict.Add("PreCycle", 0);
-                drainmiteAmountDict.Add("!", 10);
-                Dictionary<string, float> drainmiteAmountDict2 = new Dictionary<string, float>();
-                drainmiteAmountDict2.Add("SI", 0.3f);
-                drainmiteAmountDict2.Add("SU", 0.3f);
-                drainmiteAmountDict2.Add("SC", 0.3f);
-                drainmiteAmountDict2.Add("LC", 0.3f);
-                drainmiteAmountDict2.Add("PreCycle", 0f);
-                drainmiteAmountDict2.Add("SizeMult", 0f);
-
-                modCreatureExtras.Add(new CreatureTemplate.Type("DrainMite"), new ModCreatureExtras(options.drainMiteExtras, false, drainmiteAmountDict2, drainmiteAmountDict));
             }
-            if (activeMods.Contains("myr.moss_fields") || activeMods.Contains("ShinyKelp.FatNoodleFly"))
+            if (activeMods.Contains("myr.moss_fields") || activeMods.Contains("ShinyKelp.Udonfly"))
             {
                 Dictionary<string, float> fatFlyDict = new Dictionary<string, float>();
                 fatFlyDict.Add("SI", 1.5f);
@@ -1044,32 +1098,33 @@ namespace ApexUpYourSpawns
             }
             if (activeMods.Contains("shrimb.scroungers"))
             {
-                //Mimicstar, ThornBug, MiniLeviathan, NoodleEater, Scrounger, Chillipede,
                 Dictionary<string, float> scroungerDict = new Dictionary<string, float>();
                 scroungerDict.Add("Artificer", 0.2f);
                 scroungerDict.Add("Spear", 0.35f);
                 scroungerDict.Add("Rivulet", 1.5f);
                 scroungerDict.Add("Saint", 2f);
                 scroungerDict.Add("UW", 2f);
-                scroungerDict.Add("LC", 2f);
-                scroungerDict.Add("OE", 1.5f);
+                scroungerDict.Add("FR", 3f);
+                scroungerDict.Add("OE", 3f);
                 scroungerDict.Add("SI", 1.5f);
                 scroungerDict.Add("SB", 0.5f);
                 scroungerDict.Add("GW", 0.5f);
+                CreatureTemplate.Type scrType = new CreatureTemplate.Type("Scrounger");
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("Scrounger"), options.scroungerChance, scroungerDict));
-                modCreatureExtras.Add(new CreatureTemplate.Type("Scrounger"), new ModCreatureExtras(
+                    scrType, options.scroungerChance, scroungerDict));
+                modCreatureExtras.Add(scrType, new ModCreatureExtras(
                     options.scroungerExtras, false));
             }
             if (activeMods.Contains("Croken.Mimicstarfish"))
             {
                 Dictionary<string, int> starfishDict = new Dictionary<string, int>();
-                starfishDict.Add("MS", 20);
-                starfishDict.Add("SL", 20);
-                starfishDict.Add("LM", 20);
-                starfishDict.Add("DS", 5);
-                starfishDict.Add("OA", 5);
-                starfishDict.Add("Sump Tunnel", 30);
+                starfishDict.Add("MS", 10);
+                starfishDict.Add("SL", 10);
+                starfishDict.Add("LM", 10);
+                starfishDict.Add("DS", 10);
+                starfishDict.Add("OA", 10);
+                starfishDict.Add("Sump Tunnel", 10);
+                starfishDict.Add("!", -5);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BrotherLongLegs, new ModCreatureReplacement(
                     new CreatureTemplate.Type("Mimicstar"), options.bllMimicstarfishChance, null, starfishDict));
@@ -1097,7 +1152,7 @@ namespace ApexUpYourSpawns
                     new CreatureTemplate.Type("ThornBug"), options.thornbugChance, true));
                 modCreatureExtras.Add(new CreatureTemplate.Type("ThornBug"), new ModCreatureExtras(options.thornbugExtras));
             }
-            if(activeMods.Contains("lb-fgf-m4r-ik.mini-levi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi"))
             {
                 Dictionary<string, float> miniLeviDict = new Dictionary<string, float>();
                 miniLeviDict.Add("SB", 1.5f);
@@ -1106,9 +1161,83 @@ namespace ApexUpYourSpawns
                     new CreatureTemplate.Type("MiniLeviathan"), options.miniLeviathanChance, true, false, miniLeviDict));
                 modCreatureExtras.Add(new CreatureTemplate.Type("MiniLeviathan"), new ModCreatureExtras(options.miniLeviathanExtras, false));
             }
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            {
+                CreatureTemplate.Type polliType = new CreatureTemplate.Type("Polliwog");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, new ModCreatureReplacement(
+                    polliType, options.polliwogChance));
+                modCreatureExtras.Add(polliType, new ModCreatureExtras(options.polliwogExtras));
+
+
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            {
+                CreatureTemplate.Type hunType = new CreatureTemplate.Type("HunterSeeker");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CyanLizard, new ModCreatureReplacement(
+                    hunType, options.hunterSeekerCyanChance));
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.WhiteLizard, new ModCreatureReplacement(
+                    hunType, options.hunterSeekerWhiteChance));
+                modCreatureExtras.Add(hunType, new ModCreatureExtras(options.hunterSeekerExtras));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            {
+                CreatureTemplate.Type silType = new CreatureTemplate.Type("SilverLizard");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, new ModCreatureReplacement(
+                    silType, options.silverLizChance));
+                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
+                    silType, options.silverLizChance));
+                modCreatureExtras.Add(silType, new ModCreatureExtras(options.silverLizExtras));
+            }
+            if (activeMods.Contains("bebra.gregtech_lizard"))
+            {
+                CreatureTemplate.Type elecLiz = new CreatureTemplate.Type("GregTechLizard");
+                Dictionary<string, float> elecFiltersL = new Dictionary<string, float>();
+                Dictionary<string, float> elecFiltersC = new Dictionary<string, float>();
+                elecFiltersL.Add("Salamander", 0f);
+                elecFiltersL.Add("EelLizard", 0f);
+                elecFiltersC.Add("AquaCenti", 0f);
+                if(activeMods.Contains("theincandescent"))
+                    elecFiltersC.Add("InfantAquapede", 0f);
+                if(activeMods.Contains("lb-fgf-m4r-ik.water-spitter"))
+                    elecFiltersL.Add("WaterSpitter", 0f);
+                if(activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+                    elecFiltersL.Add("Polliwog", 0f);
+                AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.LizardTemplate,
+                    new ModCreatureReplacement(elecLiz, options.lizardElectricLizChance, true, true, elecFiltersL, null, true));
+                AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.Centipede,
+                    new ModCreatureReplacement(elecLiz, options.lizardElectricLizChance, true, true, elecFiltersC, null, true));
+            }
+            if (activeMods.Contains("bry.bubbleweavers"))
+            {
+                CreatureTemplate.Type bubbleType1 = new CreatureTemplate.Type("BubbleWeaver"),
+                    bubbleType2 = new CreatureTemplate.Type("SapphiricWeaver");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SpitterSpider, new ModCreatureReplacement(
+                    bubbleType1, options.spiderWeaverChance));
+                if (activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+                {
+                    AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("SurfaceSwimmer"), new ModCreatureReplacement(
+                        bubbleType2, options.sSwimmerWeaverChance));
+                }
+                modCreatureExtras.Add(bubbleType1, new ModCreatureExtras(options.bubbleWeaverExtras));
+                modCreatureExtras.Add(bubbleType2, new ModCreatureExtras(options.bubbleWeaverExtras));
+            }
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            {
+                CreatureTemplate.Type salamoleType = new CreatureTemplate.Type("MoleSalamander");
+                CreatureTemplate.Type blizzorType = new CreatureTemplate.Type("Blizzor");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.MirosBird, new ModCreatureReplacement(
+                    blizzorType, options.blizzorChance));
+                modCreatureExtras.Add(blizzorType, new ModCreatureExtras(options.blizzorExtras, false));
+
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, new ModCreatureReplacement(
+                    salamoleType, options.salamanderSalamoleChance));
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlackLizard, new ModCreatureReplacement(
+                    salamoleType, options.blackSalamolechance));
+
+            }
 
         }
-        
+
         private void AddModCreatureToDictionary(Dictionary<CreatureTemplate.Type, List<ModCreatureReplacement>> dict, CreatureTemplate.Type key, ModCreatureReplacement modCreature)
         {
             if(dict.TryGetValue(key, out List<ModCreatureReplacement> list))
@@ -1125,50 +1254,360 @@ namespace ApexUpYourSpawns
 
         #endregion
 
+        #region Spawner Savestate handling
+        private void CharacterSelectPage_AbandonButton_OnPressDone(On.Menu.CharacterSelectPage.orig_AbandonButton_OnPressDone orig, Menu.CharacterSelectPage self, Menu.Remix.MixedUI.UIfocusable trigger)
+        {
+            orig(self, trigger);
+            ResetSpawnBufferOnDeath();
+        }
+
+        private void RainWorldGame_GoToStarveScreen(On.RainWorldGame.orig_GoToStarveScreen orig, RainWorldGame self)
+        {
+            orig(self);
+            ResetSpawnBufferOnDeath();
+        }
+
+        private void RainWorldGame_GoToDeathScreen(On.RainWorldGame.orig_GoToDeathScreen orig, RainWorldGame self)
+        {
+            orig(self);
+            ResetSpawnBufferOnDeath();
+        }
+
+        private void ResetSpawnBufferOnDeath()
+        {
+            foreach (List<World.Lineage> lin in lineagesToSave.Values)
+                lin.Clear();
+            lineagesToSave.Clear();
+            foreach (List<World.SimpleSpawner> spw in spawnersToSave.Values)
+                spw.Clear();
+            spawnersToSave.Clear();
+        }
+
+        private void SaveSpawnersOnCycleComplete(On.WinState.orig_CycleCompleted orig, WinState self, RainWorldGame game)
+        {
+            orig(self, game);
+
+            if (game.IsStorySession && game.GetStorySession.saveState.malnourished)
+                return;
+
+            if (!Directory.Exists(Custom.RootFolderDirectory() + "/ApexUpYourSpawns"))
+                Directory.CreateDirectory(Custom.RootFolderDirectory() + "/ApexUpYourSpawns");
+            if (!Directory.Exists(Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates"))
+                Directory.CreateDirectory(Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates");
+
+            SlugcatStats.Name player = null;
+            int saveSlot = Math.Abs(game.rainWorld.options.saveSlot);
+            bool expedition = game.rainWorld.ExpeditionMode;
+            if (game.IsStorySession)
+                player = game.GetStorySession.saveStateNumber;
+            string baseSaveFilePath = Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates/" +
+                (expedition ? "e" : "") + saveSlot + player.ToString();
+
+            foreach (string regionSave in lineagesToSave.Keys)
+            {
+                string filePath = baseSaveFilePath + regionSave + ".txt";
+                using (StreamWriter writer = new StreamWriter(filePath, false))
+                {
+                    foreach (World.Lineage lineage in lineagesToSave[regionSave])
+                    {
+                        string linStr = lineage.SpawnerID.ToString() + "|";
+                        foreach (int critIndex in lineage.creatureTypes)
+                        {
+                            if (critIndex < 0 || critIndex >= StaticWorld.creatureTemplates.Length)
+                                linStr += "-1,";
+                            else if (critIndex < 47)
+                                linStr += critIndex + ",";
+                            else
+                                linStr += StaticWorld.creatureTemplates[critIndex].type.ToString() + ":" + critIndex + ",";
+                        }
+                        linStr = linStr.Substring(0, linStr.Length - 1);
+
+                        linStr += "|";
+                        for (int i = 0; i < lineage.spawnData.Length; ++i)
+                        {
+                            if (lineage.spawnData[i] != null)
+                                linStr += lineage.spawnData[i];
+                            linStr += ";";
+                        }
+                        linStr = linStr.Substring(0, linStr.Length - 1);
+                        writer.WriteLine(linStr);
+                    }
+
+                    if(spawnersToSave.ContainsKey(regionSave) && spawnersToSave[regionSave].Count > 0)
+                    {
+                        writer.WriteLine("====");
+                        foreach(World.SimpleSpawner spawner in spawnersToSave[regionSave])
+                        {
+                            string spawnerStr = spawner.region.ToString() + ":" + spawner.inRegionSpawnerIndex.ToString() + "|";
+                            int critIndex = spawner.creatureType.index;
+                            
+                            if (critIndex > -1 && critIndex < 47)
+                                spawnerStr += critIndex + ",";
+                            else
+                                spawnerStr += spawner.creatureType.ToString() + ":" + critIndex + ",";
+
+                            spawnerStr += spawner.amount + "," + (spawner.spawnDataString != null? spawner.spawnDataString : "");
+
+                            writer.WriteLine(spawnerStr);
+                        }
+                        spawnersToSave[regionSave].Clear();
+                    }
+
+                }
+                lineagesToSave[regionSave].Clear();
+            }
+            lineagesToSave.Clear();
+            spawnersToSave.Clear();
+        }
+
+        private bool LoadSaveState(WorldLoader worldLoader)
+        {
+            bool needsFresh = false;
+            Dictionary<int, KeyValuePair<int[], string[]>> linSaveState = SavedLineagesToDictionary(worldLoader);
+            foreach (World.Lineage lineage in worldLoader.spawners.OfType<World.Lineage>())
+            {
+                if (linSaveState.ContainsKey(lineage.SpawnerID))
+                {
+                    lineage.creatureTypes = linSaveState[lineage.SpawnerID].Key;
+                    lineage.spawnData = linSaveState[lineage.SpawnerID].Value;
+
+                }
+            }
+            linSaveState.Clear();
+
+            List<World.SimpleSpawner> offScreenSaveState = SavedSpawnersToList(worldLoader);
+            if(offScreenSaveState.Count > 0)
+            {
+                WorldCoordinate offScreenDen = FindOffScreenDen(worldLoader);
+                foreach (World.SimpleSpawner spawner in worldLoader.spawners.OfType<World.SimpleSpawner>())
+                {
+                    if (spawner.den == offScreenDen)
+                    {
+                        spawner.creatureType = offScreenSaveState[0].creatureType;
+                        spawner.amount = offScreenSaveState[0].amount;
+                        spawner.spawnDataString = offScreenSaveState[0].spawnDataString;
+                        offScreenSaveState.RemoveAt(0);
+                        if (offScreenSaveState.Count == 0)
+                            break;
+                    }
+                }
+                /*
+                 * TO-DO: Save ALL spawns, not just offscreen.
+                 * Set needsFresh to true to force them to change.
+                 * Current version has spawn data loss over time.
+                if (offScreenSaveState.Count > 0)
+                    needsFresh = true;
+                */
+                while (offScreenSaveState.Count > 0)
+                {
+                    offScreenSaveState[0].inRegionSpawnerIndex = worldLoader.spawners.Count;
+                    worldLoader.spawners.Add(offScreenSaveState[0]);
+                    offScreenSaveState.RemoveAt(0);
+                }
+            }
+            return needsFresh;
+        }
+
+        private void AddSpawnersToBuffer(WorldLoader loader)
+        {
+            List<World.Lineage> lineages = new List<World.Lineage>();
+            List<World.SimpleSpawner> spawners = new List<World.SimpleSpawner>();
+
+            WorldCoordinate offScreenDen = FindOffScreenDen(loader);
+            foreach (World.CreatureSpawner spawner in loader.spawners)
+            {
+                if (spawner is World.Lineage lin)
+                    lineages.Add(lin);
+                else if (spawner is World.SimpleSpawner && spawner.den == offScreenDen)
+                    spawners.Add(spawner as World.SimpleSpawner);
+            }
+            UnityEngine.Debug.Log("Added " + spawners.Count + " spawners to save buffer.");
+            if (lineages.Count > 0)
+                lineagesToSave.Add(loader.worldName, lineages);
+            if (spawners.Count > 0)
+                spawnersToSave.Add(loader.worldName, spawners);
+        }
+
+        private Dictionary<int, KeyValuePair<int[], string[]>> SavedLineagesToDictionary(WorldLoader loader)
+        {
+            Dictionary<int, KeyValuePair<int[], string[]>> lineagesDict = new Dictionary<int, KeyValuePair<int[], string[]>>();
+            string filePath = Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates/";
+            SlugcatStats.Name player = null;
+            int saveSlot = Math.Abs(loader.game.rainWorld.options.saveSlot);
+            bool expedition = loader.game.rainWorld.ExpeditionMode;
+            if (loader.game.IsStorySession)
+                player = loader.game.GetStorySession.saveStateNumber;
+            filePath += (expedition ? "e" : "") + saveSlot + player.ToString() + loader.worldName + ".txt";
+            if (File.Exists(filePath))
+            {
+                StreamReader sr = new StreamReader(filePath);
+                string line = sr.ReadLine();
+                while (line != null && !line.StartsWith("===="))
+                {
+                    string[] baseSplits = line.Split('|');
+                    string[] creatureSplits = baseSplits[1].Split(',');
+                    int[] critArray = new int[creatureSplits.Length];
+                    for (int i = 0; i < creatureSplits.Length; ++i)
+                    {
+                        if (creatureSplits[i].Length < 4 && int.TryParse(creatureSplits[i], out int index))
+                            critArray[i] = index;
+                        else
+                        {
+                            string[] dividedCrit = creatureSplits[i].Split(':');
+                            int prevIndex = int.Parse(dividedCrit[1]);
+                            if (prevIndex < StaticWorld.creatureTemplates.Length &&
+                                dividedCrit[0] == StaticWorld.creatureTemplates[prevIndex].type.value)
+                            {
+                                critArray[i] = prevIndex;
+                            }
+                            else
+                            {
+                                critArray[i] = new CreatureTemplate.Type(dividedCrit[0]).index;
+                            }
+                        }
+                    }
+                    string[] spawnDataSplit = baseSplits[2].Split(';');
+                    if (spawnDataSplit.Length != creatureSplits.Length)
+                        spawnDataSplit = new string[creatureSplits.Length];
+                    for (int i = 0; i < spawnDataSplit.Length; ++i)
+                    {
+                        if (spawnDataSplit[i] != null && (spawnDataSplit[i].Length < 3 ||
+                            !spawnDataSplit[i].StartsWith("{") || !spawnDataSplit[i].EndsWith("}")))
+                            spawnDataSplit[i] = null;
+                    }
+                    lineagesDict.Add(int.Parse(baseSplits[0]), new KeyValuePair<int[], string[]>(critArray, spawnDataSplit));
+
+                    line = sr.ReadLine();
+                }
+                sr.Close();
+            }
+            return lineagesDict;
+        }
+
+        private List<World.SimpleSpawner> SavedSpawnersToList(WorldLoader loader)
+        {
+            List<World.SimpleSpawner> savedSpawners = new List<World.SimpleSpawner>();
+            string filePath = Custom.RootFolderDirectory() + "/ApexUpYourSpawns/Savestates/";
+            SlugcatStats.Name player = null;
+            int saveSlot = Math.Abs(loader.game.rainWorld.options.saveSlot);
+            bool expedition = loader.game.rainWorld.ExpeditionMode;
+            if (loader.game.IsStorySession)
+                player = loader.game.GetStorySession.saveStateNumber;
+            filePath += (expedition ? "e" : "") + saveSlot + player.ToString() + loader.worldName + ".txt";
+
+            if (File.Exists(filePath))
+            {
+                WorldCoordinate offScreenDen = FindOffScreenDen(loader);
+                StreamReader sr = new StreamReader(filePath);
+                string line = sr.ReadLine();
+                while (line != null)
+                {
+                    if (!line.StartsWith("===="))
+                    {
+                        line = sr.ReadLine();
+                        continue;
+                    }
+                    else
+                    {
+                        line = sr.ReadLine();
+                        break;
+                    }
+                }
+                while (line != null)
+                {
+
+                    World.SimpleSpawner spawner = new World.SimpleSpawner(0, 0, offScreenDen, CreatureTemplate.Type.StandardGroundCreature,
+                        null, 0);
+                    string[] splitLine = line.Split('|');
+                    string[] splitID = splitLine[0].Split(':');
+                    spawner.region = int.Parse(splitID[0]);
+                    spawner.inRegionSpawnerIndex = int.Parse(splitID[1]);
+                    string[] spawnData = splitLine[1].Split(',');
+
+                    if (!spawnData[0].Contains(":"))
+                    {
+                        int index = int.Parse(spawnData[0]);
+                        spawner.creatureType = StaticWorld.creatureTemplates[index].type;
+                    }
+                    else
+                    {
+                        string[] splitType = spawnData[0].Split(':');
+                        int index = int.Parse(splitType[1]);
+                        if (index > -1 && index < StaticWorld.creatureTemplates.Length &&
+                            StaticWorld.creatureTemplates[index].type.value == splitType[0])
+                            spawner.creatureType = StaticWorld.creatureTemplates[index].type;
+                        else
+                            spawner.creatureType = new CreatureTemplate.Type(splitType[0]);
+                    }
+
+                    spawner.amount = int.Parse(spawnData[1]);
+                    if (spawnData[2].Length > 2 && spawnData[2].StartsWith("{") && spawnData[2].EndsWith("}"))
+                        spawner.spawnDataString = spawnData[2];
+                    savedSpawners.Add(spawner);
+
+                    line = sr.ReadLine();
+                }
+                sr.Close();
+            }
+            return savedSpawners;
+        }
+
+        #endregion
+
         #region HunterLongLegs functions
 
-        private void AbstractRoom_RealizeRoom(ILContext il)
+        private void ReplaceSlugpupForHLLRoom(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            c.GotoNext(MoveType.Before,
+            c.GotoNext(MoveType.After,
                 x => x.MatchLdloc(2),
                 x => x.MatchLdfld<AbstractCreature>("state"),
                 x => x.MatchIsinst<PlayerNPCState>(),
                 x => x.MatchLdcI4(1),
                 x => x.MatchStfld<PlayerState>("foodInStomach")
                 );
-            c.RemoveRange(5);
+            c.Emit(OpCodes.Ldarg_0);
             c.Emit(OpCodes.Ldloc, 2);
-            c.EmitDelegate<Action<AbstractCreature>>((abstractCreature) =>
+            c.EmitDelegate<Action<AbstractRoom, AbstractCreature>>((absRoom, pupAbstract) =>
             {
-                if (!(abstractCreature.state is null) && abstractCreature.state is PlayerNPCState npcState)
+                UnityEngine.Debug.Log("Created Pup from AbstractRoom.RealizeRoom!");
+                if (ApexUpYourSpawnsMod.hunterLongLegsChance > UnityEngine.Random.value)
                 {
-                    npcState.foodInStomach = 1;
+                    AbstractCreature hllReplacement = new AbstractCreature(pupAbstract.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.HunterDaddy),
+                            null, pupAbstract.pos, pupAbstract.ID);
+                    absRoom.RemoveEntity(pupAbstract);
+                    absRoom.AddEntity(hllReplacement);
                 }
             });
         }
         
-        private void PreventPupCrash(ILContext il)
+        private void ReplaceSlugpupForHLL(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            c.GotoNext(MoveType.Before,
+            c.GotoNext(MoveType.After,
                 x => x.MatchLdloc(13),
                 x => x.MatchLdfld<AbstractCreature>("state"),
                 x => x.MatchIsinst<PlayerNPCState>(),
                 x => x.MatchLdcI4(1),
                 x => x.MatchStfld<PlayerState>("foodInStomach")
                 );
-
-            c.Index++;
-            c.RemoveRange(4);
-            
-            c.EmitDelegate<Action<AbstractCreature>>((abstractCreature) => 
+            c.Emit(OpCodes.Ldloc, 6);
+            c.Emit(OpCodes.Ldloc, 13);
+            c.EmitDelegate<Action<AbstractRoom, AbstractCreature>>((absRoom, pupAbstract) =>
             {
-                if (!(abstractCreature.state is null) && abstractCreature.state is PlayerNPCState npcState)
+                UnityEngine.Debug.Log("Created Pup from World.SpawnNPCs!");
+                if (ApexUpYourSpawnsMod.hunterLongLegsChance > UnityEngine.Random.value)
                 {
-                    npcState.foodInStomach = 1;
+                    AbstractCreature hllReplacement = new AbstractCreature(pupAbstract.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.HunterDaddy),
+                            null, pupAbstract.pos, pupAbstract.ID);
+                    absRoom.RemoveEntity(pupAbstract);
+                    absRoom.AddEntity(hllReplacement);
+                    if (absRoom.realizedRoom != null)
+                        hllReplacement.RealizeInRoom();
+                    else
+                        absRoom.RealizeRoom(pupAbstract.world, pupAbstract.world.game);
                 }
-            });//*/
+            });
         }
 
         private void GiveHunterDaddyPupColor(On.DaddyLongLegs.orig_ctor orig, DaddyLongLegs self, AbstractCreature abstractCreature, World world)
@@ -1351,100 +1790,6 @@ namespace ApexUpYourSpawns
             else orig(self);
         }
         #endregion
-
-        #region ScavKing Behaviour
-
-        private void ScavKingActCanGoIntoPipes(MonoMod.Cil.ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdarg(0),
-                x => x.MatchLdfld<Creature>("shortcutDelay"),
-                x => x.MatchLdcI4(1));
-            c.Index += 6;
-            c.Emit(OpCodes.Pop);
-            c.Emit(OpCodes.Ldc_I4_0);
-        }
-
-        private void ScavKingCanTravelLikeElites(On.StaticWorld.orig_InitStaticWorld orig)
-        {
-            orig();
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).doesNotUseDens = false;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).forbidStandardShortcutEntry = false;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).usesCreatureHoles = false;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).usesRegionTransportation = false;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).roamBetweenRoomsChance = -1f;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).usesNPCTransportation =
-                StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite).usesNPCTransportation;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).shortcutAversion =
-                StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite).shortcutAversion;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).mappedNodeTypes =
-                StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite).mappedNodeTypes;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).pathingPreferencesConnections =
-                StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite).pathingPreferencesConnections;
-            StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing).NPCTravelAversion =
-                StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite).NPCTravelAversion;
-
-        }
-
-        private void ScavKingAbsAICanGoIntoPipes(On.ScavengerAbstractAI.orig_AbstractBehavior orig, ScavengerAbstractAI self, int time)
-        {
-            if(self is null || self.parent is null || self.parent.creatureTemplate is null)
-            {
-                orig(self, time);
-                return;
-            }
-
-            if (self.parent.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing && 
-                !(self.parent.realizedCreature is null) && !(self.parent.realizedCreature.room is null) &&
-                self.parent.realizedCreature.room.abstractRoom.name != "LC_FINAL")
-            {
-                self.parent.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite;
-                orig(self, time);
-                self.parent.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing;
-            }
-            else
-                orig(self, time);
-        }
-
-        private void TrickKingIntoSquad1(On.ScavengerAI.orig_DecideBehavior orig, ScavengerAI self)
-        {
-            if (self.scavenger.King && !(self.scavenger.room is null) && self.scavenger.room.abstractRoom.name != "LC_FINAL")
-            {
-                try
-                {
-                    self.scavenger.abstractCreature.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite;
-                    orig(self);
-                }
-                finally
-                {
-                    self.scavenger.abstractCreature.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing;
-                }
-            }
-            else
-                orig(self);
-        }
-
-        private void TrickKingIntoSquad(On.ScavengerAI.orig_Update orig, ScavengerAI self)
-        {
-            if (self.scavenger.King && !(self.scavenger.room is null) && self.scavenger.room.abstractRoom.name != "LC_FINAL")
-            {
-                try
-                {
-                    self.scavenger.abstractCreature.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite;
-                    orig(self);
-                }
-                finally
-                {
-                    self.scavenger.abstractCreature.creatureTemplate.type = MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing;
-                }
-
-            }
-            else
-                orig(self);
-        }
-
-        #endregion
         
         #region Non-spawner creature replacements
 
@@ -1513,7 +1858,7 @@ namespace ApexUpYourSpawns
 
         private void AddScavKings(On.Room.orig_ReadyForAI orig, Room self)
         {
-            if (kingScavengerChance > 0 && self.abstractRoom.name != "LC_FINAL")
+            if (kingScavengerChance > 0 && self.abstractRoom.name != "LC_FINAL" && activeMods.Contains("ShinyKelp.ScavengerTweaks"))
             {
                 List<AbstractCreature> elitesList = new List<AbstractCreature>();
                 List<AbstractCreature> removedElitesList = new List<AbstractCreature>();
@@ -1553,36 +1898,6 @@ namespace ApexUpYourSpawns
             }
             else
                 orig(self);
-        }
-        private void KingCtor(On.Scavenger.orig_ctor orig, Scavenger self, AbstractCreature abstractCreature, World world)
-        {
-            orig(self, abstractCreature, world);
-
-            if (self.King && abstractCreature.Room.name != "LC_FINAL")
-            {
-                self.kingWaiting = false;
-                UnityEngine.Random.InitState(self.abstractCreature.ID.RandomSeed);
-                self.armorPieces = UnityEngine.Random.Range(1, 4);
-            }
-        }
-
-        private void ReplaceSlugpupForHLL(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
-        {
-            if (!(world is null) && !(world.game is null) && !world.game.IsArenaSession && creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC)
-            {
-                AbstractRoom aRoom = world.abstractRooms[pos.room - world.firstRoomIndex];
-                bool hasPlayer = false;
-                foreach(AbstractCreature creature in aRoom.creatures)
-                {
-                    if (creature.creatureTemplate.type == CreatureTemplate.Type.Slugcat)
-                        hasPlayer = true;
-                }
-                if (!hasPlayer && UnityEngine.Random.value < hunterLongLegsChance)
-                {
-                    creatureTemplate = StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.HunterDaddy);
-                }
-            }
-            orig(self, world, creatureTemplate, realizedCreature, pos, ID);
         }
 
         #endregion
@@ -1628,21 +1943,23 @@ namespace ApexUpYourSpawns
         #region World Generation Functions
         private void GenerateCustomPopulation(On.WorldLoader.orig_GeneratePopulation orig, WorldLoader worldLoader, bool fresh)
         {
-            if (forceFreshSpawns && !fresh)
-            {
-                fresh = true;
-                foreach (AbstractRoom abstractRoom in worldLoader.abstractRooms)
-                {
-                    if (!abstractRoom.shelter)
-                    {
-                        abstractRoom.creatures.Clear();
-                        abstractRoom.entitiesInDens.Clear();
-                    }
-                }
-            }
 
             try
             {
+                triedEchoLevi = false;
+                hasBlackLizards = false;
+                if (forceFreshSpawns && !fresh)
+                {
+                    fresh = true;
+                    foreach (AbstractRoom abstractRoom in worldLoader.abstractRooms)
+                    {
+                        if (!abstractRoom.shelter)
+                        {
+                            abstractRoom.creatures.Clear();
+                            abstractRoom.entitiesInDens.Clear();
+                        }
+                    }
+                }
                 if (fresh)
                 {
                     if (!hasUpdatedRefs)
@@ -1663,9 +1980,14 @@ namespace ApexUpYourSpawns
 
                     EnsureNormalScavengers(worldLoader);
 
-                    UnityEngine.Debug.Log("\nFinished setting up spawns.");
-                    UnityEngine.Debug.Log("FINAL SPAWN COUNT: " + spawnerCount + "\n");
                     wLoader = null;
+                    AddSpawnersToBuffer(worldLoader);
+                }
+                else
+                {
+                    MoleSalamanderCheck(worldLoader);
+                    bool needsFresh = LoadSaveState(worldLoader);
+                    fresh = needsFresh;
                 }
             }
             catch(Exception ex)
@@ -1676,40 +1998,6 @@ namespace ApexUpYourSpawns
 
             orig(worldLoader, fresh);
 
-        }
-        
-        //Region must have at least 2 normal scavengers; or scavengers won't show up at all in tolls.
-        private void EnsureNormalScavengers(WorldLoader loader)
-        {
-            int scavs = 0, totalScavs = 0;
-            World.SimpleSpawner scavSpawner = null;
-            foreach (World.CreatureSpawner spawner in loader.spawners)
-            {
-                if (spawner is World.SimpleSpawner sspawner && (sspawner.spawnDataString == "" || sspawner.spawnDataString is null) && !sspawner.nightCreature
-                    && StaticWorld.GetCreatureTemplate(sspawner.creatureType).TopAncestor().type == CreatureTemplate.Type.Scavenger)
-                    {
-                        if (sspawner.creatureType == CreatureTemplate.Type.Scavenger)
-                        {
-                            scavs += sspawner.amount;
-                            totalScavs += sspawner.amount;
-                            scavSpawner = sspawner;
-                        }
-                        else
-                        {
-                            totalScavs += sspawner.amount;
-                            if (scavSpawner is null)
-                                scavSpawner = sspawner;
-                        }
-                    }
-            }
-            if (scavs < 2 && totalScavs > 0)
-            {
-                World.SimpleSpawner invasionSpawner = CopySpawner(scavSpawner);
-                invasionSpawner.creatureType = CreatureTemplate.Type.Scavenger;
-                invasionSpawner.amount = (2 - scavs);
-                invasionSpawner.inRegionSpawnerIndex = loader.spawners.Count;
-                loader.spawners.Add(invasionSpawner);
-            }
         }
 
         private void RefreshModCreatures()
@@ -1728,7 +2016,7 @@ namespace ApexUpYourSpawns
                             //UnityEngine.Debug.Log(StaticWorld.GetCreatureTemplate(modRep.type.ToString()));
                             modRep.type = new CreatureTemplate.Type(modRep.type.ToString());
                             if (logSpawners)
-                                UnityEngine.Debug.Log("Updated Mod Replacement creature " + modRep.type + " to index " + modRep.type.index);
+                                UnityEngine.Debug.Log("Updated Mod Replacement creature " + modRep.type + " to Index " + modRep.type.index);
                         }
                     }
                 }
@@ -1816,6 +2104,14 @@ namespace ApexUpYourSpawns
                 }
                 if (spawners[i] is World.SimpleSpawner simpleSpawner)
                 {   
+                    if(!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.EndsWith("<AUYS_SKIP>"))
+                    {
+                        simpleSpawner.spawnDataString = simpleSpawner.spawnDataString.Remove(simpleSpawner.spawnDataString.Length - 11);
+                        if (simpleSpawner.spawnDataString.Length <= 1)
+                            simpleSpawner.spawnDataString = null;
+                        continue;
+                    }
+
                     if (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle"))
                         HandlePrecycleSpawns(simpleSpawner, spawners);
 
@@ -2009,6 +2305,13 @@ namespace ApexUpYourSpawns
                         goto ModCreaturesSpawner;
                     }
 
+                    if(simpleSpawner.creatureType == CreatureTemplate.Type.PoleMimic)
+                    {
+                        if(ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.TentaclePlant, monsterKelpChance))
+                            IncreaseCreatureSpawner(simpleSpawner, options.kelpExtras.Value, true);
+                        goto ModCreaturesSpawner;
+                    }
+
                     if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.Yeek)
                     {
                         IncreaseCreatureSpawner(simpleSpawner, (region == "OE" && balancedSpawns) ? extraYeeks - 10 : extraYeeks, true);
@@ -2025,6 +2328,8 @@ namespace ApexUpYourSpawns
                         simpleSpawner.spawnDataString = "{Ignorecycle}";
                         goto ModCreaturesSpawner;
                     }
+
+
 
 
                 ModCreaturesSpawner:
@@ -2090,12 +2395,20 @@ namespace ApexUpYourSpawns
                         goto ModCreaturesLineage;
                     }
 
+                    if(IsCreatureInLineage(lineage, CreatureTemplate.Type.PoleMimic))
+                    {
+                        ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.PoleMimic, CreatureTemplate.Type.TentaclePlant, monsterKelpChance);
+                        goto ModCreaturesLineage;
+                    }
+
                 ModCreaturesLineage:
                     CheckModCreatures(lineage, spawners);
+                    AfterModAdjustments(lineage, spawners);
                 }
             }
         }
 
+        private bool triedEchoLevi = false, hasBlackLizards = false;
         private void AfterModAdjustments(World.SimpleSpawner spawner, List<World.CreatureSpawner> spawners)
         {
             if (activeMods.Contains("Outspector") && spawner.creatureType == new CreatureTemplate.Type("Outspector"))
@@ -2120,109 +2433,133 @@ namespace ApexUpYourSpawns
 
             if(activeMods.Contains("drainmites") && spawner.creatureType == new CreatureTemplate.Type("DrainMite"))
             {
-                if (region == "CC" || region == "SI" || region == "LF")
+                if(spawner.spawnDataString is null || spawner.spawnDataString == "" || !DrainMiteStringValidFormat(spawner.spawnDataString))
                 {
-                    if(spawner.spawnDataString is null || spawner.spawnDataString == "")
+                    IncreaseCreatureSpawner(spawner, options.drainMiteExtras.Value, false);
+                    spawner.amount /= 4;
+                    World.SimpleSpawner spawner2 = CopySpawner(spawner);
+                    World.SimpleSpawner spawner3 = CopySpawner(spawner);
+                    World.SimpleSpawner spawner4 = CopySpawner(spawner);
+                    spawner2.inRegionSpawnerIndex += 1;
+                    spawner3.inRegionSpawnerIndex += 2;
+                    spawner4.inRegionSpawnerIndex += 3;
+                    spawners.Add(spawner2);
+                    spawners.Add(spawner3);
+                    spawners.Add(spawner4);
+
+                    float minSize = 0.5f, maxSize = 1.5f;
+
+                    if (region == "CC" || region == "SI" || region == "LF")
                     {
-                        spawner.spawnDataString = "SizeMult";
-                        spawner.amount /= 4;
-                        spawner.amount++;
-                        World.SimpleSpawner spawner2 = CopySpawner(spawner);
-                        World.SimpleSpawner spawner3 = CopySpawner(spawner);
-                        World.SimpleSpawner spawner4 = CopySpawner(spawner);
-                        float sizeMult = UnityEngine.Random.Range(0.5f, 1.0f);
-                        spawner.spawnDataString = "{SizeMult:" + sizeMult + "}";
-                        spawner2.inRegionSpawnerIndex += 1;
-                        spawner3.inRegionSpawnerIndex += 2;
-                        spawner4.inRegionSpawnerIndex += 3;
-                        spawners.Add(spawner2);
-                        spawners.Add(spawner3);
-                        spawners.Add(spawner4);
+                        minSize = 0.5f;
+                        maxSize = 1.0f;
                     }
-                    else if(spawner.spawnDataString == "SizeMult")
+                    else if(region == "SB" || region == "VS")
                     {
-                        float sizeMult = UnityEngine.Random.Range(0.5f, 1.0f);
-                        spawner.spawnDataString = "{SizeMult:" + sizeMult + "}";
+                        minSize = 1.0f;
+                        maxSize = 1.5f;
                     }
+
+                    float sizeMult = UnityEngine.Random.Range(minSize, maxSize);
+                    spawner.spawnDataString = "{BodySize:" + sizeMult + "}";
+                    sizeMult = UnityEngine.Random.Range(minSize, maxSize);
+                    spawner2.spawnDataString = "{BodySize:" + sizeMult + "}<AUYS_SKIP>";
+                    sizeMult = UnityEngine.Random.Range(minSize, maxSize);
+                    spawner3.spawnDataString = "{BodySize:" + sizeMult + "}<AUYS_SKIP>";
+                    sizeMult = UnityEngine.Random.Range(minSize, maxSize);
+                    spawner4.spawnDataString = "{BodySize:" + sizeMult + "}<AUYS_SKIP>";
                 }
-                else if (region == "SB" || region == "VS")
+            }
+
+            if(activeMods.Contains("ShinyKelp.AlbinoKings") && (spawner.creatureType == CreatureTemplate.Type.Vulture ||
+                spawner.creatureType == CreatureTemplate.Type.KingVulture || spawner.creatureType ==
+                MoreSlugcatsEnums.CreatureTemplateType.MirosVulture))
+            {
+                if(spawner.spawnDataString is null || !spawner.spawnDataString.Contains("AlternateForm"))
                 {
-                    if (spawner.spawnDataString is null || spawner.spawnDataString == "")
+                    int currentCount = spawners.Count;
+                    CreatureTemplate.Type prevType = spawner.creatureType;
+                    bool full =
+                        ReplaceMultiSpawner(spawner, spawners, CreatureTemplate.Type.StandardGroundCreature, options.albinoVultureChance.Value * 0.01f);
+                    if (full)
                     {
-                        spawner.spawnDataString = "SizeMult";
-                        spawner.amount /= 4;
-                        spawner.amount++;
-                        World.SimpleSpawner spawner2 = CopySpawner(spawner);
-                        World.SimpleSpawner spawner3 = CopySpawner(spawner);
-                        World.SimpleSpawner spawner4 = CopySpawner(spawner);
-                        float sizeMult = UnityEngine.Random.Range(1.0f, 1.5f);
-                        spawner.spawnDataString = "{SizeMult:" + sizeMult + "}";
-                        spawner2.inRegionSpawnerIndex += 1;
-                        spawner3.inRegionSpawnerIndex += 2;
-                        spawner4.inRegionSpawnerIndex += 3;
-                        spawners.Add(spawner2);
-                        spawners.Add(spawner3);
-                        spawners.Add(spawner4);
+                        spawner.spawnDataString = "{AlternateForm}";
+                        spawner.creatureType = prevType;
                     }
-                    else if (spawner.spawnDataString == "SizeMult")
+                    else if(currentCount < spawners.Count)
                     {
-                        float sizeMult = UnityEngine.Random.Range(1.0f, 1.5f);
-                        spawner.spawnDataString = "{SizeMult:" + sizeMult + "}";
+                        World.SimpleSpawner newSpawner = spawners[spawners.Count - 1] as World.SimpleSpawner;
+                        newSpawner.spawnDataString = "{AlternateForm}<AUYS_SKIP>";
+                        newSpawner.creatureType = prevType;
                     }
                 }
             }
+            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            {
+                if (!triedEchoLevi && spawner.creatureType.index > -1 && spawner.creatureType.index < StaticWorld.creatureTemplates.Length && (
+                    StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == CreatureTemplate.Type.Vulture ||
+                    StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == MoreSlugcatsEnums.CreatureTemplateType.MirosVulture))
+                {
+                    triedEchoLevi = true;
+                    if(UnityEngine.Random.value < options.vultureEchoLeviChance.Value * 0.01f)
+                    {
+                        World.SimpleSpawner echoSpawner = CopySpawner(spawner);
+                        echoSpawner.amount = 1;
+                        IncreaseCreatureSpawner(spawner, options.echoLeviExtras.Value, true);
+                        echoSpawner.inRegionSpawnerIndex = spawners.Count;
+                        echoSpawner.spawnDataString = "<AUYS_SKIP>";
+                        echoSpawner.nightCreature = false;
+                        echoSpawner.creatureType = new CreatureTemplate.Type("FlyingBigEel");
+                        spawners.Add(echoSpawner);
+                    }
+                }
+                
+            }
         }
 
-        private void LogSpawner(World.CreatureSpawner spawner, int arrayIndex = -1)
+        private void AfterModAdjustments(World.Lineage lineage, List<World.CreatureSpawner> spawners)
         {
-            if(spawner is null)
+            if(activeMods.Contains("drainmites") && IsCreatureInLineage(lineage, new CreatureTemplate.Type("DrainMite")))
             {
-                UnityEngine.Debug.Log("Received null spawner with index: " + arrayIndex);
-            }
-            else if (spawner is World.SimpleSpawner simpleSpawner)
-            {
-                UnityEngine.Debug.Log("Simple Spawner data:");
-                UnityEngine.Debug.Log("ID: " + simpleSpawner.SpawnerID);
-                UnityEngine.Debug.Log("Creature: " + simpleSpawner.creatureType);
-                UnityEngine.Debug.Log("Amount: " + simpleSpawner.amount);
-                UnityEngine.Debug.Log("Subregion: " + subregion);
-                UnityEngine.Debug.Log("In region index: " + simpleSpawner.inRegionSpawnerIndex);
-                if (arrayIndex != -1)
-                    UnityEngine.Debug.Log("Spawner array index: " + arrayIndex);
-                UnityEngine.Debug.Log("Den: " + simpleSpawner.den.ToString());
-                UnityEngine.Debug.Log("Den room: " + simpleSpawner.den.ResolveRoomName());
-                UnityEngine.Debug.Log("Spawn data string: " + simpleSpawner.spawnDataString);
-                UnityEngine.Debug.Log("Night creature: " + simpleSpawner.nightCreature.ToString());
-            }
-            else if (spawner is World.Lineage lineage)
-            {
-                string auxStr;
-                UnityEngine.Debug.Log("Lineage data:");// + lineage.ToString());
-                UnityEngine.Debug.Log("ID: " + lineage.SpawnerID);
-                for (int j = 0; j < lineage.creatureTypes.Length; ++j)
+                int miteIndex = new CreatureTemplate.Type("DrainMite").index;
+                for(int i = 0; i < lineage.creatureTypes.Length; ++i)
                 {
-                    if (lineage.creatureTypes[j] > -1)
-                        auxStr = StaticWorld.creatureTemplates[lineage.creatureTypes[j]].type.ToString();
-                    else auxStr = "Null";
-                    UnityEngine.Debug.Log("Creature " + (j + 1) + " : " + lineage.creatureTypes[j] + " (" +
-                        auxStr + ")");
+                    if (lineage.creatureTypes[i] == miteIndex)
+                    {
+                        lineage.creatureTypes[i] = -1;
+                        lineage.spawnData[i] = "";
+                    }
                 }
-                UnityEngine.Debug.Log("Subregion: " + subregion);
-                UnityEngine.Debug.Log("In region index: " + lineage.inRegionSpawnerIndex);
-                if (arrayIndex != -1)
-                    UnityEngine.Debug.Log("Spawner array index: " + arrayIndex);
-                UnityEngine.Debug.Log("Den: " + lineage.den.ToString());
-                UnityEngine.Debug.Log("Den room: " + lineage.den.ResolveRoomName());
-                UnityEngine.Debug.Log("Spawn data strings: ");
-                for (int j = 0; j < lineage.spawnData.Length; ++j)
+                if (options.fillLineages.Value)
+                    FillLineage(lineage);
+            }
+            if (activeMods.Contains("ShinyKelp.AlbinoKings") && (IsCreatureInLineage(lineage, CreatureTemplate.Type.Vulture)
+                || IsCreatureInLineage(lineage, CreatureTemplate.Type.Vulture)
+                || IsCreatureInLineage(lineage, MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.MirosVulture)))
+            {
+                for(int i = 0; i < lineage.creatureTypes.Length; ++i)
                 {
-                    UnityEngine.Debug.Log("Creature " + j + " : " + lineage.spawnData[j]);
+                    int index = lineage.creatureTypes[i];
+                    if(index > -1 && index < StaticWorld.creatureTemplates.Length)
+                    {
+                        if (StaticWorld.creatureTemplates[index].type ==
+                            CreatureTemplate.Type.Vulture ||
+                            IsCreatureInLineage(lineage, CreatureTemplate.Type.KingVulture) ||
+                            StaticWorld.creatureTemplates[index].type ==
+                            MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.MirosVulture)
+                        {
+                            if (lineage.spawnData[i] is null || !lineage.spawnData[i].Contains("AlternateForm"))
+                            {
+                                if (UnityEngine.Random.value < options.albinoVultureChance.Value / 100f)
+                                    lineage.spawnData[i] = "{AlternateForm}";
+                            }
+                        }
+                    }
                 }
             }
-            UnityEngine.Debug.Log("\n");
-
         }
 
+        
         #endregion
 
         #region Vanilla spawner functions
@@ -2258,6 +2595,7 @@ namespace ApexUpYourSpawns
                 HandleAxolotlSpawner(simpleSpawner, spawners);
                 return;
             }
+
 
             //Info check before changes
             float localRedLizardChance = redLizardChance;
@@ -2300,7 +2638,10 @@ namespace ApexUpYourSpawns
                     IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "UW")? extraCyans/2 : extraCyans, true);
             }
             else if (simpleSpawner.creatureType == CreatureTemplate.Type.BlackLizard)
-                IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && subregion == "Filtration System")? extraBlacks - 10 : extraBlacks, true);
+            {
+                IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && subregion == "Filtration System") ? extraBlacks - 10 : extraBlacks, true);
+                hasBlackLizards = true;
+            }
             else if (simpleSpawner.creatureType == CreatureTemplate.Type.WhiteLizard)
                 IncreaseCreatureSpawner(simpleSpawner, extraWhites, true);
             else if (simpleSpawner.creatureType == CreatureTemplate.Type.YellowLizard)
@@ -2429,7 +2770,7 @@ namespace ApexUpYourSpawns
                     slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Rivulet ||
                     slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Saint))
                     localKingVultureChance *= 2;
-                ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.KingVulture, (region == "SI" && balancedSpawns)? localKingVultureChance : kingVultureChance);
+                ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.KingVulture, localKingVultureChance);
             }
 
             if (simpleSpawner.creatureType == CreatureTemplate.Type.KingVulture && region == "UW")
@@ -2438,7 +2779,7 @@ namespace ApexUpYourSpawns
             float localMirosVultureChance = mirosVultureChance;
             if ((region == "OE" || region == "SI" || slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Saint) && localMirosVultureChance < 1)
                 localMirosVultureChance /= 2;
-            else if (region == "SL" || region == "LM" || region == "LC" || region == "MS" ||
+            else if (region == "LM" || region == "LC" || region == "MS" || region == "SD" ||
                 (region == "GW" && (slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Artificer ||
                 slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Spear)))
                 localMirosVultureChance *= 2;
@@ -2462,11 +2803,21 @@ namespace ApexUpYourSpawns
                         (slugcatName.ToString() == "Artificer" || slugcatName.ToString() == "Spear")? brotherLongLegsChance*2:brotherLongLegsChance);
                 else
                 {
-                    float localBrotherChance = simpleSpawner.creatureType == CreatureTemplate.Type.JetFish ? aquapedeChance : brotherLongLegsChance;
-                    if (balancedSpawns && (subregion == "Sump Tunnel" || subregion == "The Gutter" || region == "LM" ||
-                        (!(simpleSpawner.spawnDataString is null) && simpleSpawner.spawnDataString.Contains("PreCycle"))))
-                        localBrotherChance *= 2;
-                    ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, localBrotherChance);
+                    float localBrotherChance = brotherLongLegsChance;
+                    if (balancedSpawns)
+                    {
+                        if (subregion == "Sump Tunnel" || subregion == "The Gutter")
+                            localBrotherChance *= 2;
+                        if (simpleSpawner.creatureType == CreatureTemplate.Type.JetFish)
+                            localBrotherChance *= 1.5f;
+                        if (simpleSpawner.spawnDataString != null && simpleSpawner.spawnDataString.Contains("PreCycle"))
+                            localBrotherChance *= 2;
+                    }
+                    if(activeMods.Contains("Croken.Mimicstarfish") && options.bllMimicstarfishChance.Value > 0 &&
+                        (region == "SL" || region == "LM" || region == "MS" || (region == "DS" && UnityEngine.Random.value > 0.5f)))
+                        ReplaceMultiSpawner(simpleSpawner, spawners, new CreatureTemplate.Type("Mimicstar"), localBrotherChance);
+                    else
+                        ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BrotherLongLegs, localBrotherChance);
                 }
             }
 
@@ -3303,10 +3654,10 @@ namespace ApexUpYourSpawns
             /*
              * Again, no instances of night or precycle lineages in game.
             if ((lineage.nightCreature || (!(lineage.spawnData[index] is null) && lineage.spawnData[index].Contains("Night"))) &&
-                localAdditions.TryGetValue("Night", out addition))
+                localAdditionsRed.TryGetValue("Night", out addition))
                 totalAdd += addition;
             if (!(lineage.spawnData[index] is null) && lineage.spawnData[index].Contains("PreCycle") &&
-                localAdditions.TryGetValue("PreCycle", out addition))
+                localAdditionsRed.TryGetValue("PreCycle", out addition))
                 totalAdd += addition;
             */
 
@@ -3322,12 +3673,167 @@ namespace ApexUpYourSpawns
 
             return totalAdd;
         }
+
+        #endregion
+
+        #region Other functions
+
+        private void LogSpawner(World.CreatureSpawner spawner, int arrayIndex = -1)
+        {
+            if (spawner is null)
+            {
+                UnityEngine.Debug.Log("Received null spawner with index: " + arrayIndex);
+            }
+            else if (spawner is World.SimpleSpawner simpleSpawner)
+            {
+                UnityEngine.Debug.Log("Simple Spawner data:");
+                UnityEngine.Debug.Log("ID: " + simpleSpawner.SpawnerID);
+                UnityEngine.Debug.Log("Creature: " + simpleSpawner.creatureType);
+                UnityEngine.Debug.Log("Amount: " + simpleSpawner.amount);
+                UnityEngine.Debug.Log("Subregion: " + subregion);
+                UnityEngine.Debug.Log("In region index: " + simpleSpawner.inRegionSpawnerIndex);
+                if (arrayIndex != -1)
+                    UnityEngine.Debug.Log("Spawner array index: " + arrayIndex);
+                UnityEngine.Debug.Log("Den: " + simpleSpawner.den.ToString());
+                UnityEngine.Debug.Log("Den room: " + simpleSpawner.den.ResolveRoomName());
+                UnityEngine.Debug.Log("Spawn data string: " + simpleSpawner.spawnDataString);
+                UnityEngine.Debug.Log("Night creature: " + simpleSpawner.nightCreature.ToString());
+            }
+            else if (spawner is World.Lineage lineage)
+            {
+                string auxStr;
+                UnityEngine.Debug.Log("Lineage data:");// + lineage.ToString());
+                UnityEngine.Debug.Log("ID: " + lineage.SpawnerID);
+                for (int j = 0; j < lineage.creatureTypes.Length; ++j)
+                {
+                    if (lineage.creatureTypes[j] > -1)
+                        auxStr = StaticWorld.creatureTemplates[lineage.creatureTypes[j]].type.ToString();
+                    else auxStr = "Null";
+                    UnityEngine.Debug.Log("Creature " + (j + 1) + " : " + lineage.creatureTypes[j] + " (" +
+                        auxStr + ")");
+                }
+                UnityEngine.Debug.Log("Subregion: " + subregion);
+                UnityEngine.Debug.Log("In region index: " + lineage.inRegionSpawnerIndex);
+                if (arrayIndex != -1)
+                    UnityEngine.Debug.Log("Spawner array index: " + arrayIndex);
+                UnityEngine.Debug.Log("Den: " + lineage.den.ToString());
+                UnityEngine.Debug.Log("Den room: " + lineage.den.ResolveRoomName());
+                UnityEngine.Debug.Log("Spawn data strings: ");
+                for (int j = 0; j < lineage.spawnData.Length; ++j)
+                {
+                    UnityEngine.Debug.Log("Creature " + j + " : " + lineage.spawnData[j]);
+                }
+            }
+            UnityEngine.Debug.Log("\n");
+
+        }
+
+        private WorldCoordinate FindOffScreenDen(WorldLoader loader)
+        {
+            foreach(World.CreatureSpawner spawner in loader.spawners)
+            {
+                if(spawner.den.ResolveRoomName().ToLower().Contains("offscreenden"))
+                    return spawner.den;
+            }
+
+            return new WorldCoordinate(loader.world.firstRoomIndex + loader.roomAdder.Count, -1, -1, 0);
+        }
+
+        private void EnsureNormalScavengers(WorldLoader loader)
+        {
+            int scavs = 0, totalScavs = 0;
+            World.SimpleSpawner scavSpawner = null;
+            foreach (World.CreatureSpawner spawner in loader.spawners)
+            {
+                if (spawner is World.SimpleSpawner sspawner && (sspawner.spawnDataString == "" || sspawner.spawnDataString is null) && !sspawner.nightCreature
+                    && StaticWorld.GetCreatureTemplate(sspawner.creatureType).TopAncestor().type == CreatureTemplate.Type.Scavenger)
+                {
+                    if (sspawner.creatureType == CreatureTemplate.Type.Scavenger)
+                    {
+                        scavs += sspawner.amount;
+                        totalScavs += sspawner.amount;
+                        scavSpawner = sspawner;
+                    }
+                    else
+                    {
+                        totalScavs += sspawner.amount;
+                        if (scavSpawner is null)
+                            scavSpawner = sspawner;
+                    }
+                }
+            }
+            if (scavs < 2 && totalScavs > 0)
+            {
+                World.SimpleSpawner invasionSpawner = CopySpawner(scavSpawner);
+                invasionSpawner.creatureType = CreatureTemplate.Type.Scavenger;
+                invasionSpawner.amount = (2 - scavs);
+                invasionSpawner.inRegionSpawnerIndex = loader.spawners.Count;
+                loader.spawners.Add(invasionSpawner);
+            }
+        }
+
+        private bool DrainMiteStringValidFormat(string spawnDataString)
+        {
+            try
+            {
+                if (spawnDataString.Length < 3)
+                    return false;
+                string cutstr = spawnDataString.Substring(1, spawnDataString.Length - 2);
+                string[] splitstr = cutstr.Split(',');
+                if (splitstr.Length == 0)
+                    return false;
+                foreach (string field in splitstr)
+                {
+                    string[] splitField = field.Split(':');
+
+                    if (splitField.Length < 2)
+                        return false;
+                    else
+                    {
+                        if (splitField[0] != "BodySize" && splitField[0] != "SizeMult" && splitField[0] != "FoodPips")
+                            return false;
+                        if (!float.TryParse(splitField[1], NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                            return false;
+                    }
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        private void MoleSalamanderCheck(WorldLoader worldLoader)
+        {
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            {
+                foreach (World.SimpleSpawner simpleSpawner in worldLoader.spawners.OfType<World.SimpleSpawner>())
+                {
+                    if (simpleSpawner.creatureType == CreatureTemplate.Type.BlackLizard)
+                    {
+                        hasBlackLizards = true;
+                        break;
+                    }
+                }
+            }
+        }
         
+        private void ForceBlackMoleSalamander(On.LizardGraphics.orig_ctor orig, LizardGraphics self, PhysicalObject ow)
+        {
+            orig(self, ow);
+            if (hasBlackLizards && self != null && self.lizard != null && self.lizard.Template.type == new CreatureTemplate.Type("MoleSalamander"))
+            {
+                self.blackSalamander = true;
+            }
+        }
         #endregion
 
         #region Game Manager functions
         private void GameSessionOnctor(On.GameSession.orig_ctor orig, GameSession self, RainWorldGame game)
         {
+            triedEchoLevi = false;
+            hasBlackLizards = false;
             orig(self, game);
             this.game = game;
             SetOptions();

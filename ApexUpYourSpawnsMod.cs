@@ -205,7 +205,8 @@ namespace ApexUpYourSpawns
                     "lb-fgf-m4r-ik.golden-region-jam",
                     "bebra.gregtech_lizard",
                     "bry.bubbleweavers",
-                    "lb-fgf-m4r-ik.tronsx-region-code"
+                    "lb-fgf-m4r-ik.tronsx-region-code",
+                    "lb-fgf-m4r-ik.modpack"
                 }
             );
         private void OnEnable()
@@ -440,8 +441,10 @@ namespace ApexUpYourSpawns
 
             options.InitModConfigs();
 
+            bool hasMarblePack = activeMods.Contains("lb-fgf-m4r-ik.modpack");
+
             //DO NOT TRY TO USE StaticWorld.GetCreatureTemplate. IT DOES NOT WORK AT MOD LOADING TIME. USE new CreatureTemplate.Type("name")
-            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit") || hasMarblePack)
             {
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
                 localMultipliers.Add("SmallNeedleWorm", .5f);
@@ -474,7 +477,7 @@ namespace ApexUpYourSpawns
             {
                 hasAngryInspectors = true;
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature") || hasMarblePack)
             {
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
                 localMultipliers.Add("GWArtificer", 2f);
@@ -492,7 +495,7 @@ namespace ApexUpYourSpawns
                     ));
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi") || hasMarblePack)
             {
                 Dictionary<string, int> localAdditionsRed = new Dictionary<string, int>();
                 localAdditionsRed.Add("SI", 10);
@@ -520,7 +523,7 @@ namespace ApexUpYourSpawns
                         options.wingRedHorrorCentiChance, null, localAdditionsWing
                 ));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter") || hasMarblePack)
             {
                 CreatureTemplate.Type watType = new CreatureTemplate.Type("WaterSpitter");
                 ModCreatureReplacement wSpitter = new ModCreatureReplacement(
@@ -569,7 +572,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.DaddyLongLegs, expDLL);
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature") || hasMarblePack)
             {
                 Dictionary<string, int> localAdditions = new Dictionary<string, int>();
                 Dictionary<string, float> localMultipliers = new Dictionary<string, float>();
@@ -703,7 +706,7 @@ namespace ApexUpYourSpawns
                 modCreatureExtras.Add(new CreatureTemplate.Type("TangerineLizard"), new ModCreatureExtras(
                     options.tangerineLizExtras));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins") || hasMarblePack)
             {
                 Dictionary<string, float> localSSMultipliers = new Dictionary<string, float>();
                 localSSMultipliers.Add("GW", 2f);
@@ -723,7 +726,7 @@ namespace ApexUpYourSpawns
                 modCreatureExtras.Add(ssType, new ModCreatureExtras(
                     options.surfaceSwimmerExtras, true, null, localSSAdds));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature") || hasMarblePack)
             {
                 CreatureTemplate.Type bType = new CreatureTemplate.Type("BouncingBall");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Snail, new ModCreatureReplacement(
@@ -1046,7 +1049,7 @@ namespace ApexUpYourSpawns
                     new CreatureTemplate.Type("SpearSnail"), options.spearSnailChance, spearSnailDict));
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || activeMods.Contains("themast"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || hasMarblePack)
             {
                 CreatureTemplate.Type hoverType = new CreatureTemplate.Type("Hoverfly");
                 ModCreatureReplacement hoverflyRep = new ModCreatureReplacement(hoverType, options.critterHoverflyChance);
@@ -1080,7 +1083,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
                     new CreatureTemplate.Type("DrainMite"), options.drainMiteChance, true, true, drainmiteDict, null, true));
             }
-            if (activeMods.Contains("myr.moss_fields") || activeMods.Contains("ShinyKelp.Udonfly"))
+            if (activeMods.Contains("myr.moss_fields") || activeMods.Contains("ShinyKelp.Udonfly") || hasMarblePack)
             {
                 Dictionary<string, float> fatFlyDict = new Dictionary<string, float>();
                 fatFlyDict.Add("SI", 1.5f);
@@ -1140,19 +1143,19 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, critterMimicRep);
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater") || hasMarblePack)
             {
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SmallNeedleWorm, new ModCreatureReplacement(
                     new CreatureTemplate.Type("NoodleEater"), options.noodleEaterChance, true, true));
                 modCreatureExtras.Add(new CreatureTemplate.Type("NoodleEater"), new ModCreatureExtras(options.noodleEaterExtras));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug") || hasMarblePack)
             {
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
                     new CreatureTemplate.Type("ThornBug"), options.thornbugChance, true));
                 modCreatureExtras.Add(new CreatureTemplate.Type("ThornBug"), new ModCreatureExtras(options.thornbugExtras));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi") || hasMarblePack)
             {
                 Dictionary<string, float> miniLeviDict = new Dictionary<string, float>();
                 miniLeviDict.Add("SB", 1.5f);
@@ -1161,7 +1164,7 @@ namespace ApexUpYourSpawns
                     new CreatureTemplate.Type("MiniLeviathan"), options.miniLeviathanChance, true, false, miniLeviDict));
                 modCreatureExtras.Add(new CreatureTemplate.Type("MiniLeviathan"), new ModCreatureExtras(options.miniLeviathanExtras, false));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef") || hasMarblePack)
             {
                 CreatureTemplate.Type polliType = new CreatureTemplate.Type("Polliwog");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, new ModCreatureReplacement(
@@ -1170,7 +1173,7 @@ namespace ApexUpYourSpawns
 
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district") || hasMarblePack)
             {
                 CreatureTemplate.Type hunType = new CreatureTemplate.Type("HunterSeeker");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CyanLizard, new ModCreatureReplacement(
@@ -1179,7 +1182,7 @@ namespace ApexUpYourSpawns
                     hunType, options.hunterSeekerWhiteChance));
                 modCreatureExtras.Add(hunType, new ModCreatureExtras(options.hunterSeekerExtras));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard") || hasMarblePack)
             {
                 CreatureTemplate.Type silType = new CreatureTemplate.Type("SilverLizard");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, new ModCreatureReplacement(
@@ -1221,7 +1224,7 @@ namespace ApexUpYourSpawns
                 modCreatureExtras.Add(bubbleType1, new ModCreatureExtras(options.bubbleWeaverExtras));
                 modCreatureExtras.Add(bubbleType2, new ModCreatureExtras(options.bubbleWeaverExtras));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code") || hasMarblePack)
             {
                 CreatureTemplate.Type salamoleType = new CreatureTemplate.Type("MoleSalamander");
                 CreatureTemplate.Type blizzorType = new CreatureTemplate.Type("Blizzor");

@@ -523,7 +523,9 @@ namespace ApexUpYourSpawns
         {
             HashSet<string> activeMods = apexMod.activeMods;
 
-            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit"))
+            bool hasMarblePack = activeMods.Contains("lb-fgf-m4r-ik.modpack");
+
+            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit") || hasMarblePack)
             {
                 sporantulaChance = this.config.Bind<int>("SporantulaChance", 4, new ConfigAcceptableRange<int>(0, 100));
                 sporantulaExtras = this.config.Bind<int>("ExtraSporantulas", 25, new ConfigAcceptableRange<int>(0, 100));
@@ -532,12 +534,12 @@ namespace ApexUpYourSpawns
             {
                 inspectorChance = this.config.Bind<int>("InspectorChance", 8, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature") || hasMarblePack)
             {
                 scutigeraChance = this.config.Bind<int>("ScutigeraChance", 15, new ConfigAcceptableRange<int>(0, 100));
                 scutigeraExtras = this.config.Bind<int>("ExtraScutigeras", 0, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi") || hasMarblePack)
             {
                 redRedHorrorCentiChance = this.config.Bind<int>("RedRedHorrorCentiChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 wingRedHorrorCentiChance = this.config.Bind<int>("WingRedHorrorCentiChance", 4, new ConfigAcceptableRange<int>(0, 100));
@@ -552,12 +554,12 @@ namespace ApexUpYourSpawns
                 mZappyLongLegsChance = this.config.Bind<int>("ZappyLongLegsChance", 5, new ConfigAcceptableRange<int>(0, 100));
                 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter") || hasMarblePack)
             {
                 waterSpitterChance = this.config.Bind<int>("WaterSpitterChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 waterSpitterExtras = this.config.Bind<int>("ExtraWaterSpitters", 0, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature") || hasMarblePack)
             {
                 fatFireFlyChance = this.config.Bind<int>("FatFireFlyChance", 10, new ConfigAcceptableRange<int>(0, 100));
                
@@ -591,12 +593,12 @@ namespace ApexUpYourSpawns
                 tangerineLizExtras = this.config.Bind<int>("TangerineLizExtras", 5, new ConfigAcceptableRange<int>(0, 100));
                 cherryLizExtras = this.config.Bind<int>("CherryLizExtras", 5, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins") || hasMarblePack)
             {
                 surfaceSwimmerChance = this.config.Bind<int>("SurfaceSwimmerChance", 20, new ConfigAcceptableRange<int>(0, 100));
                 surfaceSwimmerExtras = this.config.Bind<int>("SurfaceSwimmerExtras", 5, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature") || hasMarblePack)
             {
                 bounceBallChance = this.config.Bind<int>("BouncingBallChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 bounceBallExtras = this.config.Bind<int>("BouncingBallExtras", 10, new ConfigAcceptableRange<int>(0, 100));
@@ -679,7 +681,7 @@ namespace ApexUpYourSpawns
             {
                 spearSnailChance = this.config.Bind<int>("SpearSnailChance", 10, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || activeMods.Contains("The Mast"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || hasMarblePack)
             {
                 critterHoverflyChance = this.config.Bind<int>("CritterHoverflyChance", 7, new ConfigAcceptableRange<int>(0, 100));
                 hoverflyExtras = this.config.Bind<int>("HoverflyExtras", 15, new ConfigAcceptableRange<int>(0, 100));
@@ -697,7 +699,7 @@ namespace ApexUpYourSpawns
             {
                 toxicSpiderChance = this.config.Bind<int>("ToxicSpiderChance", 20, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("ShinyKelp.Udonfly") || activeMods.Contains("myr.moss_fields"))
+            if (activeMods.Contains("myr.moss_fields") || activeMods.Contains("ShinyKelp.Udonfly") || hasMarblePack)
             {
                 fatNootChance = this.config.Bind<int>("FatNoodleflyChance", 10, new ConfigAcceptableRange<int>(0, 100));
             }
@@ -712,33 +714,33 @@ namespace ApexUpYourSpawns
                 bllMimicstarfishChance = this.config.Bind<int>("BLLMimicChance", 7, new ConfigAcceptableRange<int>(0, 100));
                 critterMimicstarfishChance = this.config.Bind<int>("CritterMimicChance", 3, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater") || hasMarblePack)
             {
                 noodleEaterChance = this.config.Bind<int>("NoodleEaterChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 noodleEaterExtras = this.config.Bind<int>("NoodleEaterExtras", 6, new ConfigAcceptableRange<int>(0, 20));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug") || hasMarblePack)
             {
                 thornbugChance = this.config.Bind<int>("ThornbugChance", 20, new ConfigAcceptableRange<int>(0, 100));
                 thornbugExtras = this.config.Bind<int>("ThornbugExtras", 4, new ConfigAcceptableRange<int>(0, 20));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi") || hasMarblePack)
             {
                 miniLeviathanChance = this.config.Bind<int>("MiniLeviChance", 25, new ConfigAcceptableRange<int>(0, 100));
                 miniLeviathanExtras = this.config.Bind<int>("MiniLeviExtras", 3, new ConfigAcceptableRange<int>(0, 20));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef") || hasMarblePack)
             {
                 polliwogChance = this.config.Bind<int>("PolliwogChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 polliwogExtras = this.config.Bind<int>("PolliwogExtras", 8, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district") || hasMarblePack)
             {
                 hunterSeekerCyanChance = this.config.Bind<int>("HunterSeekerCyanChance", 6, new ConfigAcceptableRange<int>(0, 100));
                 hunterSeekerWhiteChance = this.config.Bind<int>("HunterSeekerWhiteChance", 6, new ConfigAcceptableRange<int>(0, 100));
                 hunterSeekerExtras = this.config.Bind<int>("HunterSeekerExtras", 2, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard") || hasMarblePack)
             {
                 silverLizChance = this.config.Bind<int>("SilverLizardChance", 15, new ConfigAcceptableRange<int>(0, 100));
                 silverLizExtras = this.config.Bind<int>("SilverLizardExtras", 2, new ConfigAcceptableRange<int>(0, 100));
@@ -752,7 +754,7 @@ namespace ApexUpYourSpawns
                 centiElectricLizChance = this.config.Bind<int>("CentiElectricLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
                 lizardElectricLizChance = this.config.Bind<int>("LizElectricLizardChance", 5, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam") || hasMarblePack)
             {
                 vultureEchoLeviChance = this.config.Bind<int>("VultureEchoLeviChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 echoLeviExtras = this.config.Bind<int>("EchoLeviExtras", 0, new ConfigAcceptableRange<int>(0, 100));
@@ -764,7 +766,7 @@ namespace ApexUpYourSpawns
                     sSwimmerWeaverChance = this.config.Bind<int>("SSwimmerWeaverChance", 15, new ConfigAcceptableRange<int>(0, 100));
                 bubbleWeaverExtras = this.config.Bind<int>("SpiderWeaverExtras", 4, new ConfigAcceptableRange<int>(0, 100));
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code") || hasMarblePack)
             {
                 blizzorChance = this.config.Bind<int>("BlizzorChance", 7, new ConfigAcceptableRange<int>(0, 100));
                 salamanderSalamoleChance = this.config.Bind<int>("SalamanderSalamoleChance", 5, new ConfigAcceptableRange<int>(0, 100));
@@ -777,8 +779,9 @@ namespace ApexUpYourSpawns
         private void SetModConfigs(Dictionary<Configurable<int>, string> labelsMap, List<Configurable<int>> enabledModsRepConfigs, List<Configurable<int>> enabledModsExtraConfigs)
         {
             HashSet<string> activeMods = apexMod.activeMods;
+            bool hasMarblePack = activeMods.Contains("lb-fgf-m4r-ik.modpack");
 
-            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.bl-crit") || hasMarblePack)
             {
                 labelsMap.Add(sporantulaChance, "Small Insects > Sporantula (Inv)");
                 labelsMap.Add(sporantulaExtras, "Sporantulas (/10)");
@@ -790,14 +793,14 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(inspectorChance, "LongLegs/??? > Inspector (Inv)");
                 enabledModsRepConfigs.Add(inspectorChance);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scutigera-creature") || hasMarblePack)
             {
                 labelsMap.Add(scutigeraChance, "Centipede > Scutigera");
                 labelsMap.Add(scutigeraExtras, "Scutigeras (/10)");
                 enabledModsRepConfigs.Add(scutigeraChance);
                 enabledModsExtraConfigs.Add(scutigeraExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.red-horror-centi") || hasMarblePack)
             {
                 labelsMap.Add(redRedHorrorCentiChance, "Red Centipede > Red Horror Centi");
                 labelsMap.Add(wingRedHorrorCentiChance, "Centiwing > Red Horror Centi");
@@ -816,14 +819,14 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(mExplosiveLongLegsChance);
                 enabledModsRepConfigs.Add(mZappyLongLegsChance);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.water-spitter") || hasMarblePack)
             {
                 labelsMap.Add(waterSpitterChance, "Aquatic Lizards > Water Spitter");
                 labelsMap.Add(waterSpitterExtras, "Water Spitters (/10)");
                 enabledModsRepConfigs.Add(waterSpitterChance);
                 enabledModsExtraConfigs.Add(waterSpitterExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.fat-fire-fly-creature") || hasMarblePack)
             {
                 labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
                 enabledModsRepConfigs.Add(fatFireFlyChance);
@@ -877,14 +880,14 @@ namespace ApexUpYourSpawns
                 enabledModsExtraConfigs.Add(tangerineLizExtras);
                 enabledModsExtraConfigs.Add(cherryLizExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.swalkins") || hasMarblePack)
             {
                 labelsMap.Add(surfaceSwimmerChance, "EggBug > Surface Swimmer");
                 labelsMap.Add(surfaceSwimmerExtras, "Surface Swimmer");
                 enabledModsRepConfigs.Add(surfaceSwimmerChance);
                 enabledModsExtraConfigs.Add(surfaceSwimmerExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.bouncing-ball-creature") || hasMarblePack)
             {
                 labelsMap.Add(bounceBallChance, "Snail > Bouncing Ball");
                 labelsMap.Add(bounceBallExtras, "Bouncing Ball");
@@ -1014,7 +1017,7 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(spearSnailChance, "Snail > Spear Snail");
                 enabledModsRepConfigs.Add(spearSnailChance);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || activeMods.Contains("The Mast"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.hvfly-tm") || hasMarblePack)
             {
                 labelsMap.Add(critterHoverflyChance, "Critters > Hoverfly (Inv)");
                 labelsMap.Add(hoverflyExtras, "Hoverfly (/10)");
@@ -1038,7 +1041,7 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(toxicSpiderChance, "Spitter > Toxic Spider");
                 enabledModsRepConfigs.Add(toxicSpiderChance);
             }
-            if (activeMods.Contains("ShinyKelp.Udonfly") || activeMods.Contains("myr.moss_fields"))
+            if (activeMods.Contains("ShinyKelp.Udonfly") || activeMods.Contains("myr.moss_fields") || hasMarblePack)
             {
                 labelsMap.Add(fatNootChance, "Noodlefly > Fat Noodlefly");
                 enabledModsRepConfigs.Add(fatNootChance);
@@ -1057,35 +1060,35 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(bllMimicstarfishChance);
                 enabledModsRepConfigs.Add(critterMimicstarfishChance);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater") || hasMarblePack)
             {
                 labelsMap.Add(noodleEaterChance, "Noodlefly > Noodle Eater (Inv)");
                 labelsMap.Add(noodleEaterExtras, "Noodle Eater (/10)");
                 enabledModsRepConfigs.Add(noodleEaterChance);
                 enabledModsExtraConfigs.Add(noodleEaterExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug") || hasMarblePack)
             {
                 labelsMap.Add(thornbugChance, "Eggbug > Thornbug (Inv)");
                 labelsMap.Add(thornbugExtras, "Thornbug (/10)");
                 enabledModsRepConfigs.Add(thornbugChance);
                 enabledModsExtraConfigs.Add(thornbugExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.mini-levi") || hasMarblePack)
             {
                 labelsMap.Add(miniLeviathanChance, "Leviathan > Mini Leviathan (Inv)");
                 labelsMap.Add(miniLeviathanExtras, "Mini Leviathan");
                 enabledModsRepConfigs.Add(miniLeviathanChance);
                 enabledModsExtraConfigs.Add(miniLeviathanExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.coral-reef") || hasMarblePack)
             {
                 labelsMap.Add(polliwogChance, "Salamander > Polliwog");
                 labelsMap.Add(polliwogExtras, "Polliwog (/10)");
                 enabledModsRepConfigs.Add(polliwogChance);
                 enabledModsExtraConfigs.Add(polliwogExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.scorched-district") || hasMarblePack)
             {
                 labelsMap.Add(hunterSeekerCyanChance, "Cyan Liz > Hunter Seeker");
                 labelsMap.Add(hunterSeekerWhiteChance, "White Liz > Hunter Seeker");
@@ -1094,7 +1097,7 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(hunterSeekerWhiteChance);
                 enabledModsExtraConfigs.Add(hunterSeekerExtras);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.undersea-lizard") || hasMarblePack)
             {
                 labelsMap.Add(silverLizChance, "Grounded Lizards > Silver Liz");
                 labelsMap.Add(silverLizExtras, "Silver Lizard (/10)");
@@ -1113,7 +1116,7 @@ namespace ApexUpYourSpawns
                 enabledModsRepConfigs.Add(centiElectricLizChance);
                 enabledModsRepConfigs.Add(lizardElectricLizChance);
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam") || hasMarblePack)
             {
                 labelsMap.Add(vultureEchoLeviChance, "Vultures > Echo Leviathan (Den)");
                 enabledModsRepConfigs.Add(vultureEchoLeviChance);
@@ -1133,7 +1136,7 @@ namespace ApexUpYourSpawns
                 }
 
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code") || hasMarblePack)
             {
                 labelsMap.Add(blizzorChance, "Miros Bird > Blizzor");
                 labelsMap.Add(blizzorExtras, "Blizzor");

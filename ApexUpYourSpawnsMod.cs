@@ -154,8 +154,10 @@ namespace ApexUpYourSpawns
 
         private RainWorldGame game;
 
+        /*
         Dictionary<string, List<World.Lineage>> lineagesToSave = new Dictionary<string, List<World.Lineage>>();
         Dictionary<string, List<World.SimpleSpawner>> spawnersToSave = new Dictionary<string, List<World.SimpleSpawner>>();
+        */
 
         private static readonly HashSet<string> supportedMods = new HashSet<string>(
                 new string[]
@@ -250,11 +252,12 @@ namespace ApexUpYourSpawns
                 On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
                 On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
                 On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
+                /*
                 On.WinState.CycleCompleted += SaveSpawnersOnCycleComplete;
                 On.RainWorldGame.GoToDeathScreen += RainWorldGame_GoToDeathScreen;
                 On.RainWorldGame.GoToStarveScreen += RainWorldGame_GoToStarveScreen;
                 On.Menu.CharacterSelectPage.AbandonButton_OnPressDone += CharacterSelectPage_AbandonButton_OnPressDone;
-
+                */
                 IL.AbstractRoom.RealizeRoom += ReplaceSlugpupForHLLRoom;
                 IL.World.SpawnPupNPCs += ReplaceSlugpupForHLL;
                 On.DaddyLongLegs.ctor += GiveHunterDaddyPupColor;
@@ -407,6 +410,7 @@ namespace ApexUpYourSpawns
             if (!(bannedRooms is null))
                 bannedRooms.Clear();
 
+            /*
             if (!(lineagesToSave is null))
             {
                 foreach (List<World.Lineage> lins in lineagesToSave.Values)
@@ -419,7 +423,7 @@ namespace ApexUpYourSpawns
                     spw.Clear();
                 spawnersToSave.Clear();
             }
-
+            */
         }
 
         private void SetUpModDependencies()
@@ -1258,6 +1262,8 @@ namespace ApexUpYourSpawns
         #endregion
 
         #region Spawner Savestate handling
+        
+        /*
         private void CharacterSelectPage_AbandonButton_OnPressDone(On.Menu.CharacterSelectPage.orig_AbandonButton_OnPressDone orig, Menu.CharacterSelectPage self, Menu.Remix.MixedUI.UIfocusable trigger)
         {
             orig(self, trigger);
@@ -1285,12 +1291,13 @@ namespace ApexUpYourSpawns
                 spw.Clear();
             spawnersToSave.Clear();
         }
+        
 
         private void SaveSpawnersOnCycleComplete(On.WinState.orig_CycleCompleted orig, WinState self, RainWorldGame game)
         {
             orig(self, game);
 
-            if (game.IsStorySession && game.GetStorySession.saveState.malnourished)
+            if (game.rainWorld.safariMode || (game.IsStorySession && game.GetStorySession.saveState.malnourished))
                 return;
 
             if (!Directory.Exists(Custom.RootFolderDirectory() + "/ApexUpYourSpawns"))
@@ -1362,6 +1369,7 @@ namespace ApexUpYourSpawns
             lineagesToSave.Clear();
             spawnersToSave.Clear();
         }
+        
 
         private bool LoadSaveState(WorldLoader worldLoader)
         {
@@ -1400,7 +1408,7 @@ namespace ApexUpYourSpawns
                  * Current version has spawn data loss over time.
                 if (offScreenSaveState.Count > 0)
                     needsFresh = true;
-                */
+                //
                 while (offScreenSaveState.Count > 0)
                 {
                     offScreenSaveState[0].inRegionSpawnerIndex = worldLoader.spawners.Count;
@@ -1410,7 +1418,7 @@ namespace ApexUpYourSpawns
             }
             return needsFresh;
         }
-
+        
         private void AddSpawnersToBuffer(WorldLoader loader)
         {
             List<World.Lineage> lineages = new List<World.Lineage>();
@@ -1554,7 +1562,7 @@ namespace ApexUpYourSpawns
             }
             return savedSpawners;
         }
-
+        */
         #endregion
 
         #region HunterLongLegs functions
@@ -1984,13 +1992,23 @@ namespace ApexUpYourSpawns
                     EnsureNormalScavengers(worldLoader);
 
                     wLoader = null;
-                    AddSpawnersToBuffer(worldLoader);
+
+                    /*
+                    if (!worldLoader.game.rainWorld.safariMode)
+                        AddSpawnersToBuffer(worldLoader);
+                    else
+                        ResetSpawnBufferOnDeath();
+                    */
                 }
                 else
                 {
                     MoleSalamanderCheck(worldLoader);
-                    bool needsFresh = LoadSaveState(worldLoader);
-                    fresh = needsFresh;
+                    /*
+                    if (!worldLoader.game.rainWorld.safariMode)
+                    {
+                        bool needsFresh = LoadSaveState(worldLoader);
+                        //fresh = needsFresh;
+                    }*/
                 }
             }
             catch(Exception ex)

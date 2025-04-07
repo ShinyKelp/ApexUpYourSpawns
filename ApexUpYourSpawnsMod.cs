@@ -6,7 +6,6 @@ using UnityEngine;
 using MoreSlugcats;
 using System.Collections.Generic;
 using System.Security.AccessControl;
-using Steamworks;
 using System.Runtime.Serialization;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
@@ -20,7 +19,7 @@ using System.Linq;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.4.2")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.4.3.3")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -266,9 +265,9 @@ namespace ApexUpYourSpawns
                 On.DaddyGraphics.HunterDummy.DrawSprites += GiveHunterDaddyDummyPupSprites;
                 On.DaddyGraphics.HunterDummy.Update += GiveHunterDaddyDummyPupSize;
                 On.DaddyGraphics.HunterDummy.ctor += GiveHunterDaddyDummyPupTailSize;
-                On.DaddyGraphics.DaddyDangleTube.ApplyPalette += GiveHunterDaddyDangleTubePupPallete;
-                On.DaddyGraphics.DaddyTubeGraphic.ApplyPalette += GiveHunterDaddyTubePupPallete;
-                On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
+                //On.DaddyGraphics.DaddyDangleTube.ApplyPalette += GiveHunterDaddyDangleTubePupPallete;
+                //On.DaddyGraphics.DaddyTubeGraphic.ApplyPalette += GiveHunterDaddyTubePupPallete;
+                //On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
                 //*/
                 ClearDictionaries();
                 SetUpModDependencies();
@@ -533,7 +532,7 @@ namespace ApexUpYourSpawns
                 ModCreatureReplacement wSpitter = new ModCreatureReplacement(
                     watType, options.waterSpitterChance);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, wSpitter);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, wSpitter);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.EelLizard, wSpitter);
                 modCreatureExtras.Add(watType, new ModCreatureExtras(
                     options.waterSpitterExtras, true));
             }
@@ -611,7 +610,7 @@ namespace ApexUpYourSpawns
                 );
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, mintLiz);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, mintLiz);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, mintLiz);
                 modCreatureExtras.Add(mintType, new ModCreatureExtras(options.mintLizardExtras, true));
 
                 hasLizardVariants = true;
@@ -628,7 +627,7 @@ namespace ApexUpYourSpawns
                     options.sludgeLizardChance, localMultipliers);
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, sludLiz);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, sludLiz);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.EelLizard, sludLiz);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Snail, 
                     new ModCreatureReplacement(
                         sludType,
@@ -650,7 +649,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.LizardTemplate, new ModCreatureReplacement(
                     new CreatureTemplate.Type("Lizor"), options.lizorInvChance, true));
 
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
                     new CreatureTemplate.Type("VoltLizard"), options.voltLizardChance, true));
 
 
@@ -678,7 +677,7 @@ namespace ApexUpYourSpawns
                 localMultipliersChameleon.Add("OE", 3f);
                 localMultipliersChameleon.Add("Rivulet", 0.7f);
 
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
                    new CreatureTemplate.Type("CameleonLizard"), options.chameleonLizarcChance, localMultipliersChameleon));
 
                 Dictionary<string, float> localMultipliersSkyBlue = new Dictionary<string, float>();
@@ -692,13 +691,13 @@ namespace ApexUpYourSpawns
 
                 Dictionary<string, float> localMultipliersCherry = new Dictionary<string, float>();
                 localMultipliersCherry.Add("CL", 2f);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
                     new CreatureTemplate.Type("CherryLizard"), options.cherryLizardChance, localMultipliersCherry));
 
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.RedLizard, new ModCreatureReplacement(
                     new CreatureTemplate.Type("RaspberryLizard"), options.redRaspberryLizardChance));
 
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
                     new CreatureTemplate.Type("RaspberryLizard"), options.strawberryRaspberryLizardChance));
 
                 modCreatureExtras.Add(new CreatureTemplate.Type("Lizor"), new ModCreatureExtras(
@@ -788,7 +787,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, new ModCreatureReplacement(
                     new CreatureTemplate.Type("Turqoise"), options.turquoiseLizardChance, true, false, turquoiseInvDic));
 
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.ZoopLizard, new ModCreatureReplacement(
                     new CreatureTemplate.Type("Amoeba"), options.amoebaLizardChance));
             }
             if (activeMods.Contains("thefriend"))
@@ -797,7 +796,7 @@ namespace ApexUpYourSpawns
                 motherDic.Add("OE", .5f);
                 ModCreatureReplacement motherRep = new ModCreatureReplacement(new CreatureTemplate.Type("MotherLizard"), options.motherLizardChance, motherDic);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, motherRep);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, motherRep);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, motherRep);
                 if(activeMods.Contains("ShinyKelp.LizardVariants"))
                     AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("MintLizard"), motherRep);
 
@@ -824,7 +823,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, youngLizRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.YellowLizard, youngLizRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.PinkLizard, youngLizRep);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, youngLizRep);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.ZoopLizard, youngLizRep);
 
                 modCreatureExtras.Add(lizType, new ModCreatureExtras(options.youngLizardExtras));
                 modCreatureExtras.Add(snowType, new ModCreatureExtras(options.snowSpiderExtras));
@@ -878,7 +877,7 @@ namespace ApexUpYourSpawns
             if (activeMods.Contains("Outspector"))
             {
                 CreatureTemplate.Type outType = new CreatureTemplate.Type("Outspector");
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
                     outType, options.outspectorChance));
                 modCreatureExtras.Add(outType, new ModCreatureExtras(
                     options.outspectorExtras, true));
@@ -929,7 +928,7 @@ namespace ApexUpYourSpawns
                 freezerBD.Add("PreCycle", 0f);
                 freezerBD.Add("SUIncandescent", 0.5f);
                 freezerBD.Add("Bitter Aerie", 2f);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
                         freezerType, options.freezerLizChance, false, true, freezerBD)
                     );
                 AddModCreatureToDictionary(modCreatureReplacements, icyType, new ModCreatureReplacement(
@@ -955,7 +954,7 @@ namespace ApexUpYourSpawns
                 babyAquapedeBD.Add("Sump Tunnel", 45);
 
                 CreatureTemplate.Type aquaType = new CreatureTemplate.Type("InfantAquapede");
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.AquaCenti, new ModCreatureReplacement(
                         aquaType, options.babyAquapedeInvChance, true)
                     );
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.JetFish, new ModCreatureReplacement(
@@ -967,7 +966,7 @@ namespace ApexUpYourSpawns
                 CreatureTemplate.Type chillType = new CreatureTemplate.Type("Chillipede");
                 ModCreatureReplacement chillRep = new ModCreatureReplacement(chillType, options.chillipedeChance);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, chillRep);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, chillRep);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, chillRep);
                 if(activeMods.Contains("ShinyKelp.LizardVariants"))
                     AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("MintLizard"), chillRep);
 
@@ -1061,7 +1060,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.LanternMouse, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, hoverflyRep);
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.TubeWorm, hoverflyRep);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.Yeek, hoverflyRep);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.Yeek, hoverflyRep);
                 modCreatureExtras.Add(hoverType, new ModCreatureExtras(options.hoverflyExtras));
             }
             if (activeMods.Contains("Croken.bombardier-vulture"))
@@ -1144,7 +1143,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.JetFish, critterMimicRep);
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.Snail, critterMimicRep);
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.Leech, critterMimicRep);
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, critterMimicRep);
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.AquaCenti, critterMimicRep);
 
             }
             if (activeMods.Contains("lb-fgf-m4r-ik.noodle-eater") || hasMarblePack)
@@ -1191,7 +1190,7 @@ namespace ApexUpYourSpawns
                 CreatureTemplate.Type silType = new CreatureTemplate.Type("SilverLizard");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.GreenLizard, new ModCreatureReplacement(
                     silType, options.silverLizChance));
-                AddModCreatureToDictionary(modCreatureReplacements, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.SpitLizard, new ModCreatureReplacement(
                     silType, options.silverLizChance));
                 modCreatureExtras.Add(silType, new ModCreatureExtras(options.silverLizExtras));
             }
@@ -1714,7 +1713,7 @@ namespace ApexUpYourSpawns
                 }
             }
         }
-
+        /*
         private void GiveHunterDaddyDangleTubePupPallete(On.DaddyGraphics.DaddyDangleTube.orig_ApplyPalette orig, DaddyGraphics.DaddyDangleTube self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
             if (self.owner.daddy.HDmode)
@@ -1763,7 +1762,7 @@ namespace ApexUpYourSpawns
             }
             else orig(self, sLeaser, rCam, palette);
         }
-
+        
         private void GiveHunterDaddyDeadLegPupPallete(On.DaddyGraphics.DaddyDeadLeg.orig_ApplyPalette orig, DaddyGraphics.DaddyDeadLeg self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
             if (self.owner.daddy.HDmode)
@@ -1787,7 +1786,7 @@ namespace ApexUpYourSpawns
             }
             else orig(self, sLeaser, rCam, palette);
             
-        }
+        }*/
 
         private void GiveHunterDaddyDummyPupSize(On.DaddyGraphics.HunterDummy.orig_Update orig, DaddyGraphics.HunterDummy self)
         {
@@ -1808,7 +1807,7 @@ namespace ApexUpYourSpawns
         {
             if (!game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
             {
-                AbstractCreature myBigJelly = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.BigJelly), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
+                AbstractCreature myBigJelly = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(DLCSharedEnums.CreatureTemplateType.BigJelly), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
                 BigJellyFish myJelly = new BigJellyFish(myBigJelly, game.world);
                 myJelly.PlaceInRoom(room);
             }
@@ -1823,7 +1822,7 @@ namespace ApexUpYourSpawns
                 self.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
                 DangleFruit.Stalk stalk = new DangleFruit.Stalk(self, room, self.firstChunk.pos);
 
-                AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.StowawayBug), 
+                AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(DLCSharedEnums.CreatureTemplateType.StowawayBug), 
                     null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y + 3, 0), game.GetNewID());
 
                 Vector2 pos = new Vector2((self.abstractPhysicalObject.pos.x+1) * 20f - 10f, (self.abstractPhysicalObject.pos.y+1) * 20f - 20f + stalk.ropeLength);
@@ -1851,7 +1850,7 @@ namespace ApexUpYourSpawns
                 DangleFruit fruit = new DangleFruit(self.abstractPhysicalObject);
                 fruit.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
                 DangleFruit.Stalk stalk = new DangleFruit.Stalk(fruit, room, fruit.firstChunk.pos);
-                AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(MoreSlugcatsEnums.CreatureTemplateType.StowawayBug), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y + 3, 0), game.GetNewID());
+                AbstractCreature myStowawayAbstract = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(DLCSharedEnums.CreatureTemplateType.StowawayBug), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y + 3, 0), game.GetNewID());
                 Vector2 pos = new Vector2((self.abstractPhysicalObject.pos.x + 1) * 20f - 10f, (self.abstractPhysicalObject.pos.y + 1) * 20f - 20f + stalk.ropeLength);
                 
                 (myStowawayAbstract.state as StowawayBugState).HomePos = new Vector2(pos.x, pos.y);
@@ -1877,7 +1876,7 @@ namespace ApexUpYourSpawns
                 {
                     foreach (AbstractCreature abstractCreature in self.abstractRoom.creatures)
                     {
-                        if (abstractCreature.realizedCreature == null && abstractCreature.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite)
+                        if (abstractCreature.realizedCreature == null && abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.ScavengerElite)
                             elitesList.Add(abstractCreature);
 
                     }
@@ -2146,7 +2145,7 @@ namespace ApexUpYourSpawns
                                 (region == "UW" && roomName != "UWOffScreenDen"))
                             {
                                 bool addedSpawner =
-                                AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, balancedSpawns? inspectorChance / 2 : inspectorChance, true);
+                                AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, balancedSpawns? inspectorChance / 2 : inspectorChance, true);
                                 if (addedSpawner)
                                     (spawners[spawners.Count - 1] as World.SimpleSpawner).spawnDataString = "{Ignorecycle}";
                             }
@@ -2163,13 +2162,13 @@ namespace ApexUpYourSpawns
                     {
                         if (hasAngryInspectors && subregion == "Memory Crypts"
                             && simpleSpawner.creatureType == CreatureTemplate.Type.Centipede)
-                            AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, balancedSpawns? inspectorChance * 4 : inspectorChance);
+                            AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, balancedSpawns? inspectorChance * 4 : inspectorChance);
                         HandleCentipedeSpawner(simpleSpawner, spawners);
                         goto ModCreaturesSpawner;
                     }
 
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.Vulture || simpleSpawner.creatureType == CreatureTemplate.Type.KingVulture
-                        || simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.MirosVulture)
+                        || simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.MirosVulture)
                     {
                         HandleVultureSpawner(simpleSpawner, spawners);
                         goto ModCreaturesSpawner;
@@ -2199,10 +2198,10 @@ namespace ApexUpYourSpawns
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.Spider)
                     {
                         IncreaseCreatureSpawner(simpleSpawner, extraSmallSpiders);
-                        AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.MotherSpider, motherSpiderChance, true, true);
+                        AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.MotherSpider, motherSpiderChance, true, true);
                         goto ModCreaturesSpawner;
                     }
-                    if(simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.MotherSpider)
+                    if(simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.MotherSpider)
                     {
                         if (balancedSpawns && subregion == "The Gutter")
                         {
@@ -2247,7 +2246,7 @@ namespace ApexUpYourSpawns
                                 localExtraScavs = (int)(localExtraScavs * 1.5f);
                         }
                         IncreaseCreatureSpawner(simpleSpawner, localExtraScavs, false);
-                        ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.ScavengerElite, eliteScavengerChance);
+                        ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.ScavengerElite, eliteScavengerChance);
                         goto ModCreaturesSpawner;
                     }
                     
@@ -2261,13 +2260,13 @@ namespace ApexUpYourSpawns
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.TentaclePlant)
                     {
                         if (hasAngryInspectors && region == "SB" && roomName == "SB_G03")
-                            AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, balancedSpawns ? inspectorChance * 4 : inspectorChance, true);
+                            AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, balancedSpawns ? inspectorChance * 4 : inspectorChance, true);
                         IncreaseCreatureSpawner(simpleSpawner, extraKelp, true);
                         goto ModCreaturesSpawner;
                     }
                     
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.Leech || simpleSpawner.creatureType == CreatureTemplate.Type.SeaLeech 
-                        || simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.JungleLeech)
+                        || simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.JungleLeech)
                     {
                         HandleLeechSpawner(simpleSpawner, spawners);
                         goto ModCreaturesSpawner;
@@ -2287,7 +2286,7 @@ namespace ApexUpYourSpawns
                         AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BigSpider, tubeWormBigSpiderChance);
                         if (hasAngryInspectors && region == "LC" && roomName == "LC_station01")
                         {
-                            AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, balancedSpawns ? inspectorChance * 4 : inspectorChance, true);
+                            AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, balancedSpawns ? inspectorChance * 4 : inspectorChance, true);
                         }
                         goto ModCreaturesSpawner;
                     }
@@ -2333,18 +2332,18 @@ namespace ApexUpYourSpawns
                         goto ModCreaturesSpawner;
                     }
 
-                    if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.Yeek)
+                    if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.Yeek)
                     {
                         IncreaseCreatureSpawner(simpleSpawner, (region == "OE" && balancedSpawns) ? extraYeeks - 10 : extraYeeks, true);
                         bool replacedFull = 
                         ReplaceMultiSpawner(simpleSpawner, spawners, UnityEngine.Random.value < (region == "OE" ? .8f : .5f)? 
-                            MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard : MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, yeekLizardChance);
+                            DLCSharedEnums.CreatureTemplateType.ZoopLizard : DLCSharedEnums.CreatureTemplateType.SpitLizard, yeekLizardChance);
                         if (replacedFull)
                             HandleLizardSpawner(simpleSpawner, spawners);
                         goto ModCreaturesSpawner;
                     }
 
-                    if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.Inspector)
+                    if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.Inspector)
                     {
                         simpleSpawner.spawnDataString = "{Ignorecycle}";
                         goto ModCreaturesSpawner;
@@ -2393,7 +2392,7 @@ namespace ApexUpYourSpawns
                     }
                     if (IsCreatureInLineage(lineage, CreatureTemplate.Type.JetFish))
                     {
-                        ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.JetFish, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, aquapedeChance);
+                        ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.JetFish, DLCSharedEnums.CreatureTemplateType.AquaCenti, aquapedeChance);
                         if(region == "SL")
                         {
                             ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.JetFish, CreatureTemplate.Type.BrotherLongLegs, aquapedeChance);
@@ -2436,7 +2435,7 @@ namespace ApexUpYourSpawns
             {
                 spawner.spawnDataString = "{IgnoreCycle}";
                 if (hasAngryInspectors)
-                    AddInvasionSpawner(spawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, options.inspectorOutspectorInvChance.Value / 100f);
+                    AddInvasionSpawner(spawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, options.inspectorOutspectorInvChance.Value / 100f);
                 ReplaceMultiSpawner(spawner, spawners, new CreatureTemplate.Type("OutspectorB"), 0.3f);
             }
 
@@ -2494,7 +2493,7 @@ namespace ApexUpYourSpawns
 
             if(activeMods.Contains("ShinyKelp.AlbinoKings") && (spawner.creatureType == CreatureTemplate.Type.Vulture ||
                 spawner.creatureType == CreatureTemplate.Type.KingVulture || spawner.creatureType ==
-                MoreSlugcatsEnums.CreatureTemplateType.MirosVulture))
+                DLCSharedEnums.CreatureTemplateType.MirosVulture))
             {
                 if(spawner.spawnDataString is null || !spawner.spawnDataString.Contains("AlternateForm"))
                 {
@@ -2519,7 +2518,7 @@ namespace ApexUpYourSpawns
             {
                 if (!triedEchoLevi && spawner.creatureType.index > -1 && spawner.creatureType.index < StaticWorld.creatureTemplates.Length && (
                     StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == CreatureTemplate.Type.Vulture ||
-                    StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == MoreSlugcatsEnums.CreatureTemplateType.MirosVulture))
+                    StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == DLCSharedEnums.CreatureTemplateType.MirosVulture))
                 {
                     triedEchoLevi = true;
                     if(UnityEngine.Random.value < options.vultureEchoLeviChance.Value * 0.01f)
@@ -2556,7 +2555,7 @@ namespace ApexUpYourSpawns
             }
             if (activeMods.Contains("ShinyKelp.AlbinoKings") && (IsCreatureInLineage(lineage, CreatureTemplate.Type.Vulture)
                 || IsCreatureInLineage(lineage, CreatureTemplate.Type.Vulture)
-                || IsCreatureInLineage(lineage, MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.MirosVulture)))
+                || IsCreatureInLineage(lineage, DLCSharedEnums.CreatureTemplateType.MirosVulture)))
             {
                 for(int i = 0; i < lineage.creatureTypes.Length; ++i)
                 {
@@ -2567,7 +2566,7 @@ namespace ApexUpYourSpawns
                             CreatureTemplate.Type.Vulture ||
                             IsCreatureInLineage(lineage, CreatureTemplate.Type.KingVulture) ||
                             StaticWorld.creatureTemplates[index].type ==
-                            MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.MirosVulture)
+                            DLCSharedEnums.CreatureTemplateType.MirosVulture)
                         {
                             if (lineage.spawnData[i] is null || !lineage.spawnData[i].Contains("AlternateForm"))
                             {
@@ -2597,8 +2596,8 @@ namespace ApexUpYourSpawns
                 spawner.creatureType == CreatureTemplate.Type.BlueLizard || spawner.creatureType == CreatureTemplate.Type.YellowLizard ||
                 spawner.creatureType == CreatureTemplate.Type.WhiteLizard || spawner.creatureType == CreatureTemplate.Type.BlackLizard ||
                 spawner.creatureType == CreatureTemplate.Type.RedLizard || spawner.creatureType == CreatureTemplate.Type.CyanLizard ||
-                spawner.creatureType == CreatureTemplate.Type.Salamander || spawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.SpitLizard ||
-                spawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard || spawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.EelLizard ||
+                spawner.creatureType == CreatureTemplate.Type.Salamander || spawner.creatureType == DLCSharedEnums.CreatureTemplateType.SpitLizard ||
+                spawner.creatureType == DLCSharedEnums.CreatureTemplateType.ZoopLizard || spawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard ||
                 spawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard;
         }
         
@@ -2611,7 +2610,7 @@ namespace ApexUpYourSpawns
         private void HandleLizardSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
         {
             if(simpleSpawner.creatureType == CreatureTemplate.Type.Salamander
-               || simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.EelLizard)
+               || simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard)
             {
                 HandleAxolotlSpawner(simpleSpawner, spawners);
                 return;
@@ -2638,7 +2637,7 @@ namespace ApexUpYourSpawns
             {
                 IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "SU")? extraGreens/2 : extraGreens, true);
                 bool replacedFull =
-                    ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, caramelLizChance);
+                    ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.SpitLizard, caramelLizChance);
                 if (replacedFull)
                     IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "OE")? extraCaramels-10:extraCaramels, true);
             }
@@ -2646,7 +2645,7 @@ namespace ApexUpYourSpawns
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraPinks, true);
                 bool replacedFull =
-                ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, strawberryLizChance);
+                ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.ZoopLizard, strawberryLizChance);
                 if (replacedFull)
                     IncreaseCreatureSpawner(simpleSpawner, extraZoops, true);
             }
@@ -2671,9 +2670,9 @@ namespace ApexUpYourSpawns
                     ? extraYellows/2 : extraYellows, true);
             else if (simpleSpawner.creatureType == CreatureTemplate.Type.CyanLizard)
                 IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "UW") ? extraCyans / 2 : extraCyans, true);
-            else if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.SpitLizard)
+            else if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.SpitLizard)
                 IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "OE") ? extraCaramels - 10 : extraCaramels, true);
-            else if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard)
+            else if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.ZoopLizard)
                 IncreaseCreatureSpawner(simpleSpawner, extraZoops, true);
 
             if (balancedSpawns && region == "GW" && extraWhites > 0 && (slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Artificer ||
@@ -2718,9 +2717,9 @@ namespace ApexUpYourSpawns
             if (simpleSpawner.creatureType == CreatureTemplate.Type.Salamander)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraSals, true);
-                ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, eelLizChance);
+                ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.EelLizard, eelLizChance);
             }
-            if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.EelLizard)
+            if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraEellizs, true);
             }
@@ -2732,7 +2731,7 @@ namespace ApexUpYourSpawns
 
         private void HandleCentipedeSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
         {
-            if(simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.AquaCenti)
+            if(simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.AquaCenti)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraAquapedes, true);
                 return;
@@ -2805,9 +2804,9 @@ namespace ApexUpYourSpawns
                 slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Spear)))
                 localMirosVultureChance *= 2;
             
-            ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.MirosVulture, balancedSpawns? localMirosVultureChance : mirosVultureChance);
+            ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.MirosVulture, balancedSpawns? localMirosVultureChance : mirosVultureChance);
 
-            if (region == "SH" && simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.MirosVulture && mirosVultureChance > 0)
+            if (region == "SH" && simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.MirosVulture && mirosVultureChance > 0)
                 IncreaseCreatureSpawner(simpleSpawner, balancedSpawns? extraVultures+1 : extraVultures);
 
         }
@@ -2820,7 +2819,7 @@ namespace ApexUpYourSpawns
                 if (region == "UW" || region == "CL")
                     ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.DaddyLongLegs, balancedSpawns ? brotherLongLegsChance * 2 : brotherLongLegsChance);
                 else if (balancedSpawns && region == "GW" && simpleSpawner.creatureType == CreatureTemplate.Type.BigSpider)
-                    ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, 
+                    ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.TerrorLongLegs, 
                         (slugcatName.ToString() == "Artificer" || slugcatName.ToString() == "Spear")? brotherLongLegsChance*2:brotherLongLegsChance);
                 else
                 {
@@ -2849,13 +2848,13 @@ namespace ApexUpYourSpawns
             
             if(simpleSpawner.creatureType == CreatureTemplate.Type.DaddyLongLegs)
             {
-                ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, terrorLongLegsChance);
+                ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.TerrorLongLegs, terrorLongLegsChance);
             }
 
             if (hasAngryInspectors &&
                 StaticWorld.GetCreatureTemplate(simpleSpawner.creatureType)?.TopAncestor().type == CreatureTemplate.Type.DaddyLongLegs)
             {
-                AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.Inspector, inspectorChance);
+                AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, inspectorChance);
             }
 
 
@@ -2876,7 +2875,7 @@ namespace ApexUpYourSpawns
             bool replacedFull;
             replacedFull = ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Salamander, jetfishSalamanderChance, true);
             if(!replacedFull)
-                replacedFull = ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, balancedSpawns? localWaterPredatorChance : aquapedeChance);
+                replacedFull = ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.AquaCenti, balancedSpawns? localWaterPredatorChance : aquapedeChance);
 
             if ((region == "SL" || region == "CL") && !replacedFull && aquapedeChance > 0)
                 HandleLongLegsSpawner(simpleSpawner, spawners);
@@ -2903,26 +2902,26 @@ namespace ApexUpYourSpawns
             {
                 wasRedLeech = true;
                 IncreaseCreatureSpawner(simpleSpawner, (balancedSpawns && region == "DS")? (int)(extraLeeches*1.5f) : extraLeeches);
-                ReplaceMultiSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.JungleLeech, jungleLeechChance);
+                ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.JungleLeech, jungleLeechChance);
                 AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Salamander, (balancedSpawns && region == "DS")? leechLizardChance*2 : leechLizardChance, true, true);
             }
-            if(simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.JungleLeech)
+            if(simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.JungleLeech)
             {
                 if(!wasRedLeech)
-                    AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, leechLizardChance, true, true);
+                    AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.EelLizard, leechLizardChance, true, true);
             }
             if (simpleSpawner.creatureType == CreatureTemplate.Type.SeaLeech)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraLeeches);
-                AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.AquaCenti, seaLeechAquapedeChance, true, true);
-                AddInvasionSpawner(simpleSpawner, spawners, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, leechLizardChance, true, true);
+                AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.AquaCenti, seaLeechAquapedeChance, true, true);
+                AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.EelLizard, leechLizardChance, true, true);
             }
         }
 
         private void HandlePrecycleSpawns(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
         {
             int extras = extraPrecycleSals;
-            if (simpleSpawner.creatureType == MoreSlugcatsEnums.CreatureTemplateType.EelLizard ||
+            if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard ||
                 StaticWorld.GetCreatureTemplate(simpleSpawner.creatureType)?.TopAncestor().type == CreatureTemplate.Type.DaddyLongLegs)
                 extras-= 10;
             IncreaseCreatureSpawner(simpleSpawner, balancedSpawns ? extras : extraPrecycleSals, true);
@@ -3133,18 +3132,18 @@ namespace ApexUpYourSpawns
 
         private void HandleLizardLineage(World.Lineage lineage, List<World.CreatureSpawner> spawners)
         {
-            if(IsCreatureInLineage(lineage, CreatureTemplate.Type.Salamander) || IsCreatureInLineage(lineage, MoreSlugcatsEnums.CreatureTemplateType.EelLizard))
+            if(IsCreatureInLineage(lineage, CreatureTemplate.Type.Salamander) || IsCreatureInLineage(lineage, DLCSharedEnums.CreatureTemplateType.EelLizard))
             {
-                ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.Salamander, MoreSlugcatsEnums.CreatureTemplateType.EelLizard, eelLizChance);
+                ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.Salamander, DLCSharedEnums.CreatureTemplateType.EelLizard, eelLizChance);
                 return;
             }
 
             bool replaceForRyanLiz = hasLizardVariants && IsCreatureInLineage(lineage, CreatureTemplate.Type.CyanLizard);
 
             ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.GreenLizard, CreatureTemplate.Type.RedLizard, redLizardChance, true);
-            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.GreenLizard, MoreSlugcatsEnums.CreatureTemplateType.SpitLizard, caramelLizChance);
+            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.GreenLizard, DLCSharedEnums.CreatureTemplateType.SpitLizard, caramelLizChance);
             ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.BlueLizard, CreatureTemplate.Type.CyanLizard, cyanLizChance);
-            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.PinkLizard, MoreSlugcatsEnums.CreatureTemplateType.ZoopLizard, strawberryLizChance);
+            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.PinkLizard, DLCSharedEnums.CreatureTemplateType.ZoopLizard, strawberryLizChance);
             ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.RedLizard, MoreSlugcatsEnums.CreatureTemplateType.TrainLizard, trainLizardChance);
 
 
@@ -3191,7 +3190,7 @@ namespace ApexUpYourSpawns
         private void HandleLongLegsLineage(World.Lineage lineage, List<World.CreatureSpawner> spawners)
         {
             ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.BrotherLongLegs, CreatureTemplate.Type.DaddyLongLegs, daddyLongLegsChance);
-            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.DaddyLongLegs, MoreSlugcatsEnums.CreatureTemplateType.TerrorLongLegs, terrorLongLegsChance);
+            ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.DaddyLongLegs, DLCSharedEnums.CreatureTemplateType.TerrorLongLegs, terrorLongLegsChance);
 
             //Inspector invasion
             if (hasAngryInspectors)
@@ -3203,7 +3202,7 @@ namespace ApexUpYourSpawns
                         if(UnityEngine.Random.value < ((region == "UW" && balancedSpawns)? inspectorChance*2 : inspectorChance))
                         {
                             World.SimpleSpawner inspectorSpawner = new World.SimpleSpawner
-                                (lineage.region, spawners.Count, lineage.den, MoreSlugcatsEnums.CreatureTemplateType.Inspector, "{Ignorecycle}", 1);
+                                (lineage.region, spawners.Count, lineage.den, DLCSharedEnums.CreatureTemplateType.Inspector, "{Ignorecycle}", 1);
                             spawners.Add(inspectorSpawner);
                             break;
                         }

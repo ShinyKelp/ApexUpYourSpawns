@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace ApexUpYourSpawns
 {
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.4.3.3")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.5.0")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -147,16 +147,18 @@ namespace ApexUpYourSpawns
 
         private bool lastWasError;
 
+        private bool hasSharedDLC;
+
         private HashSet<string> bannedRooms;
 
         private ApexUpYourSpawnsOptions options;
 
         private RainWorldGame game;
 
-        /*
+        
         Dictionary<string, List<World.Lineage>> lineagesToSave = new Dictionary<string, List<World.Lineage>>();
-        Dictionary<string, List<World.SimpleSpawner>> spawnersToSave = new Dictionary<string, List<World.SimpleSpawner>>();
-        */
+        //Dictionary<string, List<World.SimpleSpawner>> spawnersToSave = new Dictionary<string, List<World.SimpleSpawner>>();
+        
 
         private static readonly HashSet<string> supportedMods = new HashSet<string>(
                 new string[]
@@ -176,7 +178,7 @@ namespace ApexUpYourSpawns
                     "myr.moss_fields",
                     "ShinyKelp.Udonfly",
                     "shrimb.scroungers", //?
-                    "Croken.Mimicstarfish", //?
+                    "Croken.Mimicstarfish",
                     "ShinyKelp.AlbinoKings",
                     "bebra.gregtech_lizard",
                     "bry.bubbleweavers",
@@ -207,7 +209,7 @@ namespace ApexUpYourSpawns
                 modCreatureExtras = new Dictionary<CreatureTemplate.Type, ModCreatureExtras>();
             if (activeMods is null)
                 activeMods = new HashSet<string>();
-            logSpawners = false;
+            logSpawners = true;
         }
 
         private void RainWorldOnOnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
@@ -216,7 +218,8 @@ namespace ApexUpYourSpawns
             try
             {
                 if (IsInit) return;
-
+                if (ModManager.MSC || ModManager.Watcher)
+                    hasSharedDLC = true;
                 //hooks go here
                 On.GameSession.ctor += GameSessionOnctor;
                 //On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
@@ -224,23 +227,30 @@ namespace ApexUpYourSpawns
                 On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
                 On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
                 On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
-                /*
+
+                
                 On.WinState.CycleCompleted += SaveSpawnersOnCycleComplete;
                 On.RainWorldGame.GoToDeathScreen += RainWorldGame_GoToDeathScreen;
                 On.RainWorldGame.GoToStarveScreen += RainWorldGame_GoToStarveScreen;
                 On.Menu.CharacterSelectPage.AbandonButton_OnPressDone += CharacterSelectPage_AbandonButton_OnPressDone;
-                */
-                IL.AbstractRoom.RealizeRoom += ReplaceSlugpupForHLLRoom;
-                IL.World.SpawnPupNPCs += ReplaceSlugpupForHLL;
-                On.DaddyLongLegs.ctor += GiveHunterDaddyPupColor;
-                On.DaddyGraphics.ApplyPalette += GiveHunterDaddyPupPalette;
-                On.DaddyGraphics.HunterDummy.ApplyPalette += GiveHunterDaddyDummyPupPalette;
-                On.DaddyGraphics.HunterDummy.DrawSprites += GiveHunterDaddyDummyPupSprites;
-                On.DaddyGraphics.HunterDummy.Update += GiveHunterDaddyDummyPupSize;
-                On.DaddyGraphics.HunterDummy.ctor += GiveHunterDaddyDummyPupTailSize;
-                //On.DaddyGraphics.DaddyDangleTube.ApplyPalette += GiveHunterDaddyDangleTubePupPallete;
-                //On.DaddyGraphics.DaddyTubeGraphic.ApplyPalette += GiveHunterDaddyTubePupPallete;
-                //On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
+                
+
+                //PupLongLegs
+                if (ModManager.MSC)
+                {
+                    IL.AbstractRoom.RealizeRoom += ReplaceSlugpupForHLLRoom;
+                    IL.World.SpawnPupNPCs += ReplaceSlugpupForHLL;
+                    On.DaddyLongLegs.ctor += GiveHunterDaddyPupColor;
+                    On.DaddyGraphics.ApplyPalette += GiveHunterDaddyPupPalette;
+                    On.DaddyGraphics.HunterDummy.ApplyPalette += GiveHunterDaddyDummyPupPalette;
+                    On.DaddyGraphics.HunterDummy.DrawSprites += GiveHunterDaddyDummyPupSprites;
+                    On.DaddyGraphics.HunterDummy.Update += GiveHunterDaddyDummyPupSize;
+                    On.DaddyGraphics.HunterDummy.ctor += GiveHunterDaddyDummyPupTailSize;
+                    //On.DaddyGraphics.DaddyDangleTube.ApplyPalette += GiveHunterDaddyDangleTubePupPallete;
+                    //On.DaddyGraphics.DaddyTubeGraphic.ApplyPalette += GiveHunterDaddyTubePupPallete;
+                    //On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
+                }
+
                 //*/
                 ClearDictionaries();
                 SetUpModDependencies();
@@ -251,7 +261,7 @@ namespace ApexUpYourSpawns
                     On.Room.ReadyForAI += AddScavKings;
                 }
 
-                if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+                if (activeMods.Contains("lb-fgf-m4r-ik.modpack"))
                 {
                     On.LizardGraphics.ctor += ForceBlackMoleSalamander;
                 }
@@ -273,44 +283,22 @@ namespace ApexUpYourSpawns
             forceFreshSpawns = options.forceFreshSpawns.Value;
             balancedSpawns = options.balancedSpawns.Value;
 
+            //Vanilla
             redLizardChance = (float)options.redLizardChance.Value / 100;
-            trainLizardChance = (float)options.trainLizardChance.Value / 100;
             largeCentipedeChance = (float)options.largeCentipedeChance.Value / 100;
             redCentipedeChance = (float)options.redCentipedeChance.Value / 100;
             spitterSpiderChance = (float)options.spitterSpiderChance.Value / 100;
             kingVultureChance = (float)options.kingVultureChance.Value / 100;
-            mirosVultureChance = (float)options.mirosVultureChance.Value / 100;
-            eliteScavengerChance = (float)options.eliteScavengerChance.Value / 100;
             brotherLongLegsChance = (float)options.brotherLongLegsChance.Value / 100;
             daddyLongLegsChance = (float)options.daddyLongLegsChance.Value / 100;
-            terrorLongLegsChance = (float)options.terrorLongLegsChance.Value / 100;
-            fireBugChance = (float)options.fireBugChance.Value / 100;
             cicadaCentiwingChance = (float)options.cicadaCentiwingChance.Value / 100;
             leechLizardChance = (float)options.leechLizardChance.Value / 100;
             seaLeechAquapedeChance = (float)options.seaLeechAquapedeChance.Value / 100;
-            yeekLizardChance = (float)options.yeekLizardChance.Value / 100;
-            aquapedeChance = (float)options.jetfishAquapedeChance.Value / 100;
-            giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
-            caramelLizChance = (float)options.caramelLizChance.Value / 100;
-            strawberryLizChance = (float)options.strawberryLizChance.Value / 100;
             cyanLizChance = (float)options.cyanLizChance.Value / 100;
-            eelLizChance = (float)options.eelLizChance.Value / 100;
-            jungleLeechChance = (float)options.jungleLeechChance.Value / 100;
-            motherSpiderChance = (float)options.motherSpiderChance.Value / 100;
             tubeWormBigSpiderChance = (float)options.tubeWormSpiderInv.Value / 100;
-            stowawayChance = (float)options.stowawayChance.Value / 100;
-            kingScavengerChance = (float)options.kingScavengerChance.Value / 100;
-            hunterLongLegsChance = (float)options.hunterLongLegsChance.Value / 100;
             jetfishSalamanderChance = (float)options.jetfishSalamanderChance.Value / 100;
             cicadaNoodleflyChance = (float)options.cicadaNoodleFlyChance.Value / 100;
             monsterKelpChance = (float)options.monsterKelpChance.Value / 100;
-
-            //Mod dependant
-            if (activeMods.Contains("ShinyKelp.AngryInspectors"))
-                inspectorChance = (float)options.inspectorChance.Value / 100;
-            if (activeMods.Contains("ShinyKelp.LizardVariants"))
-                ryanLizardChance = (float)options.ryanLizardChance.Value / 100;
-
             extraGreens = options.greenLizExtras.Value;
             extraPinks = options.pinkLizExtras.Value;
             extraBlues = options.blueLizExtras.Value;
@@ -319,9 +307,6 @@ namespace ApexUpYourSpawns
             extraYellows = options.yellowLizExtras.Value;
             extraSals = options.salExtras.Value;
             extraCyans = options.cyanLizExtras.Value;
-            extraCaramels = options.caramelLizExtras.Value;
-            extraEellizs = options.eelLizExtras.Value;
-            extraZoops = options.zoopLizExtras.Value;
             extraSpiders = options.bigSpiderExtras.Value;
             extraVultures = options.vultureExtras.Value;
             extraScavengers = options.scavengerExtras.Value;
@@ -329,12 +314,10 @@ namespace ApexUpYourSpawns
             extraEggbugs = options.eggbugExtras.Value;
             extraCicadas = options.cicadaExtras.Value;
             extraSnails = options.snailExtras.Value;
-            extraJetfish = options.jetfishExtras.Value;
-            extraYeeks = options.yeekExtras.Value;
+            extraJetfish = options.jetfishExtras.Value;            
             extraLMice = options.lmiceExtras.Value;
             extraCentipedes = options.centipedeExtras.Value;
             extraCentiwings = options.centiWingExtras.Value;
-            extraAquapedes = options.aquapedeExtras.Value;
             extraPrecycleSals = options.precycleCreatureExtras.Value;
             extraDropwigs = options.dropwigExtras.Value;
             extraMiros = options.mirosExtras.Value;
@@ -344,6 +327,38 @@ namespace ApexUpYourSpawns
             extraKelp = options.kelpExtras.Value;
             extraLeviathans = options.leviathanExtras.Value;
             extraNightCreatures = options.nightCreatureExtras.Value;
+
+            //MSC
+            trainLizardChance = (float)options.trainLizardChance.Value / 100;
+            mirosVultureChance = (float)options.mirosVultureChance.Value / 100;
+            eliteScavengerChance = (float)options.eliteScavengerChance.Value / 100;
+            terrorLongLegsChance = (float)options.terrorLongLegsChance.Value / 100;
+            fireBugChance = (float)options.fireBugChance.Value / 100;
+            yeekLizardChance = (float)options.yeekLizardChance.Value / 100;
+            aquapedeChance = (float)options.jetfishAquapedeChance.Value / 100;
+            giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
+            caramelLizChance = (float)options.caramelLizChance.Value / 100;
+            strawberryLizChance = (float)options.strawberryLizChance.Value / 100;
+            eelLizChance = (float)options.eelLizChance.Value / 100;
+            jungleLeechChance = (float)options.jungleLeechChance.Value / 100;
+            motherSpiderChance = (float)options.motherSpiderChance.Value / 100;
+            stowawayChance = (float)options.stowawayChance.Value / 100;
+            kingScavengerChance = (float)options.kingScavengerChance.Value / 100;
+            hunterLongLegsChance = (float)options.hunterLongLegsChance.Value / 100;
+            extraCaramels = options.caramelLizExtras.Value;
+            extraEellizs = options.eelLizExtras.Value;
+            extraZoops = options.zoopLizExtras.Value;
+            extraYeeks = options.yeekExtras.Value;
+            extraAquapedes = options.aquapedeExtras.Value;
+
+            //Watcher
+
+            //Mods
+            //Mod dependant
+            if (activeMods.Contains("ShinyKelp.AngryInspectors"))
+                inspectorChance = (float)options.inspectorChance.Value / 100;
+            if (activeMods.Contains("ShinyKelp.LizardVariants"))
+                ryanLizardChance = (float)options.ryanLizardChance.Value / 100;
         }
 
         private void ClearDictionaries()
@@ -382,13 +397,14 @@ namespace ApexUpYourSpawns
             if (!(bannedRooms is null))
                 bannedRooms.Clear();
 
-            /*
+            
             if (!(lineagesToSave is null))
             {
                 foreach (List<World.Lineage> lins in lineagesToSave.Values)
                     lins.Clear();
                 lineagesToSave.Clear();
             }
+            /*
             if (!(spawnersToSave is null))
             {
                 foreach (List<World.SimpleSpawner> spw in spawnersToSave.Values)
@@ -1000,8 +1016,6 @@ namespace ApexUpYourSpawns
         #endregion
 
         #region Spawner Savestate handling
-        
-        /*
         private void CharacterSelectPage_AbandonButton_OnPressDone(On.Menu.CharacterSelectPage.orig_AbandonButton_OnPressDone orig, Menu.CharacterSelectPage self, Menu.Remix.MixedUI.UIfocusable trigger)
         {
             orig(self, trigger);
@@ -1025,9 +1039,6 @@ namespace ApexUpYourSpawns
             foreach (List<World.Lineage> lin in lineagesToSave.Values)
                 lin.Clear();
             lineagesToSave.Clear();
-            foreach (List<World.SimpleSpawner> spw in spawnersToSave.Values)
-                spw.Clear();
-            spawnersToSave.Clear();
         }
         
 
@@ -1061,12 +1072,10 @@ namespace ApexUpYourSpawns
                         string linStr = lineage.SpawnerID.ToString() + "|";
                         foreach (int critIndex in lineage.creatureTypes)
                         {
-                            if (critIndex < 0 || critIndex >= StaticWorld.creatureTemplates.Length)
-                                linStr += "-1,";
-                            else if (critIndex < 47)
-                                linStr += critIndex + ",";
-                            else
-                                linStr += StaticWorld.creatureTemplates[critIndex].type.ToString() + ":" + critIndex + ",";
+                            string critName = "Empty";
+                            if(critIndex > -1 && critIndex < StaticWorld.creatureTemplates.Count())
+                                critName = StaticWorld.creatureTemplates[critIndex].type.ToString();
+                            linStr += critName + ";";
                         }
                         linStr = linStr.Substring(0, linStr.Length - 1);
 
@@ -1081,31 +1090,10 @@ namespace ApexUpYourSpawns
                         writer.WriteLine(linStr);
                     }
 
-                    if(spawnersToSave.ContainsKey(regionSave) && spawnersToSave[regionSave].Count > 0)
-                    {
-                        writer.WriteLine("====");
-                        foreach(World.SimpleSpawner spawner in spawnersToSave[regionSave])
-                        {
-                            string spawnerStr = spawner.region.ToString() + ":" + spawner.inRegionSpawnerIndex.ToString() + "|";
-                            int critIndex = spawner.creatureType.index;
-                            
-                            if (critIndex > -1 && critIndex < 47)
-                                spawnerStr += critIndex + ",";
-                            else
-                                spawnerStr += spawner.creatureType.ToString() + ":" + critIndex + ",";
-
-                            spawnerStr += spawner.amount + "," + (spawner.spawnDataString != null? spawner.spawnDataString : "");
-
-                            writer.WriteLine(spawnerStr);
-                        }
-                        spawnersToSave[regionSave].Clear();
-                    }
-
                 }
                 lineagesToSave[regionSave].Clear();
             }
             lineagesToSave.Clear();
-            spawnersToSave.Clear();
         }
         
 
@@ -1113,6 +1101,21 @@ namespace ApexUpYourSpawns
         {
             bool needsFresh = false;
             Dictionary<int, KeyValuePair<int[], string[]>> linSaveState = SavedLineagesToDictionary(worldLoader);
+
+            if (logSpawners)
+            {
+                Debug.Log("READ DICTIONARY:");
+                foreach (int i in linSaveState.Keys)
+                {
+                    Debug.Log("\n   ===========\n");
+                    Debug.Log("ID: " + i);
+                    foreach (int j in linSaveState[i].Key)
+                        Debug.Log(j);
+
+                }
+                Debug.Log("\n");
+            }
+            
             foreach (World.Lineage lineage in worldLoader.spawners.OfType<World.Lineage>())
             {
                 if (linSaveState.ContainsKey(lineage.SpawnerID))
@@ -1124,6 +1127,8 @@ namespace ApexUpYourSpawns
             }
             linSaveState.Clear();
 
+            /*
+             * Offscreen dens
             List<World.SimpleSpawner> offScreenSaveState = SavedSpawnersToList(worldLoader);
             if(offScreenSaveState.Count > 0)
             {
@@ -1140,10 +1145,6 @@ namespace ApexUpYourSpawns
                             break;
                     }
                 }
-                /*
-                 * TO-DO: Save ALL spawns, not just offscreen.
-                 * Set needsFresh to true to force them to change.
-                 * Current version has spawn data loss over time.
                 if (offScreenSaveState.Count > 0)
                     needsFresh = true;
                 //
@@ -1153,28 +1154,29 @@ namespace ApexUpYourSpawns
                     worldLoader.spawners.Add(offScreenSaveState[0]);
                     offScreenSaveState.RemoveAt(0);
                 }
-            }
+            }*/
             return needsFresh;
         }
         
         private void AddSpawnersToBuffer(WorldLoader loader)
         {
             List<World.Lineage> lineages = new List<World.Lineage>();
-            List<World.SimpleSpawner> spawners = new List<World.SimpleSpawner>();
-
-            WorldCoordinate offScreenDen = FindOffScreenDen(loader);
+            //WorldCoordinate offScreenDen = FindOffScreenDen(loader);
             foreach (World.CreatureSpawner spawner in loader.spawners)
             {
                 if (spawner is World.Lineage lin)
                     lineages.Add(lin);
-                else if (spawner is World.SimpleSpawner && spawner.den == offScreenDen)
-                    spawners.Add(spawner as World.SimpleSpawner);
             }
-            UnityEngine.Debug.Log("Added " + spawners.Count + " spawners to save buffer.");
             if (lineages.Count > 0)
-                lineagesToSave.Add(loader.worldName, lineages);
-            if (spawners.Count > 0)
-                spawnersToSave.Add(loader.worldName, spawners);
+            {
+                if (lineagesToSave.ContainsKey(loader.worldName))
+                {
+                    Debug.Log("WARNING: Trying to save state of region twice: " + loader.worldName);
+                    lineagesToSave[loader.worldName] = lineages;
+                }
+                else
+                    lineagesToSave.Add(loader.worldName, lineages);
+            }
         }
 
         private Dictionary<int, KeyValuePair<int[], string[]>> SavedLineagesToDictionary(WorldLoader loader)
@@ -1187,48 +1189,49 @@ namespace ApexUpYourSpawns
             if (loader.game.IsStorySession)
                 player = loader.game.GetStorySession.saveStateNumber;
             filePath += (expedition ? "e" : "") + saveSlot + player.ToString() + loader.worldName + ".txt";
-            if (File.Exists(filePath))
+            StreamReader sr = null;
+            try
             {
-                StreamReader sr = new StreamReader(filePath);
-                string line = sr.ReadLine();
-                while (line != null && !line.StartsWith("===="))
+                if (File.Exists(filePath))
                 {
-                    string[] baseSplits = line.Split('|');
-                    string[] creatureSplits = baseSplits[1].Split(',');
-                    int[] critArray = new int[creatureSplits.Length];
-                    for (int i = 0; i < creatureSplits.Length; ++i)
+                    sr = new StreamReader(filePath);
+                    string line = sr.ReadLine();
+                    while (line != null)
                     {
-                        if (creatureSplits[i].Length < 4 && int.TryParse(creatureSplits[i], out int index))
-                            critArray[i] = index;
-                        else
+                        string[] baseSplits = line.Split('|');
+                        string[] creatureSplits = baseSplits[1].Split(';');
+                        int[] critArray = new int[creatureSplits.Length];
+                        for (int i = 0; i < creatureSplits.Length; ++i)
                         {
-                            string[] dividedCrit = creatureSplits[i].Split(':');
-                            int prevIndex = int.Parse(dividedCrit[1]);
-                            if (prevIndex < StaticWorld.creatureTemplates.Length &&
-                                dividedCrit[0] == StaticWorld.creatureTemplates[prevIndex].type.value)
-                            {
-                                critArray[i] = prevIndex;
-                            }
+                            if (creatureSplits[i] == "Empty")
+                                critArray[i] = -1;
                             else
-                            {
-                                critArray[i] = new CreatureTemplate.Type(dividedCrit[0]).index;
-                            }
+                                critArray[i] = new CreatureTemplate.Type(creatureSplits[i]).index;
                         }
-                    }
-                    string[] spawnDataSplit = baseSplits[2].Split(';');
-                    if (spawnDataSplit.Length != creatureSplits.Length)
-                        spawnDataSplit = new string[creatureSplits.Length];
-                    for (int i = 0; i < spawnDataSplit.Length; ++i)
-                    {
-                        if (spawnDataSplit[i] != null && (spawnDataSplit[i].Length < 3 ||
-                            !spawnDataSplit[i].StartsWith("{") || !spawnDataSplit[i].EndsWith("}")))
-                            spawnDataSplit[i] = null;
-                    }
-                    lineagesDict.Add(int.Parse(baseSplits[0]), new KeyValuePair<int[], string[]>(critArray, spawnDataSplit));
+                        string[] spawnDataSplit = baseSplits[2].Split(';');
+                        if (spawnDataSplit.Length != creatureSplits.Length)
+                            spawnDataSplit = new string[creatureSplits.Length];
+                        for (int i = 0; i < spawnDataSplit.Length; ++i)
+                        {
+                            if (spawnDataSplit[i] != null && (spawnDataSplit[i].Length < 3 ||
+                                !spawnDataSplit[i].StartsWith("{") || !spawnDataSplit[i].EndsWith("}")))
+                                spawnDataSplit[i] = null;
+                        }
+                        lineagesDict.Add(int.Parse(baseSplits[0]), new KeyValuePair<int[], string[]>(critArray, spawnDataSplit));
 
-                    line = sr.ReadLine();
+                        line = sr.ReadLine();
+                    }
                 }
-                sr.Close();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("ERROR WHILE READING FROM FILE.");
+                Debug.Log(e.Message);
+            }
+            finally
+            {
+                if(sr != null)
+                    sr.Close();
             }
             return lineagesDict;
         }
@@ -1300,7 +1303,7 @@ namespace ApexUpYourSpawns
             }
             return savedSpawners;
         }
-        */
+        
         #endregion
 
         #region HunterLongLegs functions
@@ -1544,7 +1547,7 @@ namespace ApexUpYourSpawns
 
         private void ReplaceGiantJellyfish(On.JellyFish.orig_PlaceInRoom orig, JellyFish self, Room room)
         {
-            if (!game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
+            if (hasSharedDLC && !game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
             {
                 AbstractCreature myBigJelly = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(DLCSharedEnums.CreatureTemplateType.BigJelly), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
                 BigJellyFish myJelly = new BigJellyFish(myBigJelly, game.world);
@@ -1556,7 +1559,7 @@ namespace ApexUpYourSpawns
 
         private void ReplaceStowawayBugBlueFruit(On.DangleFruit.orig_PlaceInRoom orig, DangleFruit self, Room room)
         {
-            if(!game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance)
+            if(hasSharedDLC && !game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < stowawayChance)
             {
                 self.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
                 DangleFruit.Stalk stalk = new DangleFruit.Stalk(self, room, self.firstChunk.pos);
@@ -1584,7 +1587,7 @@ namespace ApexUpYourSpawns
 
         private void ReplaceStowawayBugGooieDuck(On.MoreSlugcats.GooieDuck.orig_PlaceInRoom orig, GooieDuck self, Room room)
         {
-            if (game.IsStorySession && !room.abstractRoom.shelter && UnityEngine.Random.value < (balancedSpawns? stowawayChance * 2 : stowawayChance))
+            if (hasSharedDLC && game.IsStorySession && !room.abstractRoom.shelter && UnityEngine.Random.value < (balancedSpawns? stowawayChance * 2 : stowawayChance))
             {
                 DangleFruit fruit = new DangleFruit(self.abstractPhysicalObject);
                 fruit.firstChunk.HardSetPosition(room.MiddleOfTile(self.abstractPhysicalObject.pos));
@@ -1607,7 +1610,7 @@ namespace ApexUpYourSpawns
 
         private void AddScavKings(On.Room.orig_ReadyForAI orig, Room self)
         {
-            if (kingScavengerChance > 0 && self.abstractRoom.name != "LC_FINAL" && activeMods.Contains("ShinyKelp.ScavengerTweaks"))
+            if (ModManager.MSC && kingScavengerChance > 0 && self.abstractRoom.name != "LC_FINAL" && activeMods.Contains("ShinyKelp.ScavengerTweaks"))
             {
                 List<AbstractCreature> elitesList = new List<AbstractCreature>();
                 List<AbstractCreature> removedElitesList = new List<AbstractCreature>();
@@ -1692,7 +1695,6 @@ namespace ApexUpYourSpawns
         #region World Generation Functions
         private void GenerateCustomPopulation(On.WorldLoader.orig_GeneratePopulation orig, WorldLoader worldLoader, bool fresh)
         {
-
             try
             {
                 triedEchoLevi = false;
@@ -1731,22 +1733,21 @@ namespace ApexUpYourSpawns
 
                     wLoader = null;
 
-                    /*
+                    
                     if (!worldLoader.game.rainWorld.safariMode)
                         AddSpawnersToBuffer(worldLoader);
                     else
                         ResetSpawnBufferOnDeath();
-                    */
                 }
                 else
                 {
                     MoleSalamanderCheck(worldLoader);
-                    /*
+                    
                     if (!worldLoader.game.rainWorld.safariMode)
                     {
                         bool needsFresh = LoadSaveState(worldLoader);
                         //fresh = needsFresh;
-                    }*/
+                    }
                 }
             }
             catch(Exception ex)
@@ -1878,7 +1879,7 @@ namespace ApexUpYourSpawns
                         && (simpleSpawner.spawnDataString is null || !simpleSpawner.spawnDataString.Contains("Ignorecycle")))
                     {
                         IncreaseCreatureSpawner(simpleSpawner, extraNightCreatures, true);
-                        if (hasAngryInspectors) 
+                        if (hasAngryInspectors && hasSharedDLC) 
                         {
                             if((region == "LC" && roomName != "LCOffScreenDen") || 
                                 (region == "UW" && roomName != "UWOffScreenDen"))
@@ -2088,9 +2089,6 @@ namespace ApexUpYourSpawns
                         goto ModCreaturesSpawner;
                     }
 
-
-
-
                 ModCreaturesSpawner:
                     CheckModCreatures(simpleSpawner, spawners);
                     AfterModAdjustments(simpleSpawner, spawners);
@@ -2141,7 +2139,7 @@ namespace ApexUpYourSpawns
                     }
                     if (IsCreatureInLineage(lineage, CreatureTemplate.Type.EggBug))
                     {
-                        if (balancedSpawns)
+                        if (balancedSpawns && ModManager.MSC)
                         {
                             lineage.creatureTypes[0] = CreatureTemplate.Type.EggBug.Index;
                             for (int j = 1; j < lineage.creatureTypes.Length; ++j)
@@ -2253,7 +2251,7 @@ namespace ApexUpYourSpawns
                     }
                 }
             }
-            if (activeMods.Contains("lb-fgf-m4r-ik.golden-region-jam"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.modpack"))
             {
                 if (!triedEchoLevi && spawner.creatureType.index > -1 && spawner.creatureType.index < StaticWorld.creatureTemplates.Length && (
                     StaticWorld.creatureTemplates[spawner.creatureType.index].TopAncestor().type == CreatureTemplate.Type.Vulture ||
@@ -2360,9 +2358,10 @@ namespace ApexUpYourSpawns
             float localRedLizardChance = redLizardChance;
             if (simpleSpawner.creatureType == CreatureTemplate.Type.YellowLizard || (
                 (region == "SU" || region == "HI") && (
-                slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Artificer ||
-                slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Spear ||
-                slugcatName == SlugcatStats.Name.Red)))
+                slugcatName == SlugcatStats.Name.Red || ( 
+                hasSharedDLC && (
+                slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Artificer || slugcatName == MoreSlugcatsEnums.SlugcatStatsName.Spear 
+                )))))
             {
                 if(localRedLizardChance < 1)
                     localRedLizardChance /= 2;
@@ -2458,13 +2457,10 @@ namespace ApexUpYourSpawns
                 IncreaseCreatureSpawner(simpleSpawner, extraSals, true);
                 ReplaceMultiSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.EelLizard, eelLizChance);
             }
-            if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard)
+            if (hasSharedDLC && simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.EelLizard)
             {
                 IncreaseCreatureSpawner(simpleSpawner, extraEellizs, true);
             }
-
-
-            
 
         }
 
@@ -2688,7 +2684,8 @@ namespace ApexUpYourSpawns
 
         private bool ReplaceMultiSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners, CreatureTemplate.Type replacement, float chance, bool forceNewSpawner = false)
         {
-
+            if (replacement == null)
+                return false;
             if (simpleSpawner.creatureType == replacement)
                 return false;
             if (forceNewSpawner && spawnerCount > originalSpawnCount * 4)
@@ -2750,6 +2747,8 @@ namespace ApexUpYourSpawns
     
         private bool AddInvasionSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners, CreatureTemplate.Type invador, float chance, bool singleRoll = false, bool reduceInvaded = false, bool removeInvaded = false)
         {
+            if (invador == null)
+                return false;
             if (simpleSpawner.creatureType == invador)
                 return false;
             if (spawnerCount > originalSpawnCount * 4)
@@ -2952,8 +2951,9 @@ namespace ApexUpYourSpawns
 
         private bool IsCreatureInLineage(World.Lineage lineage, CreatureTemplate.Type creatureType, bool useAncestor = false)
         {
+            if (creatureType == null)
+                return false;
             bool foundCreature = false;
-
             if (!useAncestor)
             {
                 for (int i = 0; i < lineage.creatureTypes.Length; ++i)
@@ -2983,7 +2983,10 @@ namespace ApexUpYourSpawns
     
         private bool ReplaceCreatureInLineage(World.Lineage lineage, CreatureTemplate.Type replacee, CreatureTemplate.Type replacement, float chance, bool useAncestors = false)
         {
+            if (replacement is null || replacee is null)
+                return false;
             bool replacedCreature = false;
+
             if (!useAncestors)
             {
                 for (int i = 0; i < lineage.creatureTypes.Length; ++i)
@@ -3030,6 +3033,8 @@ namespace ApexUpYourSpawns
 
         private void CheckModCreatures(World.SimpleSpawner spawner, List<World.CreatureSpawner> spawners)
         {
+            if (spawner is null || spawner.creatureType is null)
+                return;
             if(!(modCreatureReplacements is null) && modCreatureReplacements.TryGetValue(spawner.creatureType, out List<ModCreatureReplacement> list))
             {
                 ApplyModCreatureEdits(spawner, spawners, list);

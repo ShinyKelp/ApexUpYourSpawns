@@ -120,7 +120,7 @@ namespace ApexUpYourSpawns
         private OpScrollBox scrollBox;
         private OpTextBox presetText;
         private OpComboBox presetsComboBox;
-        private UIelement[] UIFixed, UIBaseGameOptions, UIDLCOptions, UIMSCOptions, UIWatcherOptions, UIModOptions;
+        private UIelement[] UIFixed, UIBaseGameOptions, UIDLCOptions, UIWatcherOptions, UIModOptions;
         private Dictionary<string, OpUpdown> optionsRefs;
 
         private ApexUpYourSpawnsMod apexMod;
@@ -434,7 +434,15 @@ namespace ApexUpYourSpawns
                 scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras
             };
 
-            Configurable<int>[] UIDLCReplacementConfigs = new Configurable<int>[]
+            Configurable<int>[] UIDLCExtraConfigs = new Configurable<int>[]
+            {
+                caramelLizExtras, eelLizExtras, zoopLizExtras,
+                aquapedeExtras,
+                yeekExtras,
+            };
+
+
+            List<Configurable<int>> dlcRepConfigsList = new List<Configurable<int>>
             {
                 strawberryLizChance, caramelLizChance, eelLizChance, yeekLizardChance,
                 jetfishAquapedeChance, seaLeechAquapedeChance,
@@ -447,15 +455,7 @@ namespace ApexUpYourSpawns
                 stowawayChance
             };
 
-            Configurable<int>[] UIDLCExtraConfigs = new Configurable<int>[]
-            {
-                caramelLizExtras, eelLizExtras, zoopLizExtras,
-                aquapedeExtras,
-                yeekExtras,
-            };
-
-
-            List<Configurable<int>> configList = new List<Configurable<int>>
+            List<Configurable<int>> mscRepConfigList = new List<Configurable<int>>
             {
                 trainLizardChance,
                 fireBugChance,
@@ -463,9 +463,13 @@ namespace ApexUpYourSpawns
             };
             if (apexMod.activeMods.Contains("ShinyKelp.ScavengerTweaks"))
             {
-                configList.Add(kingScavengerChance);
+                mscRepConfigList.Add(kingScavengerChance);
             }
-            Configurable<int>[] UIMSCReplacementConfigs = configList.ToArray();
+
+            if (ModManager.MSC)
+                dlcRepConfigsList.AddRange(mscRepConfigList);
+
+            Configurable<int>[] UIDLCReplacementConfigs = dlcRepConfigsList.ToArray();
 
             //Basegame scrollbox
             OpTab vanillaTab = new OpTab(this, " Vanilla");
@@ -499,8 +503,13 @@ namespace ApexUpYourSpawns
             vanillaTab._AddItem(vanillaScrollBox);
             vanillaScrollBox.AddItems(UIBaseGameOptions);
 
-            //DLC Shared
-            OpTab dlcTab = new OpTab(this, " DLC Expansion");
+            //DLC Shared / MSC
+            OpTab dlcTab = new OpTab(this);
+
+            if (ModManager.MSC)
+                dlcTab.name = " More Slugcats";
+            else
+                dlcTab.name = " DLC Expansion";
 
             float dlcScrollSize = 60f + 35f * (Mathf.Max(UIDLCReplacementConfigs.Length, UIDLCExtraConfigs.Length));
 
@@ -529,40 +538,6 @@ namespace ApexUpYourSpawns
 
             dlcTab._AddItem(dlcScrollBox);
             dlcScrollBox.AddItems(UIDLCOptions);
-
-
-            //MSC
-            OpTab mscTab = new OpTab(this, " More Slugcats");
-
-            float mscScrollSize = 60f + 35f * (Mathf.Max(UIMSCReplacementConfigs.Length, 0));
-
-            replaceLength = UIMSCReplacementConfigs.Length * 2;
-            extraLength = 0;
-
-            UIMSCOptions = new UIelement[extraLength + replaceLength];
-
-            //Replacements
-            for (int i = 0; i < UIMSCReplacementConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIMSCReplacementConfigs[i], out auxString);
-                UIMSCOptions[i * 2] = new OpLabel(80f, mscScrollSize - 30f - (35f * i), auxString);
-                UIMSCOptions[i * 2 + 1] = new OpUpdown(UIMSCReplacementConfigs[i], new Vector2(10f, mscScrollSize - 35f - (35f * i)), 60f);
-            }
-
-            //Extras
-            //No extras exclusive to MSC.
-            /*
-            for (int i = 0; i < UIMSCExtraConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIMSCExtraConfigs[i], out auxString);
-                UIMSCOptions[replaceLength + i * 2] = new OpLabel(400f, mscScrollSize - 30f - (35f * i), auxString);
-                UIMSCOptions[replaceLength + i * 2 + 1] = new OpUpdown(UIMSCExtraConfigs[i], new Vector2(330f, mscScrollSize - 35f - (35f * i)), 60f);
-            }*/
-
-            OpScrollBox mscScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), mscScrollSize, false, false, true);
-
-            mscTab._AddItem(mscScrollBox);
-            mscScrollBox.AddItems(UIMSCOptions);
 
             //Mods
             OpTab modsTab = new OpTab(this, " Mods");
@@ -602,7 +577,6 @@ namespace ApexUpYourSpawns
             OpTab watcherTab = new OpTab(this, "The Watcher");
             UIWatcherOptions = new UIelement[0];
 
-
             //Final tabs
             vanillaTab.OnPreActivate += () => {
                 vanillaTab.AddItems(UIFixed);
@@ -617,13 +591,6 @@ namespace ApexUpYourSpawns
             dlcTab.OnPostDeactivate += () =>
             {
                 dlcTab.RemoveItems(UIFixed);
-            };
-            mscTab.OnPreActivate += () => {
-                mscTab.AddItems(UIFixed);
-            };
-            mscTab.OnPostDeactivate += () =>
-            {
-                mscTab.RemoveItems(UIFixed);
             };
             watcherTab.OnPreActivate += () => {
                 watcherTab.AddItems(UIFixed);
@@ -643,14 +610,11 @@ namespace ApexUpYourSpawns
             tabs.Add(vanillaTab);
             if (ModManager.MSC || ModManager.Watcher)
                 tabs.Add(dlcTab);
-            if (ModManager.MSC)
-                tabs.Add(mscTab);
             if (ModManager.Watcher)
                 tabs.Add(watcherTab);
             if (hasAnyMods)
                 tabs.Add(modsTab);
 
-            
 
             this.Tabs = tabs.ToArray();
 
@@ -663,7 +627,7 @@ namespace ApexUpYourSpawns
                 if(u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
 
-            foreach (UIelement u in UIMSCOptions)
+            foreach (UIelement u in UIDLCOptions)
                 if (u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
 
@@ -848,11 +812,11 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
                 enabledModsRepConfigs.Add(fatFireFlyChance);
                 labelsMap.Add(surfaceSwimmerChance, "EggBug > Surface Swimmer");
-                labelsMap.Add(surfaceSwimmerExtras, "Surface Swimmer");
+                labelsMap.Add(surfaceSwimmerExtras, "Surface Swimmer (/10)");
                 enabledModsRepConfigs.Add(surfaceSwimmerChance);
                 enabledModsExtraConfigs.Add(surfaceSwimmerExtras);
                 labelsMap.Add(bounceBallChance, "Snail > Bouncing Ball");
-                labelsMap.Add(bounceBallExtras, "Bouncing Ball");
+                labelsMap.Add(bounceBallExtras, "Bouncing Ball (/10)");
                 enabledModsRepConfigs.Add(bounceBallChance);
                 enabledModsExtraConfigs.Add(bounceBallExtras);
                 labelsMap.Add(noodleEaterChance, "Noodlefly > Noodle Eater (Inv)");
@@ -1133,9 +1097,15 @@ namespace ApexUpYourSpawns
         {
             for(int i = 0; i < UIBaseGameOptions.Length; i++)
                 if (UIBaseGameOptions[i] is OpUpdown op)
-                {
                     op.Reset();
-                }
+
+            for (int i = 0; i < UIDLCOptions.Length; i++)
+                if (UIDLCOptions[i] is OpUpdown op)
+                    op.Reset();
+
+            for (int i = 0; i < UIWatcherOptions.Length; i++)
+                if (UIWatcherOptions[i] is OpUpdown op)
+                    op.Reset();
 
             for (int i = 0; i < UIModOptions.Length; i++)
                 if (UIModOptions[i] is OpUpdown op)
@@ -1153,8 +1123,8 @@ namespace ApexUpYourSpawns
                     op.Reset();
                     op.defaultValue = aux;
                 }
-            for (int i = 0; i < UIMSCOptions.Length; i++)
-                if (UIMSCOptions[i] is OpUpdown op)
+            for (int i = 0; i < UIDLCOptions.Length; i++)
+                if (UIDLCOptions[i] is OpUpdown op)
                 {
                     aux = op.defaultValue;
                     op.defaultValue = "0";

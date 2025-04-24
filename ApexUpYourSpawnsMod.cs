@@ -164,7 +164,7 @@ namespace ApexUpYourSpawns
                 new string[]
                 {        
                     "ShinyKelp.AngryInspectors",
-                    "moredlls", //?
+                    "moredlls",
                     "ShinyKelp.LizardVariants",
                     "thefriend",
                     "Outspector",
@@ -177,7 +177,8 @@ namespace ApexUpYourSpawns
                     "drainmites",
                     "myr.moss_fields",
                     "ShinyKelp.Udonfly",
-                    "shrimb.scroungers", //?
+                    "shrimb.scroungers",
+                    "shrimb.frostbite",
                     "Croken.Mimicstarfish",
                     "ShinyKelp.AlbinoKings",
                     "bebra.gregtech_lizard",
@@ -918,7 +919,7 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SpitterSpider, new ModCreatureReplacement(
                     new CreatureTemplate.Type("ToxicSpider"), options.toxicSpiderChance));
             }
-            if (activeMods.Contains("shrimb.scroungers"))
+            if (activeMods.Contains("shrimb.scroungers") || activeMods.Contains("shrimb.frostbite"))
             {
                 Dictionary<string, float> scroungerDict = new Dictionary<string, float>();
                 scroungerDict.Add("Artificer", 0.2f);

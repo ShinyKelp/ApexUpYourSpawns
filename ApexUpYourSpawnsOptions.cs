@@ -17,22 +17,40 @@ namespace ApexUpYourSpawns
         public readonly Configurable<bool> forceFreshSpawns;
         public readonly Configurable<bool> balancedSpawns;
 
-        //Vanilla
+        //Replacements
         public readonly Configurable<int> redLizardChance;
         public readonly Configurable<int> redCentipedeChance;
         public readonly Configurable<int> largeCentipedeChance;
+        public readonly Configurable<int> mirosVultureChance;
         public readonly Configurable<int> kingVultureChance;
         public readonly Configurable<int> spitterSpiderChance;
+        public readonly Configurable<int> trainLizardChance;
         public readonly Configurable<int> cicadaCentiwingChance;
+        public readonly Configurable<int> fireBugChance;
+        public readonly Configurable<int> eliteScavengerChance;
         public readonly Configurable<int> brotherLongLegsChance;
         public readonly Configurable<int> daddyLongLegsChance;
+        public readonly Configurable<int> terrorLongLegsChance;
+        public readonly Configurable<int> giantJellyfishChance;
         public readonly Configurable<int> leechLizardChance;
+        public readonly Configurable<int> seaLeechAquapedeChance;
+        public readonly Configurable<int> jetfishAquapedeChance;
+        public readonly Configurable<int> yeekLizardChance;
+        public readonly Configurable<int> caramelLizChance;
+        public readonly Configurable<int> strawberryLizChance;
         public readonly Configurable<int> cyanLizChance;
+        public readonly Configurable<int> eelLizChance;
+        public readonly Configurable<int> jungleLeechChance;
+        public readonly Configurable<int> motherSpiderChance;
         public readonly Configurable<int> tubeWormSpiderInv;
+        public readonly Configurable<int> stowawayChance;
+        public readonly Configurable<int> kingScavengerChance;
+        public readonly Configurable<int> hunterLongLegsChance;
         public readonly Configurable<int> jetfishSalamanderChance;
         public readonly Configurable<int> cicadaNoodleFlyChance;
         public readonly Configurable<int> monsterKelpChance;
 
+        //Extra spawns
         public readonly Configurable<int> greenLizExtras;
         public readonly Configurable<int> pinkLizExtras;
         public readonly Configurable<int> blueLizExtras;
@@ -41,11 +59,15 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> yellowLizExtras;
         public readonly Configurable<int> salExtras;
         public readonly Configurable<int> cyanLizExtras;
+        public readonly Configurable<int> zoopLizExtras;
+        public readonly Configurable<int> caramelLizExtras;
+        public readonly Configurable<int> eelLizExtras;
         public readonly Configurable<int> precycleCreatureExtras;
         public readonly Configurable<int> scavengerExtras;
         public readonly Configurable<int> vultureExtras;
         public readonly Configurable<int> centipedeExtras;
         public readonly Configurable<int> centiWingExtras;
+        public readonly Configurable<int> aquapedeExtras;
         public readonly Configurable<int> bigSpiderExtras;
         public readonly Configurable<int> dropwigExtras;
         public readonly Configurable<int> eggbugExtras;
@@ -54,6 +76,7 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> snailExtras;
         public readonly Configurable<int> jetfishExtras;
         public readonly Configurable<int> smallCentExtras;
+        public readonly Configurable<int> yeekExtras;
         public readonly Configurable<int> mirosExtras;
         public readonly Configurable<int> spiderExtras;
         public readonly Configurable<int> leechExtras;
@@ -61,34 +84,41 @@ namespace ApexUpYourSpawns
         public readonly Configurable<int> tubeWormExtras;
         public readonly Configurable<int> leviathanExtras;
         public readonly Configurable<int> nightCreatureExtras;
+        public readonly Configurable<int> deerExtras;
 
+        //Watcher DLC
+        public readonly Configurable<int> scavengerDiscipleChance;
+        public readonly Configurable<int> scavengerTemplarChance;
+        public readonly Configurable<int> blizzardLizardChance;
+        public readonly Configurable<int> mirosLoachChance;
+        public readonly Configurable<int> deerLoachInvChance;
+        public readonly Configurable<int> loachMirosChance;
+        public readonly Configurable<int> rotLoachChance;
+        public readonly Configurable<int> vultureBigMothChance;
+        public readonly Configurable<int> bigMothVultureChance;
+        public readonly Configurable<int> cicadaSmallMothChance;
+        public readonly Configurable<int> smallMothNoodleflyChance;
+        public readonly Configurable<int> smallMothCentiwingChance;
+        public readonly Configurable<int> deerSkywhaleChance;
+        public readonly Configurable<int> snailBarnacleChance;
+        public readonly Configurable<int> barnacleSnailChance;
+        public readonly Configurable<int> blackBasiliskLizChance;
+        public readonly Configurable<int> groundIndigoLizChance;
+        public readonly Configurable<int> drillCrabMirosChance;
+        public readonly Configurable<int> mirosDrillCrabChance;
+        public readonly Configurable<int> drillCrabLoachChance;
+        public readonly Configurable<int> loachDrillCrabChance;
+        public readonly Configurable<int> deerDrillCrabInvChance;
 
-        //MSC
-        public readonly Configurable<int> mirosVultureChance;
-        public readonly Configurable<int> trainLizardChance;
-        public readonly Configurable<int> fireBugChance;
-        public readonly Configurable<int> eliteScavengerChance;
-        public readonly Configurable<int> terrorLongLegsChance;
-        public readonly Configurable<int> giantJellyfishChance;
-        public readonly Configurable<int> seaLeechAquapedeChance;
-        public readonly Configurable<int> jetfishAquapedeChance;
-        public readonly Configurable<int> yeekLizardChance;
-        public readonly Configurable<int> caramelLizChance;
-        public readonly Configurable<int> strawberryLizChance;
-        public readonly Configurable<int> eelLizChance;
-        public readonly Configurable<int> jungleLeechChance;
-        public readonly Configurable<int> motherSpiderChance;
-        public readonly Configurable<int> stowawayChance;
-        public readonly Configurable<int> kingScavengerChance;
-        public readonly Configurable<int> hunterLongLegsChance;
+        public readonly Configurable<int> loachExtras;
+        public readonly Configurable<int> bigMothExtras;
+        public readonly Configurable<int> smallMothExtras;
+        public readonly Configurable<int> skywhaleExtras;
+        public readonly Configurable<int> basiliskLizExtras;
+        public readonly Configurable<int> indigoLizExtras;
+        public readonly Configurable<int> barnacleExtras;
+        public readonly Configurable<int> drillCrabExtras;
 
-        public readonly Configurable<int> zoopLizExtras;
-        public readonly Configurable<int> caramelLizExtras;
-        public readonly Configurable<int> eelLizExtras;
-        public readonly Configurable<int> aquapedeExtras;
-        public readonly Configurable<int> yeekExtras;
-
-        //Watcher
 
         //Mod dependent
         //Replacements
@@ -120,7 +150,7 @@ namespace ApexUpYourSpawns
         private OpScrollBox scrollBox;
         private OpTextBox presetText;
         private OpComboBox presetsComboBox;
-        private UIelement[] UIFixed, UIBaseGameOptions, UIDLCOptions, UIWatcherOptions, UIModOptions;
+        private UIelement[] UIFixed, UIBaseGameOptions, UIDependentOptions;
         private Dictionary<string, OpUpdown> optionsRefs;
 
         private ApexUpYourSpawnsMod apexMod;
@@ -207,6 +237,40 @@ namespace ApexUpYourSpawns
             leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 4, new ConfigAcceptableRange<int>(0, 100));
             nightCreatureExtras = this.config.Bind<int>("ExtraNightCreatures", 10, new ConfigAcceptableRange<int>(0, 100));
 
+            //Watcher
+            scavengerDiscipleChance = this.config.Bind<int>("ScavengerDiscipleChance", 4, new ConfigAcceptableRange<int>(0, 100));
+            scavengerTemplarChance = this.config.Bind<int>("ScavengerTemplarChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            blizzardLizardChance = this.config.Bind<int>("BlizzardLizardChance", 2, new ConfigAcceptableRange<int>(0, 100));
+            mirosLoachChance = this.config.Bind<int>("MirosLoachChance", 20, new ConfigAcceptableRange<int>(0, 100));
+            deerLoachInvChance = this.config.Bind<int>("DeerLoachInvChance", 5, new ConfigAcceptableRange<int>(0, 100));
+            loachMirosChance = this.config.Bind<int>("LoachMirosChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            rotLoachChance = this.config.Bind<int>("RotLoachChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            vultureBigMothChance = this.config.Bind<int>("VultureBigMothChance", 12, new ConfigAcceptableRange<int>(0, 100));
+            bigMothVultureChance = this.config.Bind<int>("BigMothVultureChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            cicadaSmallMothChance = this.config.Bind<int>("CicadaSmallMothChance", 15, new ConfigAcceptableRange<int>(0, 100));
+            smallMothNoodleflyChance = this.config.Bind<int>("SmallMothNoodleflyChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            smallMothCentiwingChance = this.config.Bind<int>("SmallMothCentiwingChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            deerSkywhaleChance = this.config.Bind<int>("DeerSkywhaleChance", 15, new ConfigAcceptableRange<int>(0, 100));
+            snailBarnacleChance = this.config.Bind<int>("SnailBarnacleChance", 30, new ConfigAcceptableRange<int>(0, 100));
+            barnacleSnailChance = this.config.Bind<int>("BarnacleSnailChance", 8, new ConfigAcceptableRange<int>(0, 100));
+            blackBasiliskLizChance = this.config.Bind<int>("BlackBasiliskLizChance", 10, new ConfigAcceptableRange<int>(0, 100));
+            groundIndigoLizChance = this.config.Bind<int>("GroundIndigoLizChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            drillCrabMirosChance = this.config.Bind<int>("DrillCrabMirosChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            mirosDrillCrabChance = this.config.Bind<int>("MirosDrillCrabChance", 25, new ConfigAcceptableRange<int>(0, 100));
+            drillCrabLoachChance = this.config.Bind<int>("DrillCrabLoachChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            loachDrillCrabChance = this.config.Bind<int>("LoachDrillCrabChance", 0, new ConfigAcceptableRange<int>(0, 100));
+            deerDrillCrabInvChance = this.config.Bind<int>("DeerDrillCrabChance", 18, new ConfigAcceptableRange<int>(0, 100));
+
+            deerExtras = this.config.Bind<int>("ExtraDeer", 2, new ConfigAcceptableRange<int>(0, 20));
+            loachExtras = this.config.Bind<int>("LoachExtras", 2, new ConfigAcceptableRange<int>(0, 20));
+            bigMothExtras = this.config.Bind<int>("BigMothExtras", 3, new ConfigAcceptableRange<int>(0, 100));
+            smallMothExtras = this.config.Bind<int>("SmallMothExtras", 6, new ConfigAcceptableRange<int>(0, 100));
+            basiliskLizExtras = this.config.Bind<int>("BasiliskLizExtras", 4, new ConfigAcceptableRange<int>(0, 100));
+            indigoLizExtras = this.config.Bind<int>("IndigoLizExtras", 8, new ConfigAcceptableRange<int>(0, 100));
+            barnacleExtras = this.config.Bind<int>("BarnacleExtras", 0, new ConfigAcceptableRange<int>(0, 100));
+            drillCrabExtras = this.config.Bind<int>("DrillCrabExtras", 3, new ConfigAcceptableRange<int>(0, 20));
+            skywhaleExtras = this.config.Bind<int>("SkywhaleExtras", 2, new ConfigAcceptableRange<int>(0, 20));
+
         }
 
         private void SetDictionary(Dictionary<Configurable<int>, string> labelsMap)
@@ -282,6 +346,13 @@ namespace ApexUpYourSpawns
 
         public override void Initialize()
         {
+
+            var opTab = new OpTab(this, "Options");
+            this.Tabs = new[]
+            {
+                opTab
+            };
+
             List<ListItem> boxList = new List<ListItem>();
             ListItem def = new ListItem("Default");
             ListItem nulls = new ListItem("Nulls");
@@ -380,21 +451,14 @@ namespace ApexUpYourSpawns
                 new OpLabel(10f, 524f, "Options", true),
                 new OpLabel(-2f, 483f, "Replacements", true),
                 new OpLabel(325f, 483f, "Extra spawns", true),
-                //Replacement description
                 replacementDescription,
-                //Extras description
                 extrasDescription,
-                //Replacement description 2
                 replacementDescription2,
-                //Extras description 2
                 extrasDescription2,
-                //fill lineages
-                fillLineageCheck, 
+                fillLineageCheck,
                 new OpLabel(187f, 16f, "Fill Lineages"),
-                //Balanced spawns check
                 balancedSpawnsCheck,
                 new OpLabel(289f, 16f, "Balanced spawns"),
-                //Force fresh check
                 forceFreshCheck,
                 new OpLabel(421f, 16f, "Randomize every cycle"),
                 presetsComboBox,
@@ -413,210 +477,96 @@ namespace ApexUpYourSpawns
             List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
             SetModConfigs(labelsMap, enabledModsRepConfigs, enabledModsExtraConfigs);
 
-            Configurable<int>[] UIVanillaReplacementConfigs = new Configurable<int>[]
-            {
-                redLizardChance, cyanLizChance, 
-                leechLizardChance, largeCentipedeChance, redCentipedeChance, 
-                kingVultureChance, 
-                cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishSalamanderChance,
-                spitterSpiderChance,  tubeWormSpiderInv, 
-                brotherLongLegsChance, daddyLongLegsChance, monsterKelpChance,
-                    
-            };
+            Configurable<int>[] UIReplacementConfigs;
+            if (apexMod.activeMods.Contains("ShinyKelp.ScavengerTweaks"))
+                UIReplacementConfigs = new Configurable<int>[]
+                {
+                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
+                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
+                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
+                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
+                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
+                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
+                    hunterLongLegsChance, giantJellyfishChance, stowawayChance, kingScavengerChance
+                };
+            else
+                UIReplacementConfigs = new Configurable<int>[]
+                {
+                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
+                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
+                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
+                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
+                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
+                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
+                    hunterLongLegsChance, giantJellyfishChance, stowawayChance
+                };
 
-            Configurable<int>[] UIVanillaExtraConfigs = new Configurable<int>[]
+            Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
             {
                 greenLizExtras, pinkLizExtras, blueLizExtras, whiteLizExtras, blackLizExtras, yellowLizExtras, 
-                salExtras, cyanLizExtras,   
-                smallCentExtras, centipedeExtras, centiWingExtras,  bigSpiderExtras, dropwigExtras, 
+                salExtras, cyanLizExtras, caramelLizExtras, eelLizExtras, zoopLizExtras,  
+                smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, 
                 kelpExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
-                lmiceExtras, snailExtras, jetfishExtras, tubeWormExtras,  precycleCreatureExtras, nightCreatureExtras,
+                lmiceExtras, snailExtras, jetfishExtras, tubeWormExtras, yeekExtras, precycleCreatureExtras, nightCreatureExtras,
                 scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras
             };
 
-            Configurable<int>[] UIDLCExtraConfigs = new Configurable<int>[]
-            {
-                caramelLizExtras, eelLizExtras, zoopLizExtras,
-                aquapedeExtras,
-                yeekExtras,
-            };
 
+            //Adjust scrollbox's size accordingly
+            float scrollBoxSize;
 
-            List<Configurable<int>> dlcRepConfigsList = new List<Configurable<int>>
-            {
-                strawberryLizChance, caramelLizChance, eelLizChance, yeekLizardChance,
-                jetfishAquapedeChance, seaLeechAquapedeChance,
-                motherSpiderChance,
-                jungleLeechChance,
-                mirosVultureChance,
-                eliteScavengerChance,
-                terrorLongLegsChance,
-                giantJellyfishChance,
-                stowawayChance
-            };
+            if (enabledModsRepConfigs.Count + UIReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIExtraConfigs.Length)
+                scrollBoxSize = 60f +  (enabledModsRepConfigs.Count + UIReplacementConfigs.Length) * 35f;
+            else scrollBoxSize = 60f + (enabledModsExtraConfigs.Count + UIExtraConfigs.Length) * 35f;
 
-            List<Configurable<int>> mscRepConfigList = new List<Configurable<int>>
-            {
-                trainLizardChance,
-                fireBugChance,
-                hunterLongLegsChance
-            };
-            if (apexMod.activeMods.Contains("ShinyKelp.ScavengerTweaks"))
-            {
-                mscRepConfigList.Add(kingScavengerChance);
-            }
-
-            if (ModManager.MSC)
-                dlcRepConfigsList.AddRange(mscRepConfigList);
-
-            Configurable<int>[] UIDLCReplacementConfigs = dlcRepConfigsList.ToArray();
-
-            //Basegame scrollbox
-            OpTab vanillaTab = new OpTab(this, " Vanilla");
-
-            float vanillaScrollSize = 60f + 35f * (Mathf.Max(UIVanillaReplacementConfigs.Length, UIVanillaExtraConfigs.Length));
-
-            int replaceLength = UIVanillaReplacementConfigs.Length * 2;
-            int extraLength = UIVanillaExtraConfigs.Length * 2;
+            int replaceLength = UIReplacementConfigs.Length * 2;
+            int extraLength = UIExtraConfigs.Length * 2;
 
             UIBaseGameOptions = new UIelement[extraLength + replaceLength];
             
-            //Replacements
+            //Set the base replacements
             string auxString;
-            for(int i = 0; i < UIVanillaReplacementConfigs.Length; ++i)
+            for(int i = 0; i < UIReplacementConfigs.Length; ++i)
             {
-                labelsMap.TryGetValue(UIVanillaReplacementConfigs[i], out auxString);
-                UIBaseGameOptions[i*2] = new OpLabel(80f, vanillaScrollSize - 30f-(35f*i), auxString);
-                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIVanillaReplacementConfigs[i], new Vector2(10f, vanillaScrollSize - 35f-(35f*i)), 60f);
+                labelsMap.TryGetValue(UIReplacementConfigs[i], out auxString);
+                UIBaseGameOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*i), auxString);
+                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIReplacementConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
-            //Extras
-            for(int i = 0; i < UIVanillaExtraConfigs.Length; ++i)
+            //Set the base extras
+            for(int i = 0; i < UIExtraConfigs.Length; ++i)
             {
-                labelsMap.TryGetValue(UIVanillaExtraConfigs[i], out auxString);
-                UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, vanillaScrollSize - 30f-(35f*i), auxString);
-                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIVanillaExtraConfigs[i], new Vector2(330f, vanillaScrollSize - 35f-(35f*i)), 60f);
+                labelsMap.TryGetValue(UIExtraConfigs[i], out auxString);
+                UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*i), auxString);
+                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
-            OpScrollBox vanillaScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), vanillaScrollSize, false, false, true);            
-            
-            vanillaTab._AddItem(vanillaScrollBox);
-            vanillaScrollBox.AddItems(UIBaseGameOptions);
+            //Set the mod-dependant configs
+            int modReplaceLength = enabledModsRepConfigs.Count * 2;
+            int modExtraLength = enabledModsExtraConfigs.Count * 2;
+            UIDependentOptions = new UIelement[modReplaceLength + modExtraLength];
 
-            //DLC Shared / MSC
-            OpTab dlcTab = new OpTab(this);
-
-            if (ModManager.MSC)
-                dlcTab.name = " More Slugcats";
-            else
-                dlcTab.name = " DLC Expansion";
-
-            float dlcScrollSize = 60f + 35f * (Mathf.Max(UIDLCReplacementConfigs.Length, UIDLCExtraConfigs.Length));
-
-            replaceLength = UIDLCReplacementConfigs.Length * 2;
-            extraLength = UIDLCExtraConfigs.Length * 2;
-
-            UIDLCOptions = new UIelement[extraLength + replaceLength];
-
-            //Replacements
-            for (int i = 0; i < UIDLCReplacementConfigs.Length; ++i)
+            //Set the mod dependant replacement configs
+            for(int i = 0; i < enabledModsRepConfigs.Count; ++i)
             {
-                labelsMap.TryGetValue(UIDLCReplacementConfigs[i], out auxString);
-                UIDLCOptions[i * 2] = new OpLabel(80f, dlcScrollSize - 30f - (35f * i), auxString);
-                UIDLCOptions[i * 2 + 1] = new OpUpdown(UIDLCReplacementConfigs[i], new Vector2(10f, dlcScrollSize - 35f - (35f * i)), 60f);
+                labelsMap.TryGetValue(enabledModsRepConfigs[i], out auxString);
+                UIDependentOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*(i+UIReplacementConfigs.Length)), auxString);
+                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*(i+UIReplacementConfigs.Length))), 60f);
             }
 
-            //Extras
-            for (int i = 0; i < UIDLCExtraConfigs.Length; ++i)
+            //Set the mod dependent extra configs
+            for (int i = 0; i < enabledModsExtraConfigs.Count; ++i)
             {
-                labelsMap.TryGetValue(UIDLCExtraConfigs[i], out auxString);
-                UIDLCOptions[replaceLength + i * 2] = new OpLabel(400f, dlcScrollSize - 30f - (35f * i), auxString);
-                UIDLCOptions[replaceLength + i * 2 + 1] = new OpUpdown(UIDLCExtraConfigs[i], new Vector2(330f, dlcScrollSize - 35f - (35f * i)), 60f);
+                labelsMap.TryGetValue(enabledModsExtraConfigs[i], out auxString);
+                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*(i+UIExtraConfigs.Length)), auxString);
+                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*(i+UIExtraConfigs.Length))), 60f);
             }
 
-            OpScrollBox dlcScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), dlcScrollSize, false, false, true);
-
-            dlcTab._AddItem(dlcScrollBox);
-            dlcScrollBox.AddItems(UIDLCOptions);
-
-            //Mods
-            OpTab modsTab = new OpTab(this, " Mods");
-            UIModOptions = new UIelement[0];
-            bool hasAnyMods = (enabledModsExtraConfigs.Count > 0 || enabledModsRepConfigs.Count > 0);
-            if (hasAnyMods)
-            {
-                //Set the mod-dependant configs
-                float modScrollSize = 60f + 35f * (Mathf.Max(enabledModsRepConfigs.Count, enabledModsExtraConfigs.Count));
-                int modReplaceLength = enabledModsRepConfigs.Count * 2;
-                int modExtraLength = enabledModsExtraConfigs.Count * 2;
-                UIModOptions = new UIelement[modReplaceLength + modExtraLength];
-
-                //Set the mod dependant replacement configs
-                for (int i = 0; i < enabledModsRepConfigs.Count; ++i)
-                {
-                    labelsMap.TryGetValue(enabledModsRepConfigs[i], out auxString);
-                    UIModOptions[i * 2] = new OpLabel(80f, modScrollSize - 30f - (35f * i), auxString);
-                    UIModOptions[i * 2 + 1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, modScrollSize - 35f - (35f * i)), 60f);
-                }
-
-                //Set the mod dependent extra configs
-                for (int i = 0; i < enabledModsExtraConfigs.Count; ++i)
-                {
-                    labelsMap.TryGetValue(enabledModsExtraConfigs[i], out auxString);
-                    UIModOptions[modReplaceLength + i * 2] = new OpLabel(400f, modScrollSize - 30f - (35f * i), auxString);
-                    UIModOptions[modReplaceLength + i * 2 + 1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, modScrollSize - 35f - (35f * i)), 60f);
-                }
-
-                OpScrollBox modScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), modScrollSize, false, false, true);
-
-                modsTab._AddItem(modScrollBox);
-                modScrollBox.AddItems(UIModOptions);
-            }
-
-            //Watcher
-            OpTab watcherTab = new OpTab(this, "The Watcher");
-            UIWatcherOptions = new UIelement[0];
-
-            //Final tabs
-            vanillaTab.OnPreActivate += () => {
-                vanillaTab.AddItems(UIFixed);
-            };
-            vanillaTab.OnPostDeactivate += () =>
-            {
-                vanillaTab.RemoveItems(UIFixed);
-            };
-            dlcTab.OnPreActivate += () => {
-                dlcTab.AddItems(UIFixed);
-            };
-            dlcTab.OnPostDeactivate += () =>
-            {
-                dlcTab.RemoveItems(UIFixed);
-            };
-            watcherTab.OnPreActivate += () => {
-                watcherTab.AddItems(UIFixed);
-            };
-            watcherTab.OnPostDeactivate += () =>
-            {
-                watcherTab.RemoveItems(UIFixed);
-            };
-            modsTab.OnPreActivate += () => {
-                modsTab.AddItems(UIFixed);
-            };
-            modsTab.OnPostDeactivate += () =>
-            {
-                modsTab.RemoveItems(UIFixed);
-            };
-            List<OpTab> tabs = new List<OpTab>();
-            tabs.Add(vanillaTab);
-            if (ModManager.MSC || ModManager.Watcher)
-                tabs.Add(dlcTab);
-            if (ModManager.Watcher)
-                tabs.Add(watcherTab);
-            if (hasAnyMods)
-                tabs.Add(modsTab);
-
-
-            this.Tabs = tabs.ToArray();
+            scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), scrollBoxSize, false, false, true);
+            opTab.AddItems(UIFixed);
+            opTab._AddItem(scrollBox);
+            scrollBox.AddItems(UIBaseGameOptions);
+            scrollBox.AddItems(UIDependentOptions);
 
             labelsMap.Clear();
             enabledModsRepConfigs.Clear();
@@ -627,15 +577,7 @@ namespace ApexUpYourSpawns
                 if(u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
 
-            foreach (UIelement u in UIDLCOptions)
-                if (u is OpUpdown op)
-                    optionsRefs.Add(op.Key, op);
-
-            foreach (UIelement u in UIWatcherOptions)
-                if (u is OpUpdown op)
-                    optionsRefs.Add(op.Key, op);
-
-            foreach (UIelement u in UIModOptions)
+            foreach (UIelement u in UIDependentOptions)
                 if (u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
             
@@ -812,11 +754,11 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(fatFireFlyChance, "Vultures > Fat Firefly");
                 enabledModsRepConfigs.Add(fatFireFlyChance);
                 labelsMap.Add(surfaceSwimmerChance, "EggBug > Surface Swimmer");
-                labelsMap.Add(surfaceSwimmerExtras, "Surface Swimmer (/10)");
+                labelsMap.Add(surfaceSwimmerExtras, "Surface Swimmer");
                 enabledModsRepConfigs.Add(surfaceSwimmerChance);
                 enabledModsExtraConfigs.Add(surfaceSwimmerExtras);
                 labelsMap.Add(bounceBallChance, "Snail > Bouncing Ball");
-                labelsMap.Add(bounceBallExtras, "Bouncing Ball (/10)");
+                labelsMap.Add(bounceBallExtras, "Bouncing Ball");
                 enabledModsRepConfigs.Add(bounceBallChance);
                 enabledModsExtraConfigs.Add(bounceBallExtras);
                 labelsMap.Add(noodleEaterChance, "Noodlefly > Noodle Eater (Inv)");
@@ -1097,18 +1039,12 @@ namespace ApexUpYourSpawns
         {
             for(int i = 0; i < UIBaseGameOptions.Length; i++)
                 if (UIBaseGameOptions[i] is OpUpdown op)
+                {
                     op.Reset();
+                }
 
-            for (int i = 0; i < UIDLCOptions.Length; i++)
-                if (UIDLCOptions[i] is OpUpdown op)
-                    op.Reset();
-
-            for (int i = 0; i < UIWatcherOptions.Length; i++)
-                if (UIWatcherOptions[i] is OpUpdown op)
-                    op.Reset();
-
-            for (int i = 0; i < UIModOptions.Length; i++)
-                if (UIModOptions[i] is OpUpdown op)
+            for (int i = 0; i < UIDependentOptions.Length; i++)
+                if (UIDependentOptions[i] is OpUpdown op)
                     op.Reset();
         }
 
@@ -1123,24 +1059,9 @@ namespace ApexUpYourSpawns
                     op.Reset();
                     op.defaultValue = aux;
                 }
-            for (int i = 0; i < UIDLCOptions.Length; i++)
-                if (UIDLCOptions[i] is OpUpdown op)
-                {
-                    aux = op.defaultValue;
-                    op.defaultValue = "0";
-                    op.Reset();
-                    op.defaultValue = aux;
-                }
-            for (int i = 0; i < UIWatcherOptions.Length; i++)
-                if (UIWatcherOptions[i] is OpUpdown op)
-                {
-                    aux = op.defaultValue;
-                    op.defaultValue = "0";
-                    op.Reset();
-                    op.defaultValue = aux;
-                }
-            for (int i = 0; i < UIModOptions.Length; i++)
-                if (UIModOptions[i] is OpUpdown op)
+
+            for (int i = 0; i < UIDependentOptions.Length; i++)
+                if (UIDependentOptions[i] is OpUpdown op)
                 {
                     aux = op.defaultValue;
                     op.defaultValue = "0";

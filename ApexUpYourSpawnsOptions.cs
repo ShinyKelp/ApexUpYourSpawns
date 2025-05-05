@@ -524,7 +524,6 @@ namespace ApexUpYourSpawns
             };
 
             OpTab vanillaTab = CreateTab(UIVanillaReplacementConfigs, UIVanillaExtraConfigs, labelsMap, "Vanilla");
-            vanillaTab.AddItems(UIFixed);
             tabs.Add(vanillaTab);
 
             //MSC / DLC TAB
@@ -570,7 +569,6 @@ namespace ApexUpYourSpawns
                 };
 
                 OpTab watcherTab = CreateTab(UIWatcherRepConfigs, UIWatcherExtraConfigs, labelsMap, "The Watcher");
-
                 tabs.Add(watcherTab);
             }
             
@@ -624,6 +622,12 @@ namespace ApexUpYourSpawns
             foreach (UIelement u in tab.items)
                 if (u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
+
+            
+            tab.OnPreActivate += () => {
+                tab.AddItems(UIFixed);
+            };
+            //NOTE: Do not remove items on PostDeactivate, it causes reload bug. (The game does it automatically)
             return tab;
         }
 

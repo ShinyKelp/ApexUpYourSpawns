@@ -342,16 +342,46 @@ namespace ApexUpYourSpawns
             labelsMap.Add(kelpExtras, "Monster Kelp (/10)");
             labelsMap.Add(leviathanExtras, "Leviathans (/10)");
             labelsMap.Add(nightCreatureExtras, "Night Creatures (/10)");
+
+            //Watcher
+            labelsMap.Add(scavengerDiscipleChance, "Scavenger > Disciple");
+            labelsMap.Add(scavengerTemplarChance, "Scavenger > Templar");
+            labelsMap.Add(blizzardLizardChance, "Lizards > Blizzard");
+            labelsMap.Add(mirosLoachChance, "Miros Bird > Loach (Den)");
+            labelsMap.Add(deerLoachInvChance, "Deer > Loach (Inv)");
+            labelsMap.Add(loachMirosChance, "Loach > Miros Bird (Den)");
+            labelsMap.Add(rotLoachChance, "Loach > Rot Loach");
+            labelsMap.Add(vultureBigMothChance, "Vulture > Big Moth");
+            labelsMap.Add(bigMothVultureChance, "Big Moth > Vulture");
+            labelsMap.Add(cicadaSmallMothChance, "Cicada > Small Moth");
+            labelsMap.Add(smallMothNoodleflyChance, "Small Moth > Noodlefly");
+            labelsMap.Add(smallMothCentiwingChance, "Small Moth > Centiwing");
+            labelsMap.Add(deerSkywhaleChance, "Deer > Skywhale");
+            labelsMap.Add(snailBarnacleChance, "Snail > Barnacle");
+            labelsMap.Add(barnacleSnailChance, "Barnacle > Snail");
+            labelsMap.Add(blackBasiliskLizChance, "Black Lizard > Basilisk Lizard");
+            labelsMap.Add(groundIndigoLizChance, "Grounded Lizards > Indigo lizard");
+            labelsMap.Add(drillCrabMirosChance, "Drill Crab > Miros Bird (Den)");
+            labelsMap.Add(mirosDrillCrabChance, "Miros Bird > Drill Crab (Den)");
+            labelsMap.Add(drillCrabLoachChance, "Drill Crab > Loach (Den)");
+            labelsMap.Add(loachDrillCrabChance, "Loach > Drill Crab (Den)");
+            labelsMap.Add(deerDrillCrabInvChance, "Deer > Drill Crab (Inv)");
+            labelsMap.Add(deerExtras, "Deer");
+            labelsMap.Add(loachExtras, "Loaches");
+            labelsMap.Add(bigMothExtras, "Big Moths");
+            labelsMap.Add(smallMothExtras, "Small Moths (/10)");
+            labelsMap.Add(basiliskLizExtras, "Basilisk Lizards (/10)");
+            labelsMap.Add(indigoLizExtras, "Indigo Lizards  (/10)");
+            labelsMap.Add(barnacleExtras, "Barnacles  (/10)");
+            labelsMap.Add(drillCrabExtras, "Drill Crabs");
+            labelsMap.Add(skywhaleExtras, "Skywhales");
         }
 
         public override void Initialize()
         {
+            UIDependentOptions = new UIelement[0];
+            optionsRefs.Clear();
 
-            var opTab = new OpTab(this, "Options");
-            this.Tabs = new[]
-            {
-                opTab
-            };
 
             List<ListItem> boxList = new List<ListItem>();
             ListItem def = new ListItem("Default");
@@ -477,71 +507,107 @@ namespace ApexUpYourSpawns
             List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
             SetModConfigs(labelsMap, enabledModsRepConfigs, enabledModsExtraConfigs);
 
-            Configurable<int>[] UIReplacementConfigs;
-            if (apexMod.activeMods.Contains("ShinyKelp.ScavengerTweaks"))
-                UIReplacementConfigs = new Configurable<int>[]
-                {
-                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
-                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
-                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
-                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
-                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
-                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
-                    hunterLongLegsChance, giantJellyfishChance, stowawayChance, kingScavengerChance
-                };
-            else
-                UIReplacementConfigs = new Configurable<int>[]
-                {
-                    redLizardChance, trainLizardChance, strawberryLizChance, caramelLizChance, cyanLizChance, eelLizChance,
-                    leechLizardChance, yeekLizardChance, largeCentipedeChance, redCentipedeChance, seaLeechAquapedeChance,
-                    kingVultureChance, mirosVultureChance, eliteScavengerChance,
-                    cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishAquapedeChance, jetfishSalamanderChance,
-                    spitterSpiderChance, motherSpiderChance, tubeWormSpiderInv, jungleLeechChance, fireBugChance,
-                    brotherLongLegsChance, daddyLongLegsChance, terrorLongLegsChance, monsterKelpChance,
-                    hunterLongLegsChance, giantJellyfishChance, stowawayChance
-                };
-
-            Configurable<int>[] UIExtraConfigs = new Configurable<int>[]
+            Configurable<int>[] UIVanillaReplacementConfigs = new Configurable<int>[]
             {
-                greenLizExtras, pinkLizExtras, blueLizExtras, whiteLizExtras, blackLizExtras, yellowLizExtras, 
-                salExtras, cyanLizExtras, caramelLizExtras, eelLizExtras, zoopLizExtras,  
-                smallCentExtras, centipedeExtras, centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, 
-                kelpExtras, leviathanExtras, eggbugExtras, cicadaExtras, 
-                lmiceExtras, snailExtras, jetfishExtras, tubeWormExtras, yeekExtras, precycleCreatureExtras, nightCreatureExtras,
-                scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras
+                redLizardChance, cyanLizChance,
+                leechLizardChance, largeCentipedeChance, redCentipedeChance,
+                kingVultureChance,
+                cicadaNoodleFlyChance, cicadaCentiwingChance, jetfishSalamanderChance,
+                spitterSpiderChance,  tubeWormSpiderInv,
+                brotherLongLegsChance, daddyLongLegsChance, monsterKelpChance,
+
             };
 
+            Configurable<int>[] UIVanillaExtraConfigs = new Configurable<int>[]
+            {
+                greenLizExtras, pinkLizExtras, blueLizExtras, whiteLizExtras, blackLizExtras, yellowLizExtras,
+                salExtras, cyanLizExtras,
+                smallCentExtras, centipedeExtras, centiWingExtras,  bigSpiderExtras, dropwigExtras,
+                kelpExtras, eggbugExtras, cicadaExtras,
+                lmiceExtras, snailExtras, jetfishExtras, tubeWormExtras, leviathanExtras, precycleCreatureExtras, nightCreatureExtras,
+                scavengerExtras, vultureExtras, mirosExtras, spiderExtras, leechExtras, deerExtras
+            };
+
+            OpTab vanillaTab = CreateTab(UIVanillaReplacementConfigs, UIVanillaExtraConfigs, labelsMap, "Vanilla");
+            vanillaTab.AddItems(UIFixed);
+            this.Tabs = [vanillaTab];
+            /*
+            int replaceLength = UIVanillaReplacementConfigs.Length * 2;
+            int extraLength = UIVanillaExtraConfigs.Length * 2;
+            string auxString;
+
+            Debug.Log("FINISHED VARIABLE SETUP.");
+
+             //NEW METHOD
+            float vanillaScrollSize = 60f + 35f * (Mathf.Max(UIVanillaReplacementConfigs.Length, UIVanillaExtraConfigs.Length));
+
+            UIBaseGameOptions = new UIelement[extraLength + replaceLength];
+
+            //Replacements
+            for (int i = 0; i < UIVanillaReplacementConfigs.Length; ++i)
+            {
+                labelsMap.TryGetValue(UIVanillaReplacementConfigs[i], out auxString);
+                UIBaseGameOptions[i * 2] = new OpLabel(80f, vanillaScrollSize - 30f - (35f * i), auxString);
+                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIVanillaReplacementConfigs[i], new Vector2(10f, vanillaScrollSize - 35f - (35f * i)), 60f);
+            }
+
+            //Extras
+            for (int i = 0; i < UIVanillaExtraConfigs.Length; ++i)
+            {
+                labelsMap.TryGetValue(UIVanillaExtraConfigs[i], out auxString);
+                UIBaseGameOptions[replaceLength + i * 2] = new OpLabel(400f, vanillaScrollSize - 30f - (35f * i), auxString);
+                UIBaseGameOptions[replaceLength + i * 2 + 1] = new OpUpdown(UIVanillaExtraConfigs[i], new Vector2(330f, vanillaScrollSize - 35f - (35f * i)), 60f);
+            }
+
+
+            OpScrollBox vanillaScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), vanillaScrollSize, false, false, true);
+            //OpTab vanillaTab = new OpTab(this, "Vanilla");
+            vanillaTab._AddItem(vanillaScrollBox);
+            //vanillaTab.AddItems(UIFixed);
+            vanillaScrollBox.AddItems(UIBaseGameOptions);
+
+            OpTab tab2 = new OpTab(this, "tesxt");
+            tab2.AddItems(UIFixed);
+            this.Tabs = new[]
+            {
+                vanillaTab,
+                tab2
+            };
+
+            //END OF NEW METHOD
+
+            //*/
 
             //Adjust scrollbox's size accordingly
+            //OLD METHOD
+            /*
             float scrollBoxSize;
 
-            if (enabledModsRepConfigs.Count + UIReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIExtraConfigs.Length)
-                scrollBoxSize = 60f +  (enabledModsRepConfigs.Count + UIReplacementConfigs.Length) * 35f;
-            else scrollBoxSize = 60f + (enabledModsExtraConfigs.Count + UIExtraConfigs.Length) * 35f;
+            if (enabledModsRepConfigs.Count + UIVanillaReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIVanillaExtraConfigs.Length)
+                scrollBoxSize = 60f +  (enabledModsRepConfigs.Count + UIVanillaReplacementConfigs.Length) * 35f;
+            else scrollBoxSize = 60f + (enabledModsExtraConfigs.Count + UIVanillaExtraConfigs.Length) * 35f;
 
-            int replaceLength = UIReplacementConfigs.Length * 2;
-            int extraLength = UIExtraConfigs.Length * 2;
 
             UIBaseGameOptions = new UIelement[extraLength + replaceLength];
             
             //Set the base replacements
-            string auxString;
-            for(int i = 0; i < UIReplacementConfigs.Length; ++i)
+            for(int i = 0; i < UIVanillaReplacementConfigs.Length; ++i)
             {
-                labelsMap.TryGetValue(UIReplacementConfigs[i], out auxString);
+                labelsMap.TryGetValue(UIVanillaReplacementConfigs[i], out auxString);
                 UIBaseGameOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*i), auxString);
-                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIReplacementConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*i)), 60f);
+                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIVanillaReplacementConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
             //Set the base extras
-            for(int i = 0; i < UIExtraConfigs.Length; ++i)
+            for(int i = 0; i < UIVanillaExtraConfigs.Length; ++i)
             {
-                labelsMap.TryGetValue(UIExtraConfigs[i], out auxString);
+                labelsMap.TryGetValue(UIVanillaExtraConfigs[i], out auxString);
                 UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*i), auxString);
-                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*i)), 60f);
+                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIVanillaExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*i)), 60f);
             }
 
             //Set the mod-dependant configs
+            /*
             int modReplaceLength = enabledModsRepConfigs.Count * 2;
             int modExtraLength = enabledModsExtraConfigs.Count * 2;
             UIDependentOptions = new UIelement[modReplaceLength + modExtraLength];
@@ -550,37 +616,66 @@ namespace ApexUpYourSpawns
             for(int i = 0; i < enabledModsRepConfigs.Count; ++i)
             {
                 labelsMap.TryGetValue(enabledModsRepConfigs[i], out auxString);
-                UIDependentOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*(i+UIReplacementConfigs.Length)), auxString);
-                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*(i+UIReplacementConfigs.Length))), 60f);
+                UIDependentOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*(i+ UIVanillaReplacementConfigs.Length)), auxString);
+                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*(i+ UIVanillaReplacementConfigs.Length))), 60f);
             }
 
             //Set the mod dependent extra configs
             for (int i = 0; i < enabledModsExtraConfigs.Count; ++i)
             {
                 labelsMap.TryGetValue(enabledModsExtraConfigs[i], out auxString);
-                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*(i+UIExtraConfigs.Length)), auxString);
-                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*(i+UIExtraConfigs.Length))), 60f);
+                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*(i+ UIVanillaExtraConfigs.Length)), auxString);
+                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*(i+ UIVanillaExtraConfigs.Length))), 60f);
             }
-
+            
             scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), scrollBoxSize, false, false, true);
-            opTab.AddItems(UIFixed);
-            opTab._AddItem(scrollBox);
+            vanillaTab.AddItems(UIFixed);
+            vanillaTab._AddItem(scrollBox);
             scrollBox.AddItems(UIBaseGameOptions);
             scrollBox.AddItems(UIDependentOptions);
 
+            //END OF OLD METHOD
+            //*/
             labelsMap.Clear();
             enabledModsRepConfigs.Clear();
             enabledModsExtraConfigs.Clear();
+            
+        }
 
-            optionsRefs.Clear();
-            foreach(UIelement u in UIBaseGameOptions)
-                if(u is OpUpdown op)
-                    optionsRefs.Add(op.Key, op);
+        private OpTab CreateTab(Configurable<int>[] replacementConfigs, Configurable<int>[] extraConfigs, Dictionary<Configurable<int>, string> labelsMap, string tabName)
+        {
+            string auxString;
+            float scrollBoxSize = 60f + 35f * (Mathf.Max(replacementConfigs.Length, extraConfigs.Length));
+            int replaceLength = replacementConfigs.Length * 2;
+            int extraLength = extraConfigs.Length * 2;
 
-            foreach (UIelement u in UIDependentOptions)
+            UIelement[] totalElements = new UIelement[extraLength + replaceLength];
+
+            //Replacements
+            for (int i = 0; i < replacementConfigs.Length; ++i)
+            {
+                labelsMap.TryGetValue(replacementConfigs[i], out auxString);
+                totalElements[i * 2] = new OpLabel(80f, scrollBoxSize - 30f - (35f * i), auxString);
+                totalElements[i * 2 + 1] = new OpUpdown(replacementConfigs[i], new Vector2(10f, scrollBoxSize - 35f - (35f * i)), 60f);
+            }
+
+            //Extras
+            for (int i = 0; i < extraConfigs.Length; ++i)
+            {
+                labelsMap.TryGetValue(extraConfigs[i], out auxString);
+                totalElements[replaceLength + i * 2] = new OpLabel(400f, scrollBoxSize - 30f - (35f * i), auxString);
+                totalElements[replaceLength + i * 2 + 1] = new OpUpdown(extraConfigs[i], new Vector2(330f, scrollBoxSize - 35f - (35f * i)), 60f);
+            }
+
+
+            OpScrollBox scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), scrollBoxSize, false, false, true);
+            OpTab tab = new OpTab(this, tabName);
+            tab._AddItem(scrollBox);
+            scrollBox.AddItems(totalElements);
+            foreach (UIelement u in tab.items)
                 if (u is OpUpdown op)
                     optionsRefs.Add(op.Key, op);
-            
+            return tab;
         }
 
         public void InitModConfigs()
@@ -1037,37 +1132,20 @@ namespace ApexUpYourSpawns
 
         private void SetDefaults()
         {
-            for(int i = 0; i < UIBaseGameOptions.Length; i++)
-                if (UIBaseGameOptions[i] is OpUpdown op)
-                {
-                    op.Reset();
-                }
-
-            for (int i = 0; i < UIDependentOptions.Length; i++)
-                if (UIDependentOptions[i] is OpUpdown op)
-                    op.Reset();
+            foreach(OpUpdown op in optionsRefs.Values)
+                op.Reset();
         }
 
         private void SetNulls()
         {
             string aux;
-            for (int i = 0; i < UIBaseGameOptions.Length; i++)
-                if (UIBaseGameOptions[i] is OpUpdown op)
-                {
-                    aux = op.defaultValue;
-                    op.defaultValue = "0";
-                    op.Reset();
-                    op.defaultValue = aux;
-                }
-
-            for (int i = 0; i < UIDependentOptions.Length; i++)
-                if (UIDependentOptions[i] is OpUpdown op)
-                {
-                    aux = op.defaultValue;
-                    op.defaultValue = "0";
-                    op.Reset();
-                    op.defaultValue = aux;
-                }
+            foreach (OpUpdown op in optionsRefs.Values)
+            {
+                aux = op.defaultValue;
+                op.defaultValue = "0";
+                op.Reset();
+                op.defaultValue = aux;
+            }
         }
 
         private void SetValue(OpUpdown op, int value)

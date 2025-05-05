@@ -497,6 +497,9 @@ namespace ApexUpYourSpawns
             Dictionary<Configurable<int>, string> labelsMap = new Dictionary<Configurable<int>, string>();
             SetDictionary(labelsMap);
 
+            //TABS
+            List<OpTab> tabs = new List<OpTab>();
+
             //VANILLA TAB
 
             Configurable<int>[] UIVanillaReplacementConfigs = new Configurable<int>[]
@@ -522,12 +525,55 @@ namespace ApexUpYourSpawns
 
             OpTab vanillaTab = CreateTab(UIVanillaReplacementConfigs, UIVanillaExtraConfigs, labelsMap, "Vanilla");
             vanillaTab.AddItems(UIFixed);
-
+            tabs.Add(vanillaTab);
 
             //MSC / DLC TAB
 
             //WATCHER TAB
+            if (ModManager.Watcher)
+            {
+                Configurable<int>[] UIWatcherRepConfigs =
+                {
+                    blackBasiliskLizChance,
+                    groundIndigoLizChance,
+                    blizzardLizardChance,
+                    scavengerTemplarChance,
+                    scavengerDiscipleChance,
+                    vultureBigMothChance,
+                    bigMothVultureChance,
+                    cicadaSmallMothChance,
+                    smallMothNoodleflyChance,
+                    smallMothCentiwingChance,
+                    snailBarnacleChance,
+                    barnacleSnailChance,
+                    deerSkywhaleChance,
+                    deerDrillCrabInvChance,
+                    deerLoachInvChance,
+                    rotLoachChance,
+                    drillCrabMirosChance,
+                    mirosDrillCrabChance,
+                    drillCrabLoachChance,
+                    loachDrillCrabChance,
+                    loachMirosChance,
+                    mirosLoachChance,
+                };
 
+                Configurable<int>[] UIWatcherExtraConfigs =
+                {
+                    basiliskLizExtras,
+                    indigoLizExtras,
+                    bigMothExtras,
+                    smallMothExtras,
+                    loachExtras,
+                    barnacleExtras,
+                    skywhaleExtras
+                };
+
+                OpTab watcherTab = CreateTab(UIWatcherRepConfigs, UIWatcherExtraConfigs, labelsMap, "The Watcher");
+
+                tabs.Add(watcherTab);
+            }
+            
             //MODS TAB
             //Set the mod configs
             List<Configurable<int>> enabledModsRepConfigs = new List<Configurable<int>>();
@@ -537,7 +583,7 @@ namespace ApexUpYourSpawns
 
             //END
 
-            this.Tabs = [vanillaTab];
+            this.Tabs = tabs.ToArray();
 
             labelsMap.Clear();
             enabledModsRepConfigs.Clear();

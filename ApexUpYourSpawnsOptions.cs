@@ -147,10 +147,9 @@ namespace ApexUpYourSpawns
         private OpSimpleButton replacementDescription, extrasDescription, replacementDescription2, extrasDescription2,
             savePresetButton, loadPresetButton, removePresetButton;
         private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
-        private OpScrollBox scrollBox;
         private OpTextBox presetText;
         private OpComboBox presetsComboBox;
-        private UIelement[] UIFixed, UIBaseGameOptions, UIDependentOptions;
+        private UIelement[] UIFixed;
         private Dictionary<string, OpUpdown> optionsRefs;
 
         private ApexUpYourSpawnsMod apexMod;
@@ -379,10 +378,8 @@ namespace ApexUpYourSpawns
 
         public override void Initialize()
         {
-            UIDependentOptions = new UIelement[0];
+            // === CREATE BASE UI ELEMENTS
             optionsRefs.Clear();
-
-
             List<ListItem> boxList = new List<ListItem>();
             ListItem def = new ListItem("Default");
             ListItem nulls = new ListItem("Nulls");
@@ -435,8 +432,6 @@ namespace ApexUpYourSpawns
             loadPresetButton.OnClick += LoadPreset;
             savePresetButton.OnClick += SavePreset;
             removePresetButton.OnClick += RemovePreset;
-
-
 
             fillLineageCheck = new OpCheckBox(fillLineages, new Vector2(160f, 13f))
             {
@@ -502,10 +497,7 @@ namespace ApexUpYourSpawns
             Dictionary<Configurable<int>, string> labelsMap = new Dictionary<Configurable<int>, string>();
             SetDictionary(labelsMap);
 
-            //Set the mod configs
-            List<Configurable<int>> enabledModsRepConfigs = new List<Configurable<int>>();
-            List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
-            SetModConfigs(labelsMap, enabledModsRepConfigs, enabledModsExtraConfigs);
+            //VANILLA TAB
 
             Configurable<int>[] UIVanillaReplacementConfigs = new Configurable<int>[]
             {
@@ -530,112 +522,23 @@ namespace ApexUpYourSpawns
 
             OpTab vanillaTab = CreateTab(UIVanillaReplacementConfigs, UIVanillaExtraConfigs, labelsMap, "Vanilla");
             vanillaTab.AddItems(UIFixed);
+
+
+            //MSC / DLC TAB
+
+            //WATCHER TAB
+
+            //MODS TAB
+            //Set the mod configs
+            List<Configurable<int>> enabledModsRepConfigs = new List<Configurable<int>>();
+            List<Configurable<int>> enabledModsExtraConfigs = new List<Configurable<int>>();
+            SetModConfigs(labelsMap, enabledModsRepConfigs, enabledModsExtraConfigs);
+
+
+            //END
+
             this.Tabs = [vanillaTab];
-            /*
-            int replaceLength = UIVanillaReplacementConfigs.Length * 2;
-            int extraLength = UIVanillaExtraConfigs.Length * 2;
-            string auxString;
 
-            Debug.Log("FINISHED VARIABLE SETUP.");
-
-             //NEW METHOD
-            float vanillaScrollSize = 60f + 35f * (Mathf.Max(UIVanillaReplacementConfigs.Length, UIVanillaExtraConfigs.Length));
-
-            UIBaseGameOptions = new UIelement[extraLength + replaceLength];
-
-            //Replacements
-            for (int i = 0; i < UIVanillaReplacementConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIVanillaReplacementConfigs[i], out auxString);
-                UIBaseGameOptions[i * 2] = new OpLabel(80f, vanillaScrollSize - 30f - (35f * i), auxString);
-                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIVanillaReplacementConfigs[i], new Vector2(10f, vanillaScrollSize - 35f - (35f * i)), 60f);
-            }
-
-            //Extras
-            for (int i = 0; i < UIVanillaExtraConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIVanillaExtraConfigs[i], out auxString);
-                UIBaseGameOptions[replaceLength + i * 2] = new OpLabel(400f, vanillaScrollSize - 30f - (35f * i), auxString);
-                UIBaseGameOptions[replaceLength + i * 2 + 1] = new OpUpdown(UIVanillaExtraConfigs[i], new Vector2(330f, vanillaScrollSize - 35f - (35f * i)), 60f);
-            }
-
-
-            OpScrollBox vanillaScrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), vanillaScrollSize, false, false, true);
-            //OpTab vanillaTab = new OpTab(this, "Vanilla");
-            vanillaTab._AddItem(vanillaScrollBox);
-            //vanillaTab.AddItems(UIFixed);
-            vanillaScrollBox.AddItems(UIBaseGameOptions);
-
-            OpTab tab2 = new OpTab(this, "tesxt");
-            tab2.AddItems(UIFixed);
-            this.Tabs = new[]
-            {
-                vanillaTab,
-                tab2
-            };
-
-            //END OF NEW METHOD
-
-            //*/
-
-            //Adjust scrollbox's size accordingly
-            //OLD METHOD
-            /*
-            float scrollBoxSize;
-
-            if (enabledModsRepConfigs.Count + UIVanillaReplacementConfigs.Length > enabledModsExtraConfigs.Count + UIVanillaExtraConfigs.Length)
-                scrollBoxSize = 60f +  (enabledModsRepConfigs.Count + UIVanillaReplacementConfigs.Length) * 35f;
-            else scrollBoxSize = 60f + (enabledModsExtraConfigs.Count + UIVanillaExtraConfigs.Length) * 35f;
-
-
-            UIBaseGameOptions = new UIelement[extraLength + replaceLength];
-            
-            //Set the base replacements
-            for(int i = 0; i < UIVanillaReplacementConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIVanillaReplacementConfigs[i], out auxString);
-                UIBaseGameOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*i), auxString);
-                UIBaseGameOptions[i * 2 + 1] = new OpUpdown(UIVanillaReplacementConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*i)), 60f);
-            }
-
-            //Set the base extras
-            for(int i = 0; i < UIVanillaExtraConfigs.Length; ++i)
-            {
-                labelsMap.TryGetValue(UIVanillaExtraConfigs[i], out auxString);
-                UIBaseGameOptions[replaceLength + i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*i), auxString);
-                UIBaseGameOptions[replaceLength + i*2+1] = new OpUpdown(UIVanillaExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*i)), 60f);
-            }
-
-            //Set the mod-dependant configs
-            /*
-            int modReplaceLength = enabledModsRepConfigs.Count * 2;
-            int modExtraLength = enabledModsExtraConfigs.Count * 2;
-            UIDependentOptions = new UIelement[modReplaceLength + modExtraLength];
-
-            //Set the mod dependant replacement configs
-            for(int i = 0; i < enabledModsRepConfigs.Count; ++i)
-            {
-                labelsMap.TryGetValue(enabledModsRepConfigs[i], out auxString);
-                UIDependentOptions[i*2] = new OpLabel(80f, scrollBoxSize-30f-(35f*(i+ UIVanillaReplacementConfigs.Length)), auxString);
-                UIDependentOptions[i*2+1] = new OpUpdown(enabledModsRepConfigs[i], new Vector2(10f, scrollBoxSize-35f-(35f*(i+ UIVanillaReplacementConfigs.Length))), 60f);
-            }
-
-            //Set the mod dependent extra configs
-            for (int i = 0; i < enabledModsExtraConfigs.Count; ++i)
-            {
-                labelsMap.TryGetValue(enabledModsExtraConfigs[i], out auxString);
-                UIDependentOptions[modReplaceLength+i*2] = new OpLabel(400f, scrollBoxSize-30f-(35f*(i+ UIVanillaExtraConfigs.Length)), auxString);
-                UIDependentOptions[modReplaceLength+i*2+1] = new OpUpdown(enabledModsExtraConfigs[i], new Vector2(330f, scrollBoxSize-35f-(35f*(i+ UIVanillaExtraConfigs.Length))), 60f);
-            }
-            
-            scrollBox = new OpScrollBox(new Vector2(0f, 55f), new Vector2(580f, 420f), scrollBoxSize, false, false, true);
-            vanillaTab.AddItems(UIFixed);
-            vanillaTab._AddItem(scrollBox);
-            scrollBox.AddItems(UIBaseGameOptions);
-            scrollBox.AddItems(UIDependentOptions);
-
-            //END OF OLD METHOD
-            //*/
             labelsMap.Clear();
             enabledModsRepConfigs.Clear();
             enabledModsExtraConfigs.Clear();

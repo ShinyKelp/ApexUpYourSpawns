@@ -13,111 +13,111 @@ namespace ApexUpYourSpawns
     {
         private readonly ManualLogSource Logger;
 
-        public readonly Configurable<bool> fillLineages;
-        public readonly Configurable<bool> forceFreshSpawns;
-        public readonly Configurable<bool> balancedSpawns;
+        public Configurable<bool> fillLineages;
+        public Configurable<bool> forceFreshSpawns;
+        public Configurable<bool> balancedSpawns;
 
         //Replacements
-        public readonly Configurable<int> redLizardChance;
-        public readonly Configurable<int> redCentipedeChance;
-        public readonly Configurable<int> largeCentipedeChance;
-        public readonly Configurable<int> mirosVultureChance;
-        public readonly Configurable<int> kingVultureChance;
-        public readonly Configurable<int> spitterSpiderChance;
-        public readonly Configurable<int> trainLizardChance;
-        public readonly Configurable<int> cicadaCentiwingChance;
-        public readonly Configurable<int> fireBugChance;
-        public readonly Configurable<int> eliteScavengerChance;
-        public readonly Configurable<int> brotherLongLegsChance;
-        public readonly Configurable<int> daddyLongLegsChance;
-        public readonly Configurable<int> terrorLongLegsChance;
-        public readonly Configurable<int> giantJellyfishChance;
-        public readonly Configurable<int> leechLizardChance;
-        public readonly Configurable<int> seaLeechAquapedeChance;
-        public readonly Configurable<int> jetfishAquapedeChance;
-        public readonly Configurable<int> yeekLizardChance;
-        public readonly Configurable<int> caramelLizChance;
-        public readonly Configurable<int> strawberryLizChance;
-        public readonly Configurable<int> cyanLizChance;
-        public readonly Configurable<int> eelLizChance;
-        public readonly Configurable<int> jungleLeechChance;
-        public readonly Configurable<int> motherSpiderChance;
-        public readonly Configurable<int> tubeWormSpiderInv;
-        public readonly Configurable<int> stowawayChance;
-        public readonly Configurable<int> kingScavengerChance;
-        public readonly Configurable<int> hunterLongLegsChance;
-        public readonly Configurable<int> jetfishSalamanderChance;
-        public readonly Configurable<int> cicadaNoodleFlyChance;
-        public readonly Configurable<int> monsterKelpChance;
+        public Configurable<int> redLizardChance;
+        public Configurable<int> redCentipedeChance;
+        public Configurable<int> largeCentipedeChance;
+        public Configurable<int> mirosVultureChance;
+        public Configurable<int> kingVultureChance;
+        public Configurable<int> spitterSpiderChance;
+        public Configurable<int> trainLizardChance;
+        public Configurable<int> cicadaCentiwingChance;
+        public Configurable<int> fireBugChance;
+        public Configurable<int> eliteScavengerChance;
+        public Configurable<int> brotherLongLegsChance;
+        public Configurable<int> daddyLongLegsChance;
+        public Configurable<int> terrorLongLegsChance;
+        public Configurable<int> giantJellyfishChance;
+        public Configurable<int> leechLizardChance;
+        public Configurable<int> seaLeechAquapedeChance;
+        public Configurable<int> jetfishAquapedeChance;
+        public Configurable<int> yeekLizardChance;
+        public Configurable<int> caramelLizChance;
+        public Configurable<int> strawberryLizChance;
+        public Configurable<int> cyanLizChance;
+        public Configurable<int> eelLizChance;
+        public Configurable<int> jungleLeechChance;
+        public Configurable<int> motherSpiderChance;
+        public Configurable<int> tubeWormSpiderInv;
+        public Configurable<int> stowawayChance;
+        public Configurable<int> kingScavengerChance;
+        public Configurable<int> hunterLongLegsChance;
+        public Configurable<int> jetfishSalamanderChance;
+        public Configurable<int> cicadaNoodleFlyChance;
+        public Configurable<int> monsterKelpChance;
 
         //Extra spawns
-        public readonly Configurable<int> greenLizExtras;
-        public readonly Configurable<int> pinkLizExtras;
-        public readonly Configurable<int> blueLizExtras;
-        public readonly Configurable<int> whiteLizExtras;
-        public readonly Configurable<int> blackLizExtras;
-        public readonly Configurable<int> yellowLizExtras;
-        public readonly Configurable<int> salExtras;
-        public readonly Configurable<int> cyanLizExtras;
-        public readonly Configurable<int> zoopLizExtras;
-        public readonly Configurable<int> caramelLizExtras;
-        public readonly Configurable<int> eelLizExtras;
-        public readonly Configurable<int> precycleCreatureExtras;
-        public readonly Configurable<int> scavengerExtras;
-        public readonly Configurable<int> vultureExtras;
-        public readonly Configurable<int> centipedeExtras;
-        public readonly Configurable<int> centiWingExtras;
-        public readonly Configurable<int> aquapedeExtras;
-        public readonly Configurable<int> bigSpiderExtras;
-        public readonly Configurable<int> dropwigExtras;
-        public readonly Configurable<int> eggbugExtras;
-        public readonly Configurable<int> cicadaExtras;
-        public readonly Configurable<int> lmiceExtras;
-        public readonly Configurable<int> snailExtras;
-        public readonly Configurable<int> jetfishExtras;
-        public readonly Configurable<int> smallCentExtras;
-        public readonly Configurable<int> yeekExtras;
-        public readonly Configurable<int> mirosExtras;
-        public readonly Configurable<int> spiderExtras;
-        public readonly Configurable<int> leechExtras;
-        public readonly Configurable<int> kelpExtras;
-        public readonly Configurable<int> tubeWormExtras;
-        public readonly Configurable<int> leviathanExtras;
-        public readonly Configurable<int> nightCreatureExtras;
-        public readonly Configurable<int> deerExtras;
+        public Configurable<int> greenLizExtras;
+        public Configurable<int> pinkLizExtras;
+        public Configurable<int> blueLizExtras;
+        public Configurable<int> whiteLizExtras;
+        public Configurable<int> blackLizExtras;
+        public Configurable<int> yellowLizExtras;
+        public Configurable<int> salExtras;
+        public Configurable<int> cyanLizExtras;
+        public Configurable<int> zoopLizExtras;
+        public Configurable<int> caramelLizExtras;
+        public Configurable<int> eelLizExtras;
+        public Configurable<int> precycleCreatureExtras;
+        public Configurable<int> scavengerExtras;
+        public Configurable<int> vultureExtras;
+        public Configurable<int> centipedeExtras;
+        public Configurable<int> centiWingExtras;
+        public Configurable<int> aquapedeExtras;
+        public Configurable<int> bigSpiderExtras;
+        public Configurable<int> dropwigExtras;
+        public Configurable<int> eggbugExtras;
+        public Configurable<int> cicadaExtras;
+        public Configurable<int> lmiceExtras;
+        public Configurable<int> snailExtras;
+        public Configurable<int> jetfishExtras;
+        public Configurable<int> smallCentExtras;
+        public Configurable<int> yeekExtras;
+        public Configurable<int> mirosExtras;
+        public Configurable<int> spiderExtras;
+        public Configurable<int> leechExtras;
+        public Configurable<int> kelpExtras;
+        public Configurable<int> tubeWormExtras;
+        public Configurable<int> leviathanExtras;
+        public Configurable<int> nightCreatureExtras;
+        public Configurable<int> deerExtras;
 
         //Watcher DLC
-        public readonly Configurable<int> scavengerDiscipleChance;
-        public readonly Configurable<int> scavengerTemplarChance;
-        public readonly Configurable<int> blizzardLizardChance;
-        public readonly Configurable<int> mirosLoachChance;
-        public readonly Configurable<int> deerLoachInvChance;
-        public readonly Configurable<int> loachMirosChance;
-        public readonly Configurable<int> rotLoachChance;
-        public readonly Configurable<int> vultureBigMothChance;
-        public readonly Configurable<int> bigMothVultureChance;
-        public readonly Configurable<int> cicadaSmallMothChance;
-        public readonly Configurable<int> smallMothNoodleflyChance;
-        public readonly Configurable<int> smallMothCentiwingChance;
-        public readonly Configurable<int> deerSkywhaleChance;
-        public readonly Configurable<int> snailBarnacleChance;
-        public readonly Configurable<int> barnacleSnailChance;
-        public readonly Configurable<int> blackBasiliskLizChance;
-        public readonly Configurable<int> groundIndigoLizChance;
-        public readonly Configurable<int> drillCrabMirosChance;
-        public readonly Configurable<int> mirosDrillCrabChance;
-        public readonly Configurable<int> drillCrabLoachChance;
-        public readonly Configurable<int> loachDrillCrabChance;
-        public readonly Configurable<int> deerDrillCrabInvChance;
+        public Configurable<int> scavengerDiscipleChance;
+        public Configurable<int> scavengerTemplarChance;
+        public Configurable<int> blizzardLizardChance;
+        public Configurable<int> mirosLoachChance;
+        public Configurable<int> deerLoachInvChance;
+        public Configurable<int> loachMirosChance;
+        public Configurable<int> rotLoachChance;
+        public Configurable<int> vultureBigMothChance;
+        public Configurable<int> bigMothVultureChance;
+        public Configurable<int> cicadaSmallMothChance;
+        public Configurable<int> smallMothNoodleflyChance;
+        public Configurable<int> smallMothCentiwingChance;
+        public Configurable<int> deerSkywhaleChance;
+        public Configurable<int> snailBarnacleChance;
+        public Configurable<int> barnacleSnailChance;
+        public Configurable<int> blackBasiliskLizChance;
+        public Configurable<int> groundIndigoLizChance;
+        public Configurable<int> drillCrabMirosChance;
+        public Configurable<int> mirosDrillCrabChance;
+        public Configurable<int> drillCrabLoachChance;
+        public Configurable<int> loachDrillCrabChance;
+        public Configurable<int> deerDrillCrabInvChance;
 
-        public readonly Configurable<int> loachExtras;
-        public readonly Configurable<int> bigMothExtras;
-        public readonly Configurable<int> smallMothExtras;
-        public readonly Configurable<int> skywhaleExtras;
-        public readonly Configurable<int> basiliskLizExtras;
-        public readonly Configurable<int> indigoLizExtras;
-        public readonly Configurable<int> barnacleExtras;
-        public readonly Configurable<int> drillCrabExtras;
+        public Configurable<int> loachExtras;
+        public Configurable<int> bigMothExtras;
+        public Configurable<int> smallMothExtras;
+        public Configurable<int> skywhaleExtras;
+        public Configurable<int> basiliskLizExtras;
+        public Configurable<int> indigoLizExtras;
+        public Configurable<int> barnacleExtras;
+        public Configurable<int> drillCrabExtras;
 
 
         //Mod dependent
@@ -153,6 +153,9 @@ namespace ApexUpYourSpawns
         private Dictionary<string, OpUpdown> optionsRefs;
 
         private ApexUpYourSpawnsMod apexMod;
+        private bool appliedSharedDLC = false;
+        private bool appliedMSC = false;
+        private bool appliedWatcher = false;
 
         public ApexUpYourSpawnsOptions(ApexUpYourSpawnsMod modInstance, ManualLogSource loggerSource)
         {
@@ -168,7 +171,7 @@ namespace ApexUpYourSpawns
             ConfigurableInfo info = null;
             comboBoxConfig = this.config.Bind<string>("PresetComboBox", "Default", info);
             presetTextConfig = this.config.Bind<string>(null, "", info);
-            
+
             //Vanilla configs
             //Replacements
             redLizardChance = this.config.Bind<int>("RedLizardChance", 6, new ConfigAcceptableRange<int>(0, 100));
@@ -216,8 +219,15 @@ namespace ApexUpYourSpawns
             leviathanExtras = this.config.Bind<int>("ExtraLeviathans", 4, new ConfigAcceptableRange<int>(0, 100));
             nightCreatureExtras = this.config.Bind<int>("ExtraNightCreatures", 10, new ConfigAcceptableRange<int>(0, 100));
             deerExtras = this.config.Bind<int>("ExtraDeer", 2, new ConfigAcceptableRange<int>(0, 20));
+        }
 
-            //DLC
+        private void SetExpansionBindings()
+        {   
+
+            //Shared DLC
+            if((ModManager.Watcher || ModManager.MSC) && !appliedSharedDLC)
+            {
+                appliedSharedDLC = true;
                 mirosVultureChance = this.config.Bind<int>("MirosVultureChance", 15, new ConfigAcceptableRange<int>(0, 100));
                 eliteScavengerChance = this.config.Bind<int>("EliteScavengerChance", 12, new ConfigAcceptableRange<int>(0, 100));
                 terrorLongLegsChance = this.config.Bind<int>("MotherLongLegsChance", 10, new ConfigAcceptableRange<int>(0, 100));
@@ -237,14 +247,21 @@ namespace ApexUpYourSpawns
                 eelLizExtras = this.config.Bind<int>("ExtraEelLizs", 4, new ConfigAcceptableRange<int>(0, 100));
                 aquapedeExtras = this.config.Bind<int>("ExtraAquaPedes", 5, new ConfigAcceptableRange<int>(0, 100));
                 yeekExtras = this.config.Bind<int>("ExtraYeek", 8, new ConfigAcceptableRange<int>(0, 100));
-            
+            }
 
+            //MSC
+            if (ModManager.MSC && !appliedMSC){
+                appliedMSC = true;
                 trainLizardChance = this.config.Bind<int>("TrainLizardChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 fireBugChance = this.config.Bind<int>("FireBugChance", 30, new ConfigAcceptableRange<int>(0, 100));
                 kingScavengerChance = this.config.Bind<int>("KingScavengerChance", 5, new ConfigAcceptableRange<int>(0, 100));
                 hunterLongLegsChance = this.config.Bind<int>("HunterLongLegsChance", 20, new ConfigAcceptableRange<int>(0, 100));
-            
+            }
+
             //Watcher
+            if (ModManager.Watcher && !appliedWatcher)
+            {
+                appliedWatcher = true;
                 scavengerDiscipleChance = this.config.Bind<int>("ScavengerDiscipleChance", 4, new ConfigAcceptableRange<int>(0, 100));
                 scavengerTemplarChance = this.config.Bind<int>("ScavengerTemplarChance", 10, new ConfigAcceptableRange<int>(0, 100));
                 blizzardLizardChance = this.config.Bind<int>("BlizzardLizardChance", 2, new ConfigAcceptableRange<int>(0, 100));
@@ -276,12 +293,11 @@ namespace ApexUpYourSpawns
                 barnacleExtras = this.config.Bind<int>("BarnacleExtras", 0, new ConfigAcceptableRange<int>(0, 100));
                 drillCrabExtras = this.config.Bind<int>("DrillCrabExtras", 3, new ConfigAcceptableRange<int>(0, 20));
                 skywhaleExtras = this.config.Bind<int>("SkywhaleExtras", 2, new ConfigAcceptableRange<int>(0, 20));
-            
+            }
         }
 
         private void SetVanillaDictionary(Dictionary<Configurable<int>, string> labelsMap)
         {
-            DebugAll();
             //Replacements
             labelsMap.Add(redLizardChance, "Lizard > Red Lizard");
             labelsMap.Add(largeCentipedeChance, "Small Cent > Large Centipede");
@@ -394,48 +410,6 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(barnacleExtras, "Barnacles  (/10)");
                 labelsMap.Add(drillCrabExtras, "Drill Crabs");
                 labelsMap.Add(skywhaleExtras, "Skywhales");
-            }
-
-        }
-
-        void DebugAll()
-        {
-            List<Configurable<int>> allConfigurableValues = new List<Configurable<int>>
-            {
-                // Replacements
-                redLizardChance, redCentipedeChance, largeCentipedeChance, mirosVultureChance,
-                kingVultureChance, spitterSpiderChance, trainLizardChance, cicadaCentiwingChance,
-                fireBugChance, eliteScavengerChance, brotherLongLegsChance, daddyLongLegsChance,
-                terrorLongLegsChance, giantJellyfishChance, leechLizardChance, seaLeechAquapedeChance,
-                jetfishAquapedeChance, yeekLizardChance, caramelLizChance, strawberryLizChance,
-                cyanLizChance, eelLizChance, jungleLeechChance, motherSpiderChance, tubeWormSpiderInv,
-                stowawayChance, kingScavengerChance, hunterLongLegsChance, jetfishSalamanderChance,
-                cicadaNoodleFlyChance, monsterKelpChance,
-
-                // Extra spawns
-                greenLizExtras, pinkLizExtras, blueLizExtras, whiteLizExtras, blackLizExtras,
-                yellowLizExtras, salExtras, cyanLizExtras, zoopLizExtras, caramelLizExtras,
-                eelLizExtras, precycleCreatureExtras, scavengerExtras, vultureExtras, centipedeExtras,
-                centiWingExtras, aquapedeExtras, bigSpiderExtras, dropwigExtras, eggbugExtras,
-                cicadaExtras, lmiceExtras, snailExtras, jetfishExtras, smallCentExtras, yeekExtras,
-                mirosExtras, spiderExtras, leechExtras, kelpExtras, tubeWormExtras, leviathanExtras,
-                nightCreatureExtras, deerExtras,
-
-                // Watcher DLC
-                scavengerDiscipleChance, scavengerTemplarChance, blizzardLizardChance, mirosLoachChance,
-                deerLoachInvChance, loachMirosChance, rotLoachChance, vultureBigMothChance,
-                bigMothVultureChance, cicadaSmallMothChance, smallMothNoodleflyChance,
-                smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance,
-                blackBasiliskLizChance, groundIndigoLizChance, drillCrabMirosChance, mirosDrillCrabChance,
-                drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance,
-
-                loachExtras, bigMothExtras, smallMothExtras, skywhaleExtras, basiliskLizExtras,
-                indigoLizExtras, barnacleExtras, drillCrabExtras
-            };
-            Debug.Log("TOTAL AMOUNT: " + allConfigurableValues.Count);
-            for(int i = 0; i < allConfigurableValues.Count; ++i)
-            {
-                Debug.Log(allConfigurableValues[i]);
             }
         }
 
@@ -557,6 +531,7 @@ namespace ApexUpYourSpawns
             };
 
             //Set the base game configs
+            SetExpansionBindings();
             Dictionary<Configurable<int>, string> labelsMap = new Dictionary<Configurable<int>, string>();
             SetVanillaDictionary(labelsMap);
 

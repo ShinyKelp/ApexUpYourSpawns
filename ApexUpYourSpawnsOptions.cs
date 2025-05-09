@@ -221,7 +221,7 @@ namespace ApexUpYourSpawns
             deerExtras = this.config.Bind<int>("ExtraDeer", 2, new ConfigAcceptableRange<int>(0, 20));
         }
 
-        private void SetExpansionBindings()
+        public void SetExpansionBindings()
         {   
 
             //Shared DLC
@@ -643,6 +643,7 @@ namespace ApexUpYourSpawns
                     indigoLizExtras,
                     bigMothExtras,
                     smallMothExtras,
+                    drillCrabExtras,
                     loachExtras,
                     barnacleExtras,
                     skywhaleExtras

@@ -161,6 +161,10 @@ namespace ApexUpYourSpawns
 
         private bool hasSharedDLC;
 
+        private bool regionContainsDeer = false;
+
+        private bool regionContainsMirosBird = false;
+
         private HashSet<string> bannedRooms;
 
         private ApexUpYourSpawnsOptions options;
@@ -242,7 +246,6 @@ namespace ApexUpYourSpawns
                 On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
                 On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
                 On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
-
                 
                 On.WinState.CycleCompleted += SaveSpawnersOnCycleComplete;
                 On.RainWorldGame.GoToDeathScreen += RainWorldGame_GoToDeathScreen;
@@ -266,6 +269,10 @@ namespace ApexUpYourSpawns
                     //On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
                 }
 
+                if(ModManager.Watcher)
+                {
+                    On.SkyWhaleAbstractAI.CheckBlacklist += SkyWhaleAbstractAI_CheckBlacklist;
+                }
                 //*/
                 ClearDictionaries();
                 SetUpModDependencies();
@@ -290,13 +297,38 @@ namespace ApexUpYourSpawns
                 throw;
             }
         }
+        readonly HashSet<string> LF_Skywhale_Blacklist = new HashSet<string>
+        {
+            "LF_M04",
+            "LF_M02",
+            "LF_A01",
+            "LF_A10",
+            "LF_C01",
+            "LF_C02",
+            "LF_B01",
+            "LF_B02",
+            "LF_D04",
+            "LF_D01",
+            "LF_D02",
+            "LF_D03",
+            "LF_E01",
+            "LF_E02",
+            "LF_E03",
+            "LF_E04",
+            "LF_F02",
+        };
+        private bool SkyWhaleAbstractAI_CheckBlacklist(On.SkyWhaleAbstractAI.orig_CheckBlacklist orig, SkyWhaleAbstractAI self, string room)
+        {
+            return orig(self, room) || LF_Skywhale_Blacklist.Contains(room);
+        }
 
         private void SetOptions()
         {
+            options.SetExpansionBindings();
+
             fillLineages = options.fillLineages.Value;
             forceFreshSpawns = options.forceFreshSpawns.Value;
             balancedSpawns = options.balancedSpawns.Value;
-
             //Vanilla
             redLizardChance = (float)options.redLizardChance.Value / 100;
             largeCentipedeChance = (float)options.largeCentipedeChance.Value / 100;
@@ -307,12 +339,12 @@ namespace ApexUpYourSpawns
             daddyLongLegsChance = (float)options.daddyLongLegsChance.Value / 100;
             cicadaCentiwingChance = (float)options.cicadaCentiwingChance.Value / 100;
             leechLizardChance = (float)options.leechLizardChance.Value / 100;
-            seaLeechAquapedeChance = (float)options.seaLeechAquapedeChance.Value / 100;
             cyanLizChance = (float)options.cyanLizChance.Value / 100;
             tubeWormBigSpiderChance = (float)options.tubeWormSpiderInv.Value / 100;
             jetfishSalamanderChance = (float)options.jetfishSalamanderChance.Value / 100;
             cicadaNoodleflyChance = (float)options.cicadaNoodleFlyChance.Value / 100;
             monsterKelpChance = (float)options.monsterKelpChance.Value / 100;
+
             extraGreens = options.greenLizExtras.Value;
             extraPinks = options.pinkLizExtras.Value;
             extraBlues = options.blueLizExtras.Value;
@@ -341,62 +373,75 @@ namespace ApexUpYourSpawns
             extraKelp = options.kelpExtras.Value;
             extraLeviathans = options.leviathanExtras.Value;
             extraNightCreatures = options.nightCreatureExtras.Value;
-
-            //MSC
-            trainLizardChance = (float)options.trainLizardChance.Value / 100;
-            mirosVultureChance = (float)options.mirosVultureChance.Value / 100;
-            eliteScavengerChance = (float)options.eliteScavengerChance.Value / 100;
-            terrorLongLegsChance = (float)options.terrorLongLegsChance.Value / 100;
-            fireBugChance = (float)options.fireBugChance.Value / 100;
-            yeekLizardChance = (float)options.yeekLizardChance.Value / 100;
-            aquapedeChance = (float)options.jetfishAquapedeChance.Value / 100;
-            giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
-            caramelLizChance = (float)options.caramelLizChance.Value / 100;
-            strawberryLizChance = (float)options.strawberryLizChance.Value / 100;
-            eelLizChance = (float)options.eelLizChance.Value / 100;
-            jungleLeechChance = (float)options.jungleLeechChance.Value / 100;
-            motherSpiderChance = (float)options.motherSpiderChance.Value / 100;
-            stowawayChance = (float)options.stowawayChance.Value / 100;
-            kingScavengerChance = (float)options.kingScavengerChance.Value / 100;
-            hunterLongLegsChance = (float)options.hunterLongLegsChance.Value / 100;
-            extraCaramels = options.caramelLizExtras.Value;
-            extraEellizs = options.eelLizExtras.Value;
-            extraZoops = options.zoopLizExtras.Value;
-            extraYeeks = options.yeekExtras.Value;
-            extraAquapedes = options.aquapedeExtras.Value;
             extraDeer = options.deerExtras.Value;
 
+            //MSC
+            if (ModManager.MSC || ModManager.Watcher)
+            {
+                seaLeechAquapedeChance = (float)options.seaLeechAquapedeChance.Value / 100;
+                mirosVultureChance = (float)options.mirosVultureChance.Value / 100;
+                eliteScavengerChance = (float)options.eliteScavengerChance.Value / 100;
+                terrorLongLegsChance = (float)options.terrorLongLegsChance.Value / 100;
+                yeekLizardChance = (float)options.yeekLizardChance.Value / 100;
+                aquapedeChance = (float)options.jetfishAquapedeChance.Value / 100;
+                giantJellyfishChance = (float)options.giantJellyfishChance.Value / 100;
+                caramelLizChance = (float)options.caramelLizChance.Value / 100;
+                strawberryLizChance = (float)options.strawberryLizChance.Value / 100;
+                eelLizChance = (float)options.eelLizChance.Value / 100;
+                jungleLeechChance = (float)options.jungleLeechChance.Value / 100;
+                motherSpiderChance = (float)options.motherSpiderChance.Value / 100;
+                stowawayChance = (float)options.stowawayChance.Value / 100;
+                kingScavengerChance = (float)options.kingScavengerChance.Value / 100;
+                extraCaramels = options.caramelLizExtras.Value;
+                extraEellizs = options.eelLizExtras.Value;
+                extraZoops = options.zoopLizExtras.Value;
+                extraYeeks = options.yeekExtras.Value;
+                extraAquapedes = options.aquapedeExtras.Value;
+            }
+
+            if (ModManager.MSC)
+            {
+                trainLizardChance = (float)options.trainLizardChance.Value / 100;
+                fireBugChance = (float)options.fireBugChance.Value / 100;
+                hunterLongLegsChance = (float)options.hunterLongLegsChance.Value / 100;
+                kingScavengerChance = (float)options.kingScavengerChance.Value / 100;
+            }
+
             //Watcher
-            scavengerDiscipleChance = (float)options.scavengerDiscipleChance.Value / 100;
-            scavengerTemplarChance = (float)options.scavengerTemplarChance.Value / 100;
-            blizzardLizardChance = (float)options.blizzardLizardChance.Value / 100;
-            mirosLoachChance = (float)options.mirosLoachChance.Value / 100;
-            deerLoachInvChance = (float)options.deerLoachInvChance.Value / 100;
-            loachMirosChance = (float)options.loachMirosChance.Value / 100;
-            rotLoachChance = (float)options.rotLoachChance.Value / 100;
-            vultureBigMothChance = (float)options.vultureBigMothChance.Value / 100;
-            bigMothVultureChance = (float)options.bigMothVultureChance.Value / 100;
-            cicadaSmallMothChance = (float)options.cicadaSmallMothChance.Value / 100;
-            smallMothNoodleflyChance = (float)options.smallMothNoodleflyChance.Value / 100;
-            smallMothCentiwingChance = (float)options.smallMothCentiwingChance.Value / 100;
-            deerSkywhaleChance = (float)options.deerSkywhaleChance.Value / 100;
-            snailBarnacleChance = (float)options.snailBarnacleChance.Value / 100;
-            barnacleSnailChance = (float)options.barnacleSnailChance.Value / 100;
-            blackBasiliskLizChance = (float)options.blackBasiliskLizChance.Value / 100;
-            groundIndigoLizChance = (float)options.groundIndigoLizChance.Value / 100;
-            drillCrabMirosChance = (float)options.drillCrabMirosChance.Value / 100;
-            mirosDrillCrabChance = (float)options.mirosDrillCrabChance.Value / 100;
-            drillCrabLoachChance = (float)options.drillCrabLoachChance.Value / 100;
-            loachDrillCrabChance = (float)options.loachDrillCrabChance.Value / 100;
-            deerDrillCrabInvChance = (float)options.deerDrillCrabInvChance.Value / 100;
-            loachExtras = options.loachExtras.Value;
-            bigMothExtras = options.bigMothExtras.Value;
-            smallMothExtras = options.smallMothExtras.Value;
-            skywhaleExtras = options.skywhaleExtras.Value;
-            basiliskLizExtras = options.basiliskLizExtras.Value;
-            indigoLizExtras = options.indigoLizExtras.Value;
-            barnacleExtras = options.barnacleExtras.Value;
-            drillCrabExtras = options.drillCrabExtras.Value;
+            if (ModManager.Watcher)
+            {
+                scavengerDiscipleChance = (float)options.scavengerDiscipleChance.Value / 100;
+                scavengerTemplarChance = (float)options.scavengerTemplarChance.Value / 100;
+                blizzardLizardChance = (float)options.blizzardLizardChance.Value / 100;
+                mirosLoachChance = (float)options.mirosLoachChance.Value / 100;
+                deerLoachInvChance = (float)options.deerLoachInvChance.Value / 100;
+                loachMirosChance = (float)options.loachMirosChance.Value / 100;
+                rotLoachChance = (float)options.rotLoachChance.Value / 100;
+                vultureBigMothChance = (float)options.vultureBigMothChance.Value / 100;
+                bigMothVultureChance = (float)options.bigMothVultureChance.Value / 100;
+                cicadaSmallMothChance = (float)options.cicadaSmallMothChance.Value / 100;
+                smallMothNoodleflyChance = (float)options.smallMothNoodleflyChance.Value / 100;
+                smallMothCentiwingChance = (float)options.smallMothCentiwingChance.Value / 100;
+                deerSkywhaleChance = (float)options.deerSkywhaleChance.Value / 100;
+                snailBarnacleChance = (float)options.snailBarnacleChance.Value / 100;
+                barnacleSnailChance = (float)options.barnacleSnailChance.Value / 100;
+                blackBasiliskLizChance = (float)options.blackBasiliskLizChance.Value / 100;
+                groundIndigoLizChance = (float)options.groundIndigoLizChance.Value / 100;
+                drillCrabMirosChance = (float)options.drillCrabMirosChance.Value / 100;
+                mirosDrillCrabChance = (float)options.mirosDrillCrabChance.Value / 100;
+                drillCrabLoachChance = (float)options.drillCrabLoachChance.Value / 100;
+                loachDrillCrabChance = (float)options.loachDrillCrabChance.Value / 100;
+                deerDrillCrabInvChance = (float)options.deerDrillCrabInvChance.Value / 100;
+                loachExtras = options.loachExtras.Value;
+                bigMothExtras = options.bigMothExtras.Value;
+                smallMothExtras = options.smallMothExtras.Value;
+                skywhaleExtras = options.skywhaleExtras.Value;
+                basiliskLizExtras = options.basiliskLizExtras.Value;
+                indigoLizExtras = options.indigoLizExtras.Value;
+                barnacleExtras = options.barnacleExtras.Value;
+                drillCrabExtras = options.drillCrabExtras.Value;
+            }
+           
 
             //Mods
             //Mod dependant
@@ -1738,12 +1783,51 @@ namespace ApexUpYourSpawns
         #endregion
 
         #region World Generation Functions
+
+        private void ConfigureRoomAttractions(World self)
+        {
+            if (ModManager.Watcher)
+            {
+                if (regionContainsDeer)
+                {
+                    CreatureTemplate.Type deerType = CreatureTemplate.Type.Deer;
+                    CreatureTemplate.Type skyWhaleType = WatcherEnums.CreatureTemplateType.SkyWhale;
+                    CreatureTemplate.Type dCrabType = WatcherEnums.CreatureTemplateType.DrillCrab;
+                    CreatureTemplate.Type loachType = WatcherEnums.CreatureTemplateType.Loach;
+                    CreatureTemplate.Type rotLoachType = WatcherEnums.CreatureTemplateType.RotLoach;
+
+                    foreach (AbstractRoom room in self.abstractRooms)
+                    {
+                        room.roomAttractions[skyWhaleType.Index] = room.roomAttractions[deerType.Index];
+                        room.roomAttractions[dCrabType.Index] = room.roomAttractions[deerType.Index];
+                        room.roomAttractions[loachType.Index] = room.roomAttractions[deerType.Index];
+                        room.roomAttractions[rotLoachType.Index] = room.roomAttractions[deerType.Index];
+                    }
+                }
+                else if (regionContainsMirosBird)
+                {
+                    CreatureTemplate.Type mirosType = CreatureTemplate.Type.MirosBird;
+                    CreatureTemplate.Type dCrabType = WatcherEnums.CreatureTemplateType.DrillCrab;
+                    CreatureTemplate.Type loachType = WatcherEnums.CreatureTemplateType.Loach;
+                    CreatureTemplate.Type rotLoachType = WatcherEnums.CreatureTemplateType.RotLoach;
+
+                    foreach (AbstractRoom room in self.abstractRooms)
+                    {
+                        room.roomAttractions[dCrabType.Index] = room.roomAttractions[mirosType.Index];
+                        room.roomAttractions[loachType.Index] = room.roomAttractions[mirosType.Index];
+                        room.roomAttractions[rotLoachType.Index] = room.roomAttractions[mirosType.Index];
+                    }
+                }
+            }
+        }
+
         private void GenerateCustomPopulation(On.WorldLoader.orig_GeneratePopulation orig, WorldLoader worldLoader, bool fresh)
         {
             try
             {
                 triedEchoLevi = false;
                 hasBlackLizards = false;
+                regionContainsDeer = false;
                 if (forceFreshSpawns && !fresh)
                 {
                     fresh = true;
@@ -1783,11 +1867,14 @@ namespace ApexUpYourSpawns
                         AddSpawnersToBuffer(worldLoader);
                     else
                         ResetSpawnBufferOnDeath();
+
+                    ConfigureRoomAttractions(worldLoader.world);
                 }
                 else
                 {
-                    MoleSalamanderCheck(worldLoader);
-                    
+                    LoadedWorldChecks(worldLoader);
+                    ConfigureRoomAttractions(worldLoader.world);
+
                     if (!worldLoader.game.rainWorld.safariMode)
                     {
                         bool needsFresh = LoadSaveState(worldLoader);
@@ -2011,6 +2098,7 @@ namespace ApexUpYourSpawns
                     
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.MirosBird)
                     {
+                        regionContainsMirosBird = true;
                         IncreaseCreatureSpawner(simpleSpawner, extraMiros);
                         if (region == "SB" && extraMiros > 0 && balancedSpawns)
                             IncreaseCreatureSpawner(simpleSpawner, 2);
@@ -2021,9 +2109,18 @@ namespace ApexUpYourSpawns
                         {
                             if(simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
                             {
-                                if (!AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, mirosDrillCrabChance, true, false, true, true))
+                                float localMultiplierLoach = balancedSpawns && region == "SH" ? 0.5f : 1f;
+                                float localMultiplierDrill = 1f;
+                                if (balancedSpawns)
                                 {
-                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, mirosLoachChance, true, false, true, true);
+                                    if (region == "SH")
+                                        localMultiplierDrill = 0.5f;
+                                    else if (region == "LC")
+                                        localMultiplierDrill = 1.5f;
+                                }
+                                if (!AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, mirosDrillCrabChance * localMultiplierDrill, true, false, true, true))
+                                {
+                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, mirosLoachChance * localMultiplierLoach, true, false, true, true);
                                 }
                             }
                         }
@@ -2158,25 +2255,26 @@ namespace ApexUpYourSpawns
 
                     if(simpleSpawner.creatureType == CreatureTemplate.Type.Deer)
                     {
+                        regionContainsDeer = true;
                         int deerAmount = simpleSpawner.amount;
                         IncreaseCreatureSpawner(simpleSpawner, extraDeer);
                         if (ModManager.Watcher)
                         {
-                            if(AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, deerDrillCrabInvChance, true))
+                            if(AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, deerDrillCrabInvChance, true, false, false, true))
                             {
                                 World.SimpleSpawner drillSpawner = spawners[spawners.Count - 1] as World.SimpleSpawner;
                                 if (balancedSpawns)
-                                    deerAmount -= 2;
-                                drillSpawner.amount = deerAmount;
+                                    drillSpawner.amount -= 2;
                             }
-                            else if(AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, deerLoachInvChance, true))
+                            else if(AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, deerLoachInvChance, true, false, false, true))
                             {
                                 World.SimpleSpawner loachSpawner = spawners[spawners.Count - 1] as World.SimpleSpawner;
                                 if (balancedSpawns)
-                                    deerAmount = Mathf.CeilToInt(deerAmount*0.25f);
-                                loachSpawner.amount = deerAmount;
+                                    loachSpawner.amount = Mathf.CeilToInt(loachSpawner.amount * 0.25f);
                             }
                             ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.SkyWhale, deerSkywhaleChance, true);
+                            if (simpleSpawner.amount < 1)
+                                simpleSpawner.amount = 2;
                         }
                     }
 
@@ -2195,8 +2293,8 @@ namespace ApexUpYourSpawns
                             IncreaseCreatureSpawner(simpleSpawner, drillCrabExtras);
                             if(simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
                             {
-                                if (!AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.MirosBird, drillCrabMirosChance, true, false, true))
-                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, drillCrabLoachChance, true, false, true);
+                                if (!AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.MirosBird, drillCrabMirosChance, true, false, true, true))
+                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, drillCrabLoachChance, true, false, true, true);
                             }
                         }
                         if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.Loach)
@@ -2206,8 +2304,8 @@ namespace ApexUpYourSpawns
                             IncreaseCreatureSpawner(simpleSpawner, loachExtras);
                             if(simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
                             {   
-                                if (!AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.MirosBird, loachMirosChance, true, false, true))
-                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, loachDrillCrabChance, true, false, true);
+                                if (!AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.MirosBird, loachMirosChance, true, false, true, true))
+                                    AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, loachDrillCrabChance, true, false, true, true);
                             }
                             ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.RotLoach, rotLoachChance);
                         }
@@ -3738,9 +3836,9 @@ namespace ApexUpYourSpawns
             }
         }
 
-        private void MoleSalamanderCheck(WorldLoader worldLoader)
+        private void LoadedWorldChecks(WorldLoader worldLoader)
         {
-            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code"))
+            if (activeMods.Contains("lb-fgf-m4r-ik.tronsx-region-code") || activeMods.Contains("lb-fgf-m4r-ik.modpack"))
             {
                 foreach (World.SimpleSpawner simpleSpawner in worldLoader.spawners.OfType<World.SimpleSpawner>())
                 {
@@ -3751,6 +3849,20 @@ namespace ApexUpYourSpawns
                     }
                 }
             }
+
+            if (ModManager.Watcher)
+            {
+
+                foreach (World.SimpleSpawner simpleSpawner in worldLoader.spawners.OfType<World.SimpleSpawner>())
+                {
+                    if (simpleSpawner.creatureType == CreatureTemplate.Type.Deer)
+                    {
+                        regionContainsDeer = true;
+                        break;
+                    }
+                }
+            }
+
         }
         
         private void ForceBlackMoleSalamander(On.LizardGraphics.orig_ctor orig, LizardGraphics self, PhysicalObject ow)

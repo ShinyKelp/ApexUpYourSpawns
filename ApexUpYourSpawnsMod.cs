@@ -37,10 +37,10 @@ namespace ApexUpYourSpawns
         private float scavengerDiscipleChance, scavengerTemplarChance, blizzardLizardChance, mirosLoachChance, deerLoachInvChance,
             loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothCicadaChance, smallMothNoodleflyChance,
             smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance, blackBasiliskLizChance, groundIndigoLizChance,
-            drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance;
+            drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance, leechFrogChance, mouseRatChance;
 
         private int loachExtras, bigMothExtras, smallMothExtras, skywhaleExtras, basiliskLizExtras, indigoLizExtras, barnacleExtras, 
-            drillCrabExtras;
+            drillCrabExtras, frogExtras, ratExtras;
 
 
 
@@ -436,6 +436,8 @@ namespace ApexUpYourSpawns
                 drillCrabLoachChance = (float)options.drillCrabLoachChance.Value / 100;
                 loachDrillCrabChance = (float)options.loachDrillCrabChance.Value / 100;
                 deerDrillCrabInvChance = (float)options.deerDrillCrabInvChance.Value / 100;
+                leechFrogChance = (float)options.leechFrogChance.Value / 100;
+                mouseRatChance = (float)options.mouseRatChance.Value / 100;
                 loachExtras = options.loachExtras.Value;
                 bigMothExtras = options.bigMothExtras.Value;
                 smallMothExtras = options.smallMothExtras.Value;
@@ -444,6 +446,9 @@ namespace ApexUpYourSpawns
                 indigoLizExtras = options.indigoLizExtras.Value;
                 barnacleExtras = options.barnacleExtras.Value;
                 drillCrabExtras = options.drillCrabExtras.Value;
+                frogExtras = options.frogExtras.Value;
+                ratExtras = options.ratExtras.Value;
+
             }
            
 
@@ -2171,9 +2176,8 @@ namespace ApexUpYourSpawns
                         || simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.JungleLeech)
                     {
                         HandleLeechSpawner(simpleSpawner, spawners);
-                        //TESTING
                         if (ModManager.Watcher)
-                            simpleSpawner.creatureType = WatcherEnums.CreatureTemplateType.Frog;
+                            AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Frog, leechFrogChance, true, true, true);
                         goto ModCreaturesSpawner;
                     }
 
@@ -2215,9 +2219,8 @@ namespace ApexUpYourSpawns
                     {
                         IncreaseCreatureSpawner(simpleSpawner, (Region == "SH" && balancedSpawns) ? extraLMice - 10 : extraLMice, true);
                         HandleLongLegsSpawner(simpleSpawner, spawners);
-                        //TESTING
-                        if(ModManager.Watcher)
-                            simpleSpawner.creatureType = WatcherEnums.CreatureTemplateType.Rat;
+                        if (ModManager.Watcher)
+                            ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Rat, mouseRatChance, true);
                         goto ModCreaturesSpawner;
                     }
 
@@ -2338,6 +2341,16 @@ namespace ApexUpYourSpawns
                         if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.SkyWhale)
                         {
                             IncreaseCreatureSpawner(simpleSpawner, skywhaleExtras);
+                            goto ModCreaturesSpawner;
+                        }
+                        if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.Frog)
+                        {
+                            IncreaseCreatureSpawner(simpleSpawner, frogExtras); 
+                            goto ModCreaturesSpawner;
+                        }
+                        if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.Rat)
+                        {
+                            IncreaseCreatureSpawner(simpleSpawner, ratExtras);
                             goto ModCreaturesSpawner;
                         }
                     }

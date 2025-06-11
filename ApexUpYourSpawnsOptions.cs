@@ -110,6 +110,8 @@ namespace ApexUpYourSpawns
         public Configurable<int> drillCrabLoachChance;
         public Configurable<int> loachDrillCrabChance;
         public Configurable<int> deerDrillCrabInvChance;
+        public Configurable<int> leechFrogChance;
+        public Configurable<int> mouseRatChance;
 
         public Configurable<int> loachExtras;
         public Configurable<int> bigMothExtras;
@@ -119,6 +121,8 @@ namespace ApexUpYourSpawns
         public Configurable<int> indigoLizExtras;
         public Configurable<int> barnacleExtras;
         public Configurable<int> drillCrabExtras;
+        public Configurable<int> frogExtras;
+        public Configurable<int> ratExtras;
 
 
         //Mod dependent
@@ -286,6 +290,8 @@ namespace ApexUpYourSpawns
                 drillCrabLoachChance = this.config.Bind<int>("DrillCrabLoachChance", 0, new ConfigAcceptableRange<int>(0, 100));
                 loachDrillCrabChance = this.config.Bind<int>("LoachDrillCrabChance", 0, new ConfigAcceptableRange<int>(0, 100));
                 deerDrillCrabInvChance = this.config.Bind<int>("DeerDrillCrabChance", 18, new ConfigAcceptableRange<int>(0, 100));
+                leechFrogChance = this.config.Bind<int>("LeechFrogChance", 25, new ConfigAcceptableRange<int>(0, 100));
+                mouseRatChance = this.config.Bind<int>("MouseRatChance", 33, new ConfigAcceptableRange<int>(0, 100));
 
                 loachExtras = this.config.Bind<int>("LoachExtras", 2, new ConfigAcceptableRange<int>(0, 20));
                 bigMothExtras = this.config.Bind<int>("BigMothExtras", 3, new ConfigAcceptableRange<int>(0, 100));
@@ -295,6 +301,8 @@ namespace ApexUpYourSpawns
                 barnacleExtras = this.config.Bind<int>("BarnacleExtras", 0, new ConfigAcceptableRange<int>(0, 100));
                 drillCrabExtras = this.config.Bind<int>("DrillCrabExtras", 3, new ConfigAcceptableRange<int>(0, 20));
                 skywhaleExtras = this.config.Bind<int>("SkywhaleExtras", 2, new ConfigAcceptableRange<int>(0, 20));
+                frogExtras = this.config.Bind<int>("FrogExtras", 5, new ConfigAcceptableRange<int>(0, 100));
+                ratExtras = this.config.Bind<int>("RatExtras", 0, new ConfigAcceptableRange<int>(0, 100));
             }
         }
 
@@ -405,6 +413,8 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(drillCrabLoachChance, "Drill Crab > Loach (Den)");
                 labelsMap.Add(loachDrillCrabChance, "Loach > Drill Crab (Den)");
                 labelsMap.Add(deerDrillCrabInvChance, "Deer > Drill Crab (Inv)");
+                labelsMap.Add(leechFrogChance, "Leeches > Frog (Den)");
+                labelsMap.Add(mouseRatChance, "Lantern Mouse > Rat");
                 labelsMap.Add(loachExtras, "Loaches");
                 labelsMap.Add(bigMothExtras, "Big Moths");
                 labelsMap.Add(smallMothExtras, "Small Moths (/10)");
@@ -413,6 +423,8 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(barnacleExtras, "Barnacles  (/10)");
                 labelsMap.Add(drillCrabExtras, "Drill Crabs");
                 labelsMap.Add(skywhaleExtras, "Skywhales");
+                labelsMap.Add(frogExtras, "Frogs (/10)");
+                labelsMap.Add(ratExtras, "Rats (/10)");
             }
         }
 
@@ -629,6 +641,8 @@ namespace ApexUpYourSpawns
                     smallMothCentiwingChance,
                     snailBarnacleChance,
                     barnacleSnailChance,
+                    leechFrogChance,
+                    mouseRatChance,
                     deerSkywhaleChance,
                     deerDrillCrabInvChance,
                     deerLoachInvChance,
@@ -645,11 +659,13 @@ namespace ApexUpYourSpawns
                 {
                     basiliskLizExtras,
                     indigoLizExtras,
-                    bigMothExtras,
+                    frogExtras,
+                    ratExtras,
+                    barnacleExtras,
                     smallMothExtras,
+                    bigMothExtras,
                     drillCrabExtras,
                     loachExtras,
-                    barnacleExtras,
                     skywhaleExtras
                 };
 

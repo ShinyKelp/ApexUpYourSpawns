@@ -35,7 +35,7 @@ namespace ApexUpYourSpawns
 
         //Watcher
         private float scavengerDiscipleChance, scavengerTemplarChance, blizzardLizardChance, mirosLoachChance, deerLoachInvChance,
-            loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothNoodleflyChance,
+            loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothCicadaChance, smallMothNoodleflyChance,
             smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance, blackBasiliskLizChance, groundIndigoLizChance,
             drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance;
 
@@ -423,6 +423,7 @@ namespace ApexUpYourSpawns
                 vultureBigMothChance = (float)options.vultureBigMothChance.Value / 100;
                 bigMothVultureChance = (float)options.bigMothVultureChance.Value / 100;
                 cicadaSmallMothChance = (float)options.cicadaSmallMothChance.Value / 100;
+                smallMothCicadaChance = (float)options.cicadaSmallMothChance.Value / 100;
                 smallMothNoodleflyChance = (float)options.smallMothNoodleflyChance.Value / 100;
                 smallMothCentiwingChance = (float)options.smallMothCentiwingChance.Value / 100;
                 deerSkywhaleChance = (float)options.deerSkywhaleChance.Value / 100;
@@ -2205,6 +2206,8 @@ namespace ApexUpYourSpawns
                     {
                         IncreaseCreatureSpawner(simpleSpawner, (Region == "DS" && balancedSpawns) ? extraSnails-10 : extraSnails, true);
                         HandleLongLegsSpawner(simpleSpawner, spawners);
+                        if (ModManager.Watcher && simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
+                            ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Barnacle, snailBarnacleChance, true);
                         goto ModCreaturesSpawner;
                     }
 
@@ -2278,17 +2281,28 @@ namespace ApexUpYourSpawns
                             if (simpleSpawner.amount < 1)
                                 simpleSpawner.amount = 2;
                         }
+                        goto ModCreaturesSpawner;
                     }
 
                     if (ModManager.Watcher)
                     {
                         if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.BigMoth)
                         {
-                            IncreaseCreatureSpawner(simpleSpawner);
+                            IncreaseCreatureSpawner(simpleSpawner, bigMothExtras);
                             if(simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
                             {
                                 ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Vulture, bigMothVultureChance, true);
                             }
+                            goto ModCreaturesSpawner;
+                        }
+                        if (simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.SmallMoth)
+                        {
+                            IncreaseCreatureSpawner(simpleSpawner, smallMothExtras, true);
+                            if (simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
+                                ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.CicadaA, smallMothCicadaChance, true);
+                            ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BigNeedleWorm, smallMothNoodleflyChance, true);
+                            ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Centiwing, smallMothCentiwingChance, true);
+                            goto ModCreaturesSpawner;
                         }
                         if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.DrillCrab)
                         {
@@ -2298,6 +2312,7 @@ namespace ApexUpYourSpawns
                                 if (!AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.MirosBird, drillCrabMirosChance, true, false, true, true))
                                     AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.Loach, drillCrabLoachChance, true, false, true, true);
                             }
+                            goto ModCreaturesSpawner;
                         }
                         if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.Loach)
                         {
@@ -2310,6 +2325,20 @@ namespace ApexUpYourSpawns
                                     AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.DrillCrab, loachDrillCrabChance, true, false, true, true);
                             }
                             ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.RotLoach, rotLoachChance);
+                            goto ModCreaturesSpawner;
+                        }
+                        if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.Barnacle)
+                        {
+                            IncreaseCreatureSpawner(simpleSpawner, barnacleExtras, true);
+                            if (simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
+                                ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Snail, barnacleSnailChance, true);
+                            HandleLongLegsSpawner(simpleSpawner, spawners);
+                            goto ModCreaturesSpawner;
+                        }
+                        if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.SkyWhale)
+                        {
+                            IncreaseCreatureSpawner(simpleSpawner, skywhaleExtras);
+                            goto ModCreaturesSpawner;
                         }
                     }
 
@@ -2667,11 +2696,13 @@ namespace ApexUpYourSpawns
                 if(simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.BasiliskLizard)
                     IncreaseCreatureSpawner(simpleSpawner, basiliskLizExtras, true);
 
-                float localBlizzardChance = blizzardLizardChance;
+                float blizLizChance = blizzardLizardChance;
                 if (simpleSpawner.creatureType == CreatureTemplate.Type.YellowLizard)
-                    localBlizzardChance /= 2;
+                    blizLizChance /= 2;
+                if (Subregion == "Bitter Aerie" || SlugcatName == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                    blizLizChance *= 1.8f;
 
-                AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.BlizzardLizard, balancedSpawns ? localBlizzardChance : blizzardLizardChance, true, false, true);
+                AddInvasionSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.BlizzardLizard, balancedSpawns ? blizLizChance : blizzardLizardChance, true, false, true);
             }
 
             //Mods
@@ -2880,10 +2911,10 @@ namespace ApexUpYourSpawns
             if (!replacedFull)
             {
                 int spawnCount = spawners.Count;
-                replacedFull = ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BigNeedleWorm, cicadaNoodleflyChance, true);
-                if (ModManager.Watcher)
+                ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BigNeedleWorm, cicadaNoodleflyChance, true);
+                if (ModManager.Watcher && simpleSpawner.inRegionSpawnerIndex < originalSpawnCount)
                 {
-                    ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.SmallMoth, cicadaSmallMothChance);
+                    ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.SmallMoth, cicadaSmallMothChance, true);
                 }
             }
            
@@ -3169,6 +3200,19 @@ namespace ApexUpYourSpawns
             {
                 World.SimpleSpawner simpleSpawner = new World.SimpleSpawner(lineage.region, spawners.Count, lineage.den, CreatureTemplate.Type.BlackLizard, lineage.spawnData[0], 0);
                 spawners.Add(simpleSpawner);
+            }
+
+            //Watcher
+
+            if (ModManager.Watcher)
+            {
+                ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.GreenLizard, WatcherEnums.CreatureTemplateType.IndigoLizard, groundIndigoLizChance);
+                ReplaceCreatureInLineage(lineage, DLCSharedEnums.CreatureTemplateType.SpitLizard, WatcherEnums.CreatureTemplateType.IndigoLizard, groundIndigoLizChance);
+                ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.BlackLizard, WatcherEnums.CreatureTemplateType.BasiliskLizard, blackBasiliskLizChance);
+                float blizLizChance = blizzardLizardChance;
+                if (Subregion == "Bitter Aerie" || SlugcatName == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                    blizLizChance *= 1.8f;
+                ReplaceCreatureInLineage(lineage, CreatureTemplate.Type.GreenLizard, WatcherEnums.CreatureTemplateType.BlizzardLizard, balancedSpawns? blizLizChance : blizzardLizardChance, true);
             }
 
             //Mods

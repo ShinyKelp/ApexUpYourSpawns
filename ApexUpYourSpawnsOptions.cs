@@ -97,6 +97,7 @@ namespace ApexUpYourSpawns
         public Configurable<int> vultureBigMothChance;
         public Configurable<int> bigMothVultureChance;
         public Configurable<int> cicadaSmallMothChance;
+        public Configurable<int> smallMothCicadaChance;
         public Configurable<int> smallMothNoodleflyChance;
         public Configurable<int> smallMothCentiwingChance;
         public Configurable<int> deerSkywhaleChance;
@@ -272,6 +273,7 @@ namespace ApexUpYourSpawns
                 vultureBigMothChance = this.config.Bind<int>("VultureBigMothChance", 12, new ConfigAcceptableRange<int>(0, 100));
                 bigMothVultureChance = this.config.Bind<int>("BigMothVultureChance", 0, new ConfigAcceptableRange<int>(0, 100));
                 cicadaSmallMothChance = this.config.Bind<int>("CicadaSmallMothChance", 15, new ConfigAcceptableRange<int>(0, 100));
+                smallMothCicadaChance = this.config.Bind<int>("SmallMothCicadaChance", 15, new ConfigAcceptableRange<int>(0, 100));
                 smallMothNoodleflyChance = this.config.Bind<int>("SmallMothNoodleflyChance", 0, new ConfigAcceptableRange<int>(0, 100));
                 smallMothCentiwingChance = this.config.Bind<int>("SmallMothCentiwingChance", 0, new ConfigAcceptableRange<int>(0, 100));
                 deerSkywhaleChance = this.config.Bind<int>("DeerSkywhaleChance", 15, new ConfigAcceptableRange<int>(0, 100));
@@ -390,6 +392,7 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(vultureBigMothChance, "Vulture > Big Moth");
                 labelsMap.Add(bigMothVultureChance, "Big Moth > Vulture");
                 labelsMap.Add(cicadaSmallMothChance, "Cicada > Small Moth");
+                labelsMap.Add(smallMothCicadaChance, "Small Moth > Cicada");
                 labelsMap.Add(smallMothNoodleflyChance, "Small Moth > Noodlefly");
                 labelsMap.Add(smallMothCentiwingChance, "Small Moth > Centiwing");
                 labelsMap.Add(deerSkywhaleChance, "Deer > Skywhale");
@@ -621,6 +624,7 @@ namespace ApexUpYourSpawns
                     vultureBigMothChance,
                     bigMothVultureChance,
                     cicadaSmallMothChance,
+                    smallMothCicadaChance,
                     smallMothNoodleflyChance,
                     smallMothCentiwingChance,
                     snailBarnacleChance,

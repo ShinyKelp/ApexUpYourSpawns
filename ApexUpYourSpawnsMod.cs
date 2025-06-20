@@ -38,7 +38,7 @@ namespace ApexUpYourSpawns
             loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothCicadaChance, smallMothNoodleflyChance,
             smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance, blackBasiliskLizChance, groundIndigoLizChance,
             drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance, leechFrogChance, mouseRatChance,
-            grubSandGrubChance, popcornSandWormTrapChance;
+            grubSandGrubChance, popcornSandWormTrapChance, hazerTardigradeChance;
 
         private int loachExtras, bigMothExtras, smallMothExtras, skywhaleExtras, basiliskLizExtras, indigoLizExtras, barnacleExtras, 
             drillCrabExtras, frogExtras, ratExtras;
@@ -248,7 +248,7 @@ namespace ApexUpYourSpawns
                 On.WorldLoader.GeneratePopulation += GenerateCustomPopulation;
                 if (hasSharedDLC)
                 {
-                    On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
+                    On.JellyFish.PlaceInRoom += JellyfishSpawn;
                     On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
                     On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
                 }
@@ -280,9 +280,10 @@ namespace ApexUpYourSpawns
                     //Skywhale stuff
                     On.SkyWhaleAbstractAI.CheckBlacklist += SkyWhaleAbstractAI_CheckBlacklist;
                     //Sand grub stuff
-                    On.VultureGrub.PlaceInRoom += ReplaceVultureWithSandGrub;
+                    On.VultureGrub.PlaceInRoom += VultureGrubSpawn;
                     On.SeedCob.PlaceInRoom += AddSandTrapToPopcorn;
                     On.Watcher.SandGrubNetwork.MarkConsumed += PreventSandGrubPullCrash;
+                    On.Hazer.PlaceInRoom += HazerSpawn;
                 }
                 //*/
                 ClearDictionaries();
@@ -308,8 +309,6 @@ namespace ApexUpYourSpawns
                 throw;
             }
         }
-
-
 
 
         //Apparently, limiting skywhales to deer's room attractions is not enough. Idk why.
@@ -453,6 +452,7 @@ namespace ApexUpYourSpawns
                 mouseRatChance = (float)options.mouseRatChance.Value / 100;
                 grubSandGrubChance = (float)options.grubSandGrubChance.Value / 100;
                 popcornSandWormTrapChance = (float)options.popcornSandWormTrapChance.Value / 100;
+                hazerTardigradeChance = (float)options.hazerTardigradeChance.Value / 100;
 
                 loachExtras = options.loachExtras.Value;
                 bigMothExtras = options.bigMothExtras.Value;
@@ -1677,9 +1677,9 @@ namespace ApexUpYourSpawns
                 orig(self);
         }
 
-        private void ReplaceVultureWithSandGrub(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
+        private void VultureGrubSpawn(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
         {
-            if(ModManager.Watcher && UnityEngine.Random.value < grubSandGrubChance)
+            if(ModManager.Watcher && !game.IsArenaSession && UnityEngine.Random.value < grubSandGrubChance)
             {
                 AddSandWorm(placeRoom, self.abstractPhysicalObject.pos, false);
 
@@ -1690,7 +1690,7 @@ namespace ApexUpYourSpawns
 
         private void AddSandTrapToPopcorn(On.SeedCob.orig_PlaceInRoom orig, SeedCob self, Room placeRoom)
         {
-            if (ModManager.Watcher && !self.AbstractCob.dead && UnityEngine.Random.value < popcornSandWormTrapChance)
+            if (ModManager.Watcher && !game.IsArenaSession && !self.AbstractCob.dead && UnityEngine.Random.value < popcornSandWormTrapChance)
             {
                 AddSandWorm(placeRoom, self.abstractPhysicalObject.pos, true);
             }
@@ -1733,7 +1733,25 @@ namespace ApexUpYourSpawns
             }
         }
 
-        private void ReplaceGiantJellyfish(On.JellyFish.orig_PlaceInRoom orig, JellyFish self, Room room)
+        private void HazerSpawn(On.Hazer.orig_PlaceInRoom orig, Hazer self, Room room)
+        {
+            if (ModManager.Watcher && !game.IsArenaSession && UnityEngine.Random.value < hazerTardigradeChance)
+            {
+                AbstractCreature tardAbs = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.Tardigrade), null, new WorldCoordinate(room.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
+                tardAbs.state = new Tardigrade.TardigradeState(tardAbs);
+                if(UnityEngine.Random.value < 0.1f)
+                    (tardAbs.state as Tardigrade.TardigradeState).slayer = true;
+                Tardigrade tardi = new Tardigrade(tardAbs, game.world);
+                tardAbs.realizedCreature = tardi;
+                tardAbs.abstractAI.RealAI = new TardigradeAI(tardAbs, game.world);
+
+                tardi.PlaceInRoom(room);
+            }
+            else
+                orig(self, room);
+        }
+
+        private void JellyfishSpawn(On.JellyFish.orig_PlaceInRoom orig, JellyFish self, Room room)
         {
             if (hasSharedDLC && !game.IsArenaSession && !room.abstractRoom.shelter && UnityEngine.Random.value < giantJellyfishChance)
             {

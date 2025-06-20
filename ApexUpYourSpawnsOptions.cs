@@ -114,6 +114,8 @@ namespace ApexUpYourSpawns
         public Configurable<int> mouseRatChance;
         public Configurable<int> grubSandGrubChance;
         public Configurable<int> popcornSandWormTrapChance;
+        public Configurable<int> hazerTardigradeChance;
+
 
         public Configurable<int> loachExtras;
         public Configurable<int> bigMothExtras;
@@ -296,6 +298,7 @@ namespace ApexUpYourSpawns
                 mouseRatChance = this.config.Bind<int>("MouseRatChance", 33, new ConfigAcceptableRange<int>(0, 100));
                 grubSandGrubChance = this.config.Bind<int>("GrubSandGrubChance", 20, new ConfigAcceptableRange<int>(0, 100));
                 popcornSandWormTrapChance = this.config.Bind<int>("PopcornSandWormTrapChance", 10, new ConfigAcceptableRange<int>(0, 100));
+                hazerTardigradeChance = this.config.Bind<int>("HazerTardigradeChance", 30, new ConfigAcceptableRange<int>(0, 100));
 
                 loachExtras = this.config.Bind<int>("LoachExtras", 2, new ConfigAcceptableRange<int>(0, 20));
                 bigMothExtras = this.config.Bind<int>("BigMothExtras", 3, new ConfigAcceptableRange<int>(0, 100));
@@ -421,6 +424,7 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(mouseRatChance, "Lantern Mouse > Rat");
                 labelsMap.Add(grubSandGrubChance, "Vulture Grub > Sand Grub (*)");
                 labelsMap.Add(popcornSandWormTrapChance, "Popcorn Plant > Sand Worm Trap (*)");
+                labelsMap.Add(hazerTardigradeChance, "Hazer > Tardigrade (*)");
 
 
                 labelsMap.Add(loachExtras, "Loaches");
@@ -662,7 +666,8 @@ namespace ApexUpYourSpawns
                     loachMirosChance,
                     mirosLoachChance,
                     grubSandGrubChance,
-                    popcornSandWormTrapChance
+                    popcornSandWormTrapChance,
+                    hazerTardigradeChance
                 };
 
                 Configurable<int>[] UIWatcherExtraConfigs =

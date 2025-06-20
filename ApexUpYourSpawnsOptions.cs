@@ -112,6 +112,8 @@ namespace ApexUpYourSpawns
         public Configurable<int> deerDrillCrabInvChance;
         public Configurable<int> leechFrogChance;
         public Configurable<int> mouseRatChance;
+        public Configurable<int> grubSandGrubChance;
+        public Configurable<int> popcornSandWormTrapChance;
 
         public Configurable<int> loachExtras;
         public Configurable<int> bigMothExtras;
@@ -292,6 +294,8 @@ namespace ApexUpYourSpawns
                 deerDrillCrabInvChance = this.config.Bind<int>("DeerDrillCrabChance", 18, new ConfigAcceptableRange<int>(0, 100));
                 leechFrogChance = this.config.Bind<int>("LeechFrogChance", 25, new ConfigAcceptableRange<int>(0, 100));
                 mouseRatChance = this.config.Bind<int>("MouseRatChance", 33, new ConfigAcceptableRange<int>(0, 100));
+                grubSandGrubChance = this.config.Bind<int>("GrubSandGrubChance", 20, new ConfigAcceptableRange<int>(0, 100));
+                popcornSandWormTrapChance = this.config.Bind<int>("PopcornSandWormTrapChance", 10, new ConfigAcceptableRange<int>(0, 100));
 
                 loachExtras = this.config.Bind<int>("LoachExtras", 2, new ConfigAcceptableRange<int>(0, 20));
                 bigMothExtras = this.config.Bind<int>("BigMothExtras", 3, new ConfigAcceptableRange<int>(0, 100));
@@ -415,6 +419,10 @@ namespace ApexUpYourSpawns
                 labelsMap.Add(deerDrillCrabInvChance, "Deer > Drill Crab (Inv)");
                 labelsMap.Add(leechFrogChance, "Leeches > Frog (Den)");
                 labelsMap.Add(mouseRatChance, "Lantern Mouse > Rat");
+                labelsMap.Add(grubSandGrubChance, "Vulture Grub > Sand Grub (*)");
+                labelsMap.Add(popcornSandWormTrapChance, "Popcorn Plant > Sand Worm Trap (*)");
+
+
                 labelsMap.Add(loachExtras, "Loaches");
                 labelsMap.Add(bigMothExtras, "Big Moths");
                 labelsMap.Add(smallMothExtras, "Small Moths (/10)");
@@ -653,6 +661,8 @@ namespace ApexUpYourSpawns
                     loachDrillCrabChance,
                     loachMirosChance,
                     mirosLoachChance,
+                    grubSandGrubChance,
+                    popcornSandWormTrapChance
                 };
 
                 Configurable<int>[] UIWatcherExtraConfigs =

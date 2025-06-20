@@ -37,7 +37,8 @@ namespace ApexUpYourSpawns
         private float scavengerDiscipleChance, scavengerTemplarChance, blizzardLizardChance, mirosLoachChance, deerLoachInvChance,
             loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothCicadaChance, smallMothNoodleflyChance,
             smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance, blackBasiliskLizChance, groundIndigoLizChance,
-            drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance, leechFrogChance, mouseRatChance;
+            drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance, leechFrogChance, mouseRatChance,
+            grubSandGrubChance, popcornSandWormTrapChance;
 
         private int loachExtras, bigMothExtras, smallMothExtras, skywhaleExtras, basiliskLizExtras, indigoLizExtras, barnacleExtras, 
             drillCrabExtras, frogExtras, ratExtras;
@@ -245,10 +246,13 @@ namespace ApexUpYourSpawns
                 On.GameSession.ctor += GameSessionOnctor;
                 //On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
                 On.WorldLoader.GeneratePopulation += GenerateCustomPopulation;
-                On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
-                On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
-                On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
-                
+                if (hasSharedDLC)
+                {
+                    On.JellyFish.PlaceInRoom += ReplaceGiantJellyfish;
+                    On.DangleFruit.PlaceInRoom += ReplaceStowawayBugBlueFruit;
+                    On.MoreSlugcats.GooieDuck.PlaceInRoom += ReplaceStowawayBugGooieDuck;
+                }
+
                 On.WinState.CycleCompleted += SaveSpawnersOnCycleComplete;
                 On.RainWorldGame.GoToDeathScreen += RainWorldGame_GoToDeathScreen;
                 On.RainWorldGame.GoToStarveScreen += RainWorldGame_GoToStarveScreen;
@@ -273,7 +277,12 @@ namespace ApexUpYourSpawns
 
                 if(ModManager.Watcher)
                 {
+                    //Skywhale stuff
                     On.SkyWhaleAbstractAI.CheckBlacklist += SkyWhaleAbstractAI_CheckBlacklist;
+                    //Sand grub stuff
+                    On.VultureGrub.PlaceInRoom += ReplaceVultureWithSandGrub;
+                    On.SeedCob.PlaceInRoom += AddSandTrapToPopcorn;
+                    On.Watcher.SandGrubNetwork.MarkConsumed += PreventSandGrubPullCrash;
                 }
                 //*/
                 ClearDictionaries();
@@ -299,6 +308,10 @@ namespace ApexUpYourSpawns
                 throw;
             }
         }
+
+
+
+
         //Apparently, limiting skywhales to deer's room attractions is not enough. Idk why.
         readonly HashSet<string> LF_Skywhale_Blacklist = new HashSet<string>
         {
@@ -438,6 +451,9 @@ namespace ApexUpYourSpawns
                 deerDrillCrabInvChance = (float)options.deerDrillCrabInvChance.Value / 100;
                 leechFrogChance = (float)options.leechFrogChance.Value / 100;
                 mouseRatChance = (float)options.mouseRatChance.Value / 100;
+                grubSandGrubChance = (float)options.grubSandGrubChance.Value / 100;
+                popcornSandWormTrapChance = (float)options.popcornSandWormTrapChance.Value / 100;
+
                 loachExtras = options.loachExtras.Value;
                 bigMothExtras = options.bigMothExtras.Value;
                 smallMothExtras = options.smallMothExtras.Value;
@@ -1650,8 +1666,72 @@ namespace ApexUpYourSpawns
             else orig(self);
         }
         #endregion
-        
+
         #region Non-spawner creature replacements
+
+        private void PreventSandGrubPullCrash(On.Watcher.SandGrubNetwork.orig_MarkConsumed orig, SandGrubNetwork self)
+        {
+            if (SlugcatName != WatcherEnums.SlugcatStatsName.Watcher)
+                return;
+            else
+                orig(self);
+        }
+
+        private void ReplaceVultureWithSandGrub(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
+        {
+            if(ModManager.Watcher && UnityEngine.Random.value < grubSandGrubChance)
+            {
+                AddSandWorm(placeRoom, self.abstractPhysicalObject.pos, false);
+
+            }
+            else
+                orig(self, placeRoom);
+        }
+
+        private void AddSandTrapToPopcorn(On.SeedCob.orig_PlaceInRoom orig, SeedCob self, Room placeRoom)
+        {
+            if (ModManager.Watcher && !self.AbstractCob.dead && UnityEngine.Random.value < popcornSandWormTrapChance)
+            {
+                AddSandWorm(placeRoom, self.abstractPhysicalObject.pos, true);
+            }
+            orig(self, placeRoom);
+        }
+
+        private void AddSandWorm(Room placeRoom, WorldCoordinate objPos, bool isBig)
+        {
+            SandGrubBurrow sandGrubBurrow = new SandGrubBurrow(null);
+            placeRoom.AddObject(sandGrubBurrow);
+            Vector2 origPos = new Vector2(objPos.x, objPos.y + 2);
+            Vector2 newPos = new Vector2(((float)origPos.x + 1f) * 20f - 20f, ((float)origPos.y + 1f) * 20f - 20f);
+            sandGrubBurrow.pos = placeRoom.FindGroundBelow(newPos, out sandGrubBurrow.dir, 200f);
+            SandGrubNetwork sgNet = null;
+            foreach (UpdatableAndDeletable udel in placeRoom.updateList)
+            {
+                if (udel is SandGrubNetwork sgn)
+                {
+                    sgNet = sgn; break;
+                }
+            }
+
+            if (sgNet is null)
+                placeRoom.AddObject(new SandGrubNetwork(sandGrubBurrow.pos, 1f, 1f, isBig? 1f:0f, true));
+            else
+            {
+                Vector2 netPos = Vector2.zero;
+                int count = 0;
+
+                foreach (UpdatableAndDeletable udel in placeRoom.updateList)
+                {
+                    if (udel is SandGrubBurrow burrow)
+                    {
+                        count++;
+                        netPos += burrow.pos;
+                    }
+                }
+                netPos /= count;
+                sgNet.pos = netPos;
+            }
+        }
 
         private void ReplaceGiantJellyfish(On.JellyFish.orig_PlaceInRoom orig, JellyFish self, Room room)
         {
@@ -1794,7 +1874,7 @@ namespace ApexUpYourSpawns
         }
         private SlugcatStats.Name SlugcatName
         {
-            get => (!game.IsStorySession) ? null :
+            get => (game is null || !game.IsStorySession) ? null :
                 game.GetStorySession.saveState.saveStateNumber;
         }
 

@@ -38,7 +38,7 @@ namespace ApexUpYourSpawns
             loachMirosChance, rotLoachChance, vultureBigMothChance, bigMothVultureChance, cicadaSmallMothChance, smallMothCicadaChance, smallMothNoodleflyChance,
             smallMothCentiwingChance, deerSkywhaleChance, snailBarnacleChance, barnacleSnailChance, blackBasiliskLizChance, groundIndigoLizChance,
             drillCrabMirosChance, mirosDrillCrabChance, drillCrabLoachChance, loachDrillCrabChance, deerDrillCrabInvChance, leechFrogChance, mouseRatChance,
-            grubSandGrubChance, popcornSandWormTrapChance, hazerTardigradeChance;
+            grubSandGrubChance, popcornSandWormTrapChance, hazerTardigradeChance, pearlFireSpriteChance;
 
         private int loachExtras, bigMothExtras, smallMothExtras, skywhaleExtras, basiliskLizExtras, indigoLizExtras, barnacleExtras, 
             drillCrabExtras, frogExtras, ratExtras;
@@ -277,14 +277,12 @@ namespace ApexUpYourSpawns
 
                 if(ModManager.Watcher)
                 {
-                    //Skywhale stuff
-                    On.SkyWhaleAbstractAI.CheckBlacklist += SkyWhaleAbstractAI_CheckBlacklist;
-                    //Sand grub stuff
-                    On.VultureGrub.PlaceInRoom += VultureGrubSpawn;
+                    On.SkyWhaleAbstractAI.CheckBlacklist += SkyWhale_ExtraBlacklist;
+                    On.VultureGrub.PlaceInRoom += ReplaceVultureWithSandGrub;
                     On.SeedCob.PlaceInRoom += AddSandTrapToPopcorn;
                     On.Watcher.SandGrubNetwork.MarkConsumed += PreventSandGrubPullCrash;
-                    On.Hazer.PlaceInRoom += HazerSpawn;
-                    On.DataPearl.PlaceInRoom += AddBoxWorms;
+                    On.Hazer.PlaceInRoom += ReplaceHazerWithTardigrade;
+                    On.Room.ReadyForAI += AddBoxWormsOnPearls;
                 }
                 //*/
                 ClearDictionaries();
@@ -311,19 +309,6 @@ namespace ApexUpYourSpawns
             }
         }
 
-        private void AddBoxWorms(On.DataPearl.orig_PlaceInRoom orig, DataPearl self, Room placeRoom)
-        {
-            orig(self, placeRoom);
-            AbstractCreature boxWrm = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.BoxWorm), null, new WorldCoordinate(placeRoom.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
-            BoxWorm boxWrmReal = new BoxWorm(boxWrm, game.world);
-            boxWrmReal.PlaceInRoom(placeRoom);
-
-            AbstractCreature fireSpr = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.FireSprite), null, new WorldCoordinate(placeRoom.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
-            FireSprite fireSprReal = new FireSprite(fireSpr, game.world);
-            fireSprReal.PlaceInRoom(placeRoom);
-        }
-
-
         //Apparently, limiting skywhales to deer's room attractions is not enough. Idk why.
         readonly HashSet<string> LF_Skywhale_Blacklist = new HashSet<string>
         {
@@ -345,7 +330,7 @@ namespace ApexUpYourSpawns
             "LF_E04",
             "LF_F02",
         };
-        private bool SkyWhaleAbstractAI_CheckBlacklist(On.SkyWhaleAbstractAI.orig_CheckBlacklist orig, SkyWhaleAbstractAI self, string room)
+        private bool SkyWhale_ExtraBlacklist(On.SkyWhaleAbstractAI.orig_CheckBlacklist orig, SkyWhaleAbstractAI self, string room)
         {
             return orig(self, room) || LF_Skywhale_Blacklist.Contains(room);
         }
@@ -466,6 +451,7 @@ namespace ApexUpYourSpawns
                 grubSandGrubChance = (float)options.grubSandGrubChance.Value / 100;
                 popcornSandWormTrapChance = (float)options.popcornSandWormTrapChance.Value / 100;
                 hazerTardigradeChance = (float)options.hazerTardigradeChance.Value / 100;
+                pearlFireSpriteChance = (float)options.pearlFireSpriteChance.Value / 100;
 
                 loachExtras = options.loachExtras.Value;
                 bigMothExtras = options.bigMothExtras.Value;
@@ -1690,7 +1676,7 @@ namespace ApexUpYourSpawns
                 orig(self);
         }
 
-        private void VultureGrubSpawn(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
+        private void ReplaceVultureWithSandGrub(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
         {
             if(ModManager.Watcher && !game.IsArenaSession && UnityEngine.Random.value < grubSandGrubChance)
             {
@@ -1746,7 +1732,40 @@ namespace ApexUpYourSpawns
             }
         }
 
-        private void HazerSpawn(On.Hazer.orig_PlaceInRoom orig, Hazer self, Room room)
+
+        private void AddBoxWormsOnPearls(On.Room.orig_ReadyForAI orig, Room self)
+        {
+            orig(self);
+            if (self.abstractRoom.shelter)
+                return;
+            float localChance = pearlFireSpriteChance;
+            foreach(PlacedObject pobj in self.roomSettings.placedObjects)
+            {
+                if(pobj.type == PlacedObject.Type.ScavengerTreasury)
+                {
+                    localChance *= 0.5f;
+                    break;
+                }
+            }
+            List<AbstractPhysicalObject> list = new List<AbstractPhysicalObject>();
+            foreach (AbstractWorldEntity ent in self.abstractRoom.entities)
+            {
+                if (ent is AbstractPhysicalObject phob && phob.type == AbstractPhysicalObject.AbstractObjectType.DataPearl && UnityEngine.Random.value < (balancedSpawns ? localChance : pearlFireSpriteChance))
+                    list.Add(phob);
+            }
+            foreach (AbstractPhysicalObject phob in list)
+            {
+                AbstractCreature boxWrm = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.BoxWorm), null, new WorldCoordinate(self.abstractRoom.index, phob.pos.x, phob.pos.y - 1, 0), game.GetNewID());
+                self.abstractRoom.AddEntity(boxWrm);
+                boxWrm.RealizeInRoom();
+
+                AbstractCreature fireSpr = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.FireSprite), null, new WorldCoordinate(self.abstractRoom.index, phob.pos.x, phob.pos.y - 1, 0), game.GetNewID());
+                self.abstractRoom.AddEntity(fireSpr);
+                fireSpr.RealizeInRoom();
+            }
+        }
+
+        private void ReplaceHazerWithTardigrade(On.Hazer.orig_PlaceInRoom orig, Hazer self, Room room)
         {
             if (ModManager.Watcher && !game.IsArenaSession && UnityEngine.Random.value < hazerTardigradeChance)
             {

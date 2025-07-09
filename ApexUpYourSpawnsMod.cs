@@ -284,6 +284,7 @@ namespace ApexUpYourSpawns
                     On.SeedCob.PlaceInRoom += AddSandTrapToPopcorn;
                     On.Watcher.SandGrubNetwork.MarkConsumed += PreventSandGrubPullCrash;
                     On.Hazer.PlaceInRoom += HazerSpawn;
+                    On.DataPearl.PlaceInRoom += AddBoxWorms;
                 }
                 //*/
                 ClearDictionaries();
@@ -308,6 +309,18 @@ namespace ApexUpYourSpawns
                 Logger.LogError(ex);
                 throw;
             }
+        }
+
+        private void AddBoxWorms(On.DataPearl.orig_PlaceInRoom orig, DataPearl self, Room placeRoom)
+        {
+            orig(self, placeRoom);
+            AbstractCreature boxWrm = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.BoxWorm), null, new WorldCoordinate(placeRoom.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
+            BoxWorm boxWrmReal = new BoxWorm(boxWrm, game.world);
+            boxWrmReal.PlaceInRoom(placeRoom);
+
+            AbstractCreature fireSpr = new AbstractCreature(game.world, StaticWorld.GetCreatureTemplate(WatcherEnums.CreatureTemplateType.FireSprite), null, new WorldCoordinate(placeRoom.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), game.GetNewID());
+            FireSprite fireSprReal = new FireSprite(fireSpr, game.world);
+            fireSprReal.PlaceInRoom(placeRoom);
         }
 
 

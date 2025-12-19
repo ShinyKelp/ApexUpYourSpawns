@@ -59,7 +59,7 @@ namespace ApexUpYourSpawns
                 "ShinyKelp.Udonfly",
                 "shrimb.scroungers",
                 "shrimb.frostbite",
-                "Croken.Mimicstarfish",
+                "Croken.Mimic-Long-Legs",
                 "ShinyKelp.AlbinoKings",
                 "bebra.gregtech_lizard",
                 "bry.bubbleweavers",

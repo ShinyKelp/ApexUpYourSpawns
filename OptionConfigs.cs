@@ -188,9 +188,9 @@ namespace ApexUpYourSpawns
                 AddConfigOption(ModExtraConfigs, "WaterSpitterExtras", 0, "Water Spitters (/10)");
                 AddConfigOption(ModRepConfigs, "FatFireFlyChance", 10, "Vultures > Fat Firefly");
                 AddConfigOption(ModRepConfigs, "SurfaceSwimmerChance", 20, "EggBug > Surface Swimmer");
-                AddConfigOption(ModExtraConfigs, "SurfaceSwimmerExtras", 5, "Surface Swimmer");
+                AddConfigOption(ModExtraConfigs, "SurfaceSwimmerExtras", 5, "Surface Swimmer (/10)");
                 AddConfigOption(ModRepConfigs, "BounceBallChance", 10, "Snail > Bouncing Ball");
-                AddConfigOption(ModExtraConfigs, "BounceBallExtras", 10, "Bouncing Ball");
+                AddConfigOption(ModExtraConfigs, "BounceBallExtras", 10, "Bouncing Ball (/10)");
                 AddConfigOption(ModRepConfigs, "CritterHoverflyChance", 7, "Critters > Hoverfly (Inv)");
                 AddConfigOption(ModExtraConfigs, "HoverflyExtras", 15, "Hoverfly (/10)");
                 AddConfigOption(ModRepConfigs, "NoodleEaterChance", 10, "Noodlefly > Noodle Eater (Inv)");
@@ -302,7 +302,7 @@ namespace ApexUpYourSpawns
                 AddConfigOption(ModExtraConfigs, "ScroungerExtras", 4, "Scroungers", false);
             }
 
-            if (activeMods.Contains("Croken.Mimicstarfish"))
+            if (activeMods.Contains("Croken.Mimic-Long-Legs"))
             {
                 AddConfigOption(ModRepConfigs, "BllMimicstarfishChance", 7, "BLL > Mimic Starfish");
                 AddConfigOption(ModRepConfigs, "CritterMimicstarfishChance", 3, "Aquatic creatures > Mimic Starfish");

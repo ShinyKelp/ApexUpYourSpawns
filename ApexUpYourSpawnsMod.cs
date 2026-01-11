@@ -163,24 +163,22 @@ namespace ApexUpYourSpawns
 
         private void ConfigureRoomAttractions(World self)
         {
-            if (ModManager.Watcher)
+            //We previously search for the first creature with horizontal screen spawns (miros, deer, etc).
+            //And we use that one as the template to set the room attractions for everyone else.
+            if (VanillaHorizontalSpawn != null)
             {
-                //We previously search for the first creature with horizontal screen spawns (miros, deer, etc).
-                //And we use that one as the template to set the room attractions for everyone else.
-                if (VanillaHorizontalSpawn != null)
+                foreach (AbstractRoom room in self.abstractRooms)
                 {
-                    foreach (AbstractRoom room in self.abstractRooms)
+                    foreach (CreatureTemplate.Type hSpawn in HorizontalSpawns)
                     {
-                        foreach (CreatureTemplate.Type hSpawn in HorizontalSpawns)
-                        {
-                            if (hSpawn != CreatureTemplate.Type.Deer)
-                                room.roomAttractions[hSpawn.Index] = room.roomAttractions[VanillaHorizontalSpawn.Index];
-                        }
-                        if (RegionHasDeers)
-                            room.roomAttractions[WatcherEnums.CreatureTemplateType.SkyWhale.Index] = room.roomAttractions[CreatureTemplate.Type.Deer.Index];
+                        if (hSpawn != CreatureTemplate.Type.Deer)
+                            room.roomAttractions[hSpawn.Index] = room.roomAttractions[VanillaHorizontalSpawn.Index];
                     }
+                    if (ModManager.Watcher && RegionHasDeers)
+                        room.roomAttractions[WatcherEnums.CreatureTemplateType.SkyWhale.Index] = room.roomAttractions[CreatureTemplate.Type.Deer.Index];
                 }
             }
+            
         }
         #endregion
 

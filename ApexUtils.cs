@@ -67,7 +67,9 @@ namespace ApexUpYourSpawns
                 "sequoia.luminouscode",
                 "com.rainworldgame.shroudedassembly.plugin",
                 "sequoia.parascutigera-creature",
-                "mosquitoes"
+                "mosquitoes",
+                "SnowBee.Snow",
+                "shrouded_assembly"
             }
         );
     }

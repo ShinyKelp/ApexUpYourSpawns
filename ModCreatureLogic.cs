@@ -424,8 +424,11 @@ namespace ApexUpYourSpawns
                 modCreatureExtras.Add(glowType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("GlowpillarExtras")));
 
                 //Spark Eye
+                CreatureTemplate.Type sparkType = new CreatureTemplate.Type("SparkEye");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.MirosBird, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("SparkEye"), OptionConfigs.Instance.GetOptionConfig("SparkEyeChance")));
+                    sparkType, OptionConfigs.Instance.GetOptionConfig("SparkEyeChance")));
+                horizontalSpawnsList.Add(sparkType);
+
 
                 //Diving beetle
                 CreatureTemplate.Type divingType = new CreatureTemplate.Type("DivingBeetle");
@@ -872,6 +875,19 @@ namespace ApexUpYourSpawns
                 mosLocals.Add("!", 20);
                 modCreatureExtras.Add(mosquitoType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MosquitoExtras"), null, mosLocals, true));
             }
+            if (ActiveMods.Contains("SnowBee.Snow"))
+            {
+                CreatureTemplate.Type crypticType = new CreatureTemplate.Type("CrypticCenti");
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.Inspector, new ModCreatureReplacement(
+                    crypticType, OptionConfigs.Instance.GetOptionConfig("CrypticCentiChance"), true));
+                modCreatureExtras.Add(crypticType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("CrypticCentiExtras")));
+            }
+            if (ActiveMods.Contains("com.rainworldgame.shroudedassembly"))
+            {
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Vulture, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("FogVulture"), OptionConfigs.Instance.GetOptionConfig("FogVultureChance")));
+            }
+
             HorizontalSpawns = horizontalSpawnsList.ToArray();
         }
 

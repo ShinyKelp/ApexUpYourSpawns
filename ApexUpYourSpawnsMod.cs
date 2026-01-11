@@ -20,7 +20,7 @@ namespace ApexUpYourSpawns
     using static ApexGameInfo;
     using static SpawnerHelperFunctions;
 
-    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "1.6.0")]
+    [BepInPlugin("ShinyKelp.ApexUpYourSpawns", "ApexUpYourSpawns", "2.0.0")]
 
     public class ApexUpYourSpawnsMod : BaseUnityPlugin
     {
@@ -43,7 +43,6 @@ namespace ApexUpYourSpawns
         private void OnEnable()
         {
             On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
-            Debug.Log("ON ENABLE. CREATING OPTIONS.");
             ApexOptions = new ApexUpYourSpawnsOptions();
         }
 

@@ -20,6 +20,9 @@ namespace ApexUpYourSpawns
         public readonly Dictionary<string, Configurable<int>> WatcherExtraConfigs = new Dictionary<string, Configurable<int>>();
         public readonly Dictionary<string, Configurable<int>> ModRepConfigs = new Dictionary<string, Configurable<int>>();
         public readonly Dictionary<string, Configurable<int>> ModExtraConfigs = new Dictionary<string, Configurable<int>>();
+        public readonly Dictionary<string, Configurable<int>> M4rbleRepConfigs = new Dictionary<string, Configurable<int>>();
+        public readonly Dictionary<string, Configurable<int>> M4rbleExtraConfigs = new Dictionary<string, Configurable<int>>();
+
 
         public readonly Dictionary<Configurable<int>, string> LabelsMap = new Dictionary<Configurable<int>, string>();
 
@@ -27,14 +30,12 @@ namespace ApexUpYourSpawns
 
         public OptionConfigs(ConfigHolder config)
         {
-            UnityEngine.Debug.Log("OPTION CONFIGS CTOR.");
             Instance = this;
             this.config = config;
         }
 
         public void UpdateBindings()
         {
-            UnityEngine.Debug.Log("UPDATE BINDINGS.");
             if (!appliedVanilla)
             {
                 // Vanilla configs
@@ -172,47 +173,93 @@ namespace ApexUpYourSpawns
 
         public void UpdateModBindings()
         {
-            UnityEngine.Debug.Log("UPDATING MOD BINDINGS.");
             HashSet<string> activeMods = ApexUtils.ActiveMods;
 
             if (activeMods.Contains("lb-fgf-m4r-ik.modpack"))
             {
-                UnityEngine.Debug.Log("CREATING BINDINGS FOR MARBLE PACK.");
-                AddConfigOption(ModRepConfigs, "SporantulaChance", 4, "Small Insects > Sporantula (Inv)");
-                AddConfigOption(ModExtraConfigs, "SporantulaExtras", 25, "Sporantulas (/10)");
-                AddConfigOption(ModRepConfigs, "ScutigeraChance", 15, "Centipede > Scutigera");
-                AddConfigOption(ModExtraConfigs, "ScutigeraExtras", 0, "Scutigeras (/10)");
-                AddConfigOption(ModRepConfigs, "RedRedHorrorCentiChance", 10, "Red Centipede > Red Horror Centi");
-                AddConfigOption(ModRepConfigs, "WingRedHorrorCentiChance", 4, "Centiwing > Red Horror Centi");
-                AddConfigOption(ModRepConfigs, "WaterSpitterChance", 10, "Aquatic Lizards > Water Spitter");
-                AddConfigOption(ModExtraConfigs, "WaterSpitterExtras", 0, "Water Spitters (/10)");
-                AddConfigOption(ModRepConfigs, "FatFireFlyChance", 10, "Vultures > Fat Firefly");
-                AddConfigOption(ModRepConfigs, "SurfaceSwimmerChance", 20, "EggBug > Surface Swimmer");
-                AddConfigOption(ModExtraConfigs, "SurfaceSwimmerExtras", 5, "Surface Swimmer (/10)");
-                AddConfigOption(ModRepConfigs, "BounceBallChance", 10, "Snail > Bouncing Ball");
-                AddConfigOption(ModExtraConfigs, "BounceBallExtras", 10, "Bouncing Ball (/10)");
-                AddConfigOption(ModRepConfigs, "CritterHoverflyChance", 7, "Critters > Hoverfly (Inv)");
-                AddConfigOption(ModExtraConfigs, "HoverflyExtras", 15, "Hoverfly (/10)");
-                AddConfigOption(ModRepConfigs, "NoodleEaterChance", 10, "Noodlefly > Noodle Eater (Inv)");
-                AddConfigOption(ModExtraConfigs, "NoodleEaterExtras", 6, "Noodle Eater (/10)", false);
-                AddConfigOption(ModRepConfigs, "ThornbugChance", 20, "Eggbug > Thornbug (Inv)");
-                AddConfigOption(ModExtraConfigs, "ThornbugExtras", 4, "Thornbug (/10)", false);
-                AddConfigOption(ModRepConfigs, "MiniLeviathanChance", 25, "Leviathan > Mini Leviathan (Inv)");
-                AddConfigOption(ModExtraConfigs, "MiniLeviathanExtras", 3, "Mini Leviathan", false);
-                AddConfigOption(ModRepConfigs, "PolliwogChance", 10, "Salamander > Polliwog");
-                AddConfigOption(ModExtraConfigs, "PolliwogExtras", 8, "Polliwog (/10)");
-                AddConfigOption(ModRepConfigs, "HunterSeekerCyanChance", 6, "Cyan Liz > Hunter Seeker");
-                AddConfigOption(ModRepConfigs, "HunterSeekerWhiteChance", 6, "White Liz > Hunter Seeker");
-                AddConfigOption(ModExtraConfigs, "HunterSeekerExtras", 2, "Hunter Seeker (/10)");
-                AddConfigOption(ModRepConfigs, "SilverLizChance", 15, "Grounded Lizards > Silver Liz");
-                AddConfigOption(ModExtraConfigs, "SilverLizExtras", 2, "Silver Lizard (/10)");
-                AddConfigOption(ModRepConfigs, "VultureEchoLeviChance", 10, "Vultures > Echo Leviathan (Den)");
-                AddConfigOption(ModExtraConfigs, "EchoLeviExtras", 0, "Echo Leviathans (/10)");
-                AddConfigOption(ModRepConfigs, "BlizzorChance", 7, "Miros Bird > Blizzor");
-                AddConfigOption(ModRepConfigs, "SalamanderSalamoleChance", 5, "Salamander > Mole Salamander");
-                AddConfigOption(ModRepConfigs, "BlackSalamoleChance", 5, "Black liz > Mole Salamander");
-                AddConfigOption(ModExtraConfigs, "BlizzorExtras", 2, "Blizzor", false);
-                AddConfigOption(ModExtraConfigs, "SalamoleExtras", 10, "Mole Salamander (/10)", false);
+                AddConfigOption(M4rbleRepConfigs, "SporantulaChance", 4, "Small Insects > Sporantula (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "SporantulaExtras", 25, "Sporantulas (/10)");
+                AddConfigOption(M4rbleRepConfigs, "ScutigeraChance", 15, "Centipede > Scutigera");
+                AddConfigOption(M4rbleExtraConfigs, "ScutigeraExtras", 0, "Scutigeras (/10)");
+                AddConfigOption(M4rbleRepConfigs, "RedRedHorrorCentiChance", 10, "Red Centipede > Red Horror Centi");
+                AddConfigOption(M4rbleRepConfigs, "WingRedHorrorCentiChance", 4, "Centiwing > Red Horror Centi");
+                AddConfigOption(M4rbleRepConfigs, "WaterSpitterChance", 10, "Aquatic Lizards > Water Spitter");
+                AddConfigOption(M4rbleExtraConfigs, "WaterSpitterExtras", 0, "Water Spitters (/10)");
+                AddConfigOption(M4rbleRepConfigs, "FatFireFlyChance", 10, "Vultures > Fat Firefly");
+                AddConfigOption(M4rbleRepConfigs, "SurfaceSwimmerChance", 15, "EggBug > Surface Swimmer");
+                AddConfigOption(M4rbleExtraConfigs, "SurfaceSwimmerExtras", 5, "Surface Swimmer (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "TintedBeetleChance", 20, "EggBug > Tinted Beetle");
+                AddConfigOption(M4rbleExtraConfigs, "TintedBeetleExtras", 30, "Tinted Beetle (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "ChipChopChance", 10, "EggBug > Chip Chop");
+                AddConfigOption(M4rbleExtraConfigs, "ChipChopExtras", 25, "Chip Chop (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "MamaBugChance", 5, "EggBug > MamaBug");
+                AddConfigOption(M4rbleExtraConfigs, "MamaBugExtras", 2, "MamaBug (/10)");
+
+
+                AddConfigOption(M4rbleRepConfigs, "BounceBallChance", 10, "Snail > Bouncing Ball");
+                AddConfigOption(M4rbleExtraConfigs, "BounceBallExtras", 10, "Bouncing Ball (/10)");
+                AddConfigOption(M4rbleRepConfigs, "CritterHoverflyChance", 7, "Critters > Hoverfly (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "HoverflyExtras", 15, "Hoverfly (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "TailflyChance", 12, "Cicada > Tailfly");
+                AddConfigOption(M4rbleExtraConfigs, "TailflyExtras", 15, "Tailfly (/10)");
+                
+
+                AddConfigOption(M4rbleRepConfigs, "NoodleEaterChance", 10, "Noodlefly > Noodle Eater (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "NoodleEaterExtras", 6, "Noodle Eater (/10)");
+                AddConfigOption(M4rbleRepConfigs, "ThornbugChance", 20, "Eggbug > Thornbug (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "ThornbugExtras", 4, "Thornbug (/10)");
+                AddConfigOption(M4rbleRepConfigs, "MiniLeviathanChance", 25, "Leviathan > Mini Leviathan (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "MiniLeviathanExtras", 3, "Mini Leviathan", false);
+                AddConfigOption(M4rbleRepConfigs, "PolliwogChance", 10, "Salamander > Polliwog");
+                AddConfigOption(M4rbleExtraConfigs, "PolliwogExtras", 8, "Polliwog (/10)");
+                AddConfigOption(M4rbleRepConfigs, "HunterSeekerCyanChance", 6, "Cyan Liz > Hunter Seeker");
+                AddConfigOption(M4rbleRepConfigs, "HunterSeekerWhiteChance", 6, "White Liz > Hunter Seeker");
+                AddConfigOption(M4rbleExtraConfigs, "HunterSeekerExtras", 2, "Hunter Seeker (/10)");
+                AddConfigOption(M4rbleRepConfigs, "SilverLizChance", 15, "Grounded Lizards > Silver Liz");
+                AddConfigOption(M4rbleExtraConfigs, "SilverLizExtras", 2, "Silver Lizard (/10)");
+                AddConfigOption(M4rbleRepConfigs, "VultureEchoLeviChance", 10, "Vultures > Echo Leviathan (Den)");
+                AddConfigOption(M4rbleExtraConfigs, "EchoLeviExtras", 0, "Echo Leviathans (/10)");
+                AddConfigOption(M4rbleRepConfigs, "BlizzorChance", 7, "Miros Bird > Blizzor");
+                AddConfigOption(M4rbleRepConfigs, "SalamanderSalamoleChance", 5, "Salamander > Mole Salamander");
+                AddConfigOption(M4rbleRepConfigs, "BlackSalamoleChance", 5, "Black liz > Mole Salamander");
+                AddConfigOption(M4rbleExtraConfigs, "BlizzorExtras", 2, "Blizzor", false);
+                AddConfigOption(M4rbleExtraConfigs, "SalamoleExtras", 10, "Mole Salamander (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "BigrubChance", 10, "Grappleworm > Big Grappleworm");
+                AddConfigOption(M4rbleRepConfigs, "WaterBlobChance", 10, "Bubble Fruit > Water Blob");
+                AddConfigOption(M4rbleRepConfigs, "HazerMomChance", 10, "Hazer > Hazer Mom");
+                AddConfigOption(M4rbleRepConfigs, "SeedBatChance", 10, "Batfly > Seedbat");
+                AddConfigOption(M4rbleRepConfigs, "MiniEchoLeviChance", 50, "Echo Levi > Mini Echo Levi (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "MiniEchoLeviExtras", 20, "Mini Echo Levi (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "AlphaOrangeChance", 25, "Orange > Alpha Orange Liz (Den)");
+                AddConfigOption(M4rbleRepConfigs, "ScavengerSentinelChance", 6, "Scavenger > Sentinel");
+                AddConfigOption(M4rbleRepConfigs, "MiniScutigeraChance", 16, "Small Cent > Mini Scutigera");
+
+                AddConfigOption(M4rbleRepConfigs, "KillerpillarChance", 7, "Basic Lizards > Killerpillar");
+                AddConfigOption(M4rbleRepConfigs, "GlowpillarChance", 14, "Dark Lizards > Glowpillar");
+
+                AddConfigOption(M4rbleExtraConfigs, "KillerpillarExtras", 15, "Killerpillars (/10)");
+                AddConfigOption(M4rbleExtraConfigs, "GlowpillarExtras", 15, "Glowpillars (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "SparkEyeChance", 8, "Miros Bird > Spark Eye");
+                
+                
+                AddConfigOption(M4rbleRepConfigs, "DivingBeetleChance", 10, "Jetfish > Diving Beetle (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "DivingBeetleExtras", 4, "Diving Beetles (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "CommonEelChance", 10, "Eel Lizard > Common Eel");
+                AddConfigOption(M4rbleExtraConfigs, "CommonEelExtras", 4, "Common Eels (/10)");
+
+                AddConfigOption(M4rbleRepConfigs, "MiniBlackLeechChance", 20, "Red Leech > Mini Black Leech");
+                AddConfigOption(M4rbleExtraConfigs, "MiniBlackLeechExtras", 4, "Mini Black Leeches", false);
+
+                AddConfigOption(M4rbleRepConfigs, "DentureChance", 20, "Pole Plant > Denture");
+
             }
 
             if (activeMods.Contains("ShinyKelp.AngryInspectors"))
@@ -326,6 +373,35 @@ namespace ApexUpYourSpawns
                     AddConfigOption(ModRepConfigs, "SSwimmerWeaverChance", 15, "Surface Swimmer > Spider Weaver (Inv)");
                 AddConfigOption(ModExtraConfigs, "BubbleWeaverExtras", 4, "Bubble Weaver (/10)");
             }
+
+            if (activeMods.Contains("com.rainworldgame.shroudedassembly.plugin"))
+            {
+                AddConfigOption(ModRepConfigs, "GeckoChance", 15, "Pink Lizard > Gecko");
+                AddConfigOption(ModExtraConfigs, "GeckoExtras", 3, "Geckos (/10)");
+                AddConfigOption(ModRepConfigs, "MaracaSpiderChance", 9, "Spitter Spider > Maraca Spider");
+                AddConfigOption(ModExtraConfigs, "MaracaSpiderExtras", 0, "Maraca Spiders (/10)");
+                AddConfigOption(ModRepConfigs, "BabyCroakerChance", 6, "Cicada > Baby Croaker (Inv)");
+                AddConfigOption(ModExtraConfigs, "BabyCroakerExtras", 30, "Baby Croakers (/10)");
+                if (activeMods.Contains("mosquitoes"))
+                    AddConfigOption(ModRepConfigs, "MosquitoBabyCroakerChance", 20, "Mosquitoes > Baby Croaker (Inv)");
+            }
+
+            if (activeMods.Contains("sequoia.luminouscode"))
+            {
+                AddConfigOption(ModRepConfigs, "TeuthicadaChance", 6, "Cicada > Teuthicada");
+                AddConfigOption(ModExtraConfigs, "TeuthicadaExtras", 0, "Teuthicadas (/10)");
+            }
+            if (activeMods.Contains("sequoia.parascutigera-creature"))
+            {
+                AddConfigOption(ModRepConfigs, "ParascutigeraChance", 6, "Scutigera > Parascutigera");
+            }
+            if (activeMods.Contains("mosquitoes"))
+            {
+                AddConfigOption(ModRepConfigs, "MosquitoChance", 5, "Noodle Fly > Mosquito");
+                AddConfigOption(ModRepConfigs, "ExplodingMosquitoChance", 16, "Mosquito > Exploding Mosquito");
+                AddConfigOption(ModRepConfigs, "AngryMosquitoChance", 16, "Mosquito > Angry Mosquito");
+                AddConfigOption(ModExtraConfigs, "MosquitoExtras", 25, "Mosquitoes (/10)");
+            }
         }
 
         private void AddConfigOption(Dictionary<string, Configurable<int>> dictionary, string name, int defaultVal, string labelDesc = "", bool isCompleteRange = true)
@@ -369,6 +445,10 @@ namespace ApexUpYourSpawns
                 return ModRepConfigs[configName];
             else if (ModExtraConfigs.ContainsKey(configName))
                 return ModExtraConfigs[configName];
+            else if (M4rbleRepConfigs.ContainsKey(configName))
+                return M4rbleRepConfigs[configName];
+            else if(M4rbleExtraConfigs.ContainsKey(configName))
+                return M4rbleExtraConfigs[configName];
             else
                 UnityEngine.Debug.Log("--AUYS-- Warning, key not found in options dictionary: " + configName);
             return null;

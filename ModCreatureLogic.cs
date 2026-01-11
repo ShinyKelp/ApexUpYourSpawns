@@ -291,15 +291,50 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.Yeek, hoverflyRep);
                 modCreatureExtras.Add(hoverType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("HoverflyExtras")));
 
+                //Tailfly
+                CreatureTemplate.Type tailflyType = new CreatureTemplate.Type("Tailfly");
+                ModCreatureReplacement tailFlyRep = new ModCreatureReplacement(tailflyType, OptionConfigs.Instance.GetOptionConfig("TailflyChance"));
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaA, tailFlyRep);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaB, tailFlyRep);
+                modCreatureExtras.Add(tailflyType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("TailflyExtras")));
+
                 //Noodle Eater
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SmallNeedleWorm, new ModCreatureReplacement(
                     new CreatureTemplate.Type("NoodleEater"), OptionConfigs.Instance.GetOptionConfig("NoodleEaterChance"), true, true));
                 modCreatureExtras.Add(new CreatureTemplate.Type("NoodleEater"), new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("NoodleEaterExtras")));
 
-                //Thornbug
+                //Thornbug, TintedBeetle, Chipchop, Mamabug
+                CreatureTemplate.Type thornType = new CreatureTemplate.Type("ThornBug");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("ThornBug"), OptionConfigs.Instance.GetOptionConfig("ThornbugChance"), true));
-                modCreatureExtras.Add(new CreatureTemplate.Type("ThornBug"), new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("ThornbugExtras")));
+                    thornType, OptionConfigs.Instance.GetOptionConfig("ThornbugChance"), true));
+                modCreatureExtras.Add(thornType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("ThornbugExtras")));
+
+                CreatureTemplate.Type tintedType = new CreatureTemplate.Type("TintedBeetle");
+                Dictionary<string, float> tintedLocals = new Dictionary<string, float>();
+                tintedLocals.Add("LF", 2f);
+                tintedLocals.Add("SB", 2f);
+                tintedLocals.Add("OE", 1.5f);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
+                    tintedType, OptionConfigs.Instance.GetOptionConfig("TintedBeetleChance"), tintedLocals));
+                modCreatureExtras.Add(tintedType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("TintedBeetleExtras")));
+
+                CreatureTemplate.Type chipchopType = new CreatureTemplate.Type("ChipChop");
+                Dictionary<string, float> chipchopLocals = new Dictionary<string, float>();
+                chipchopLocals.Add("SH", 2f);
+                chipchopLocals.Add("SL", 1.5f);
+                chipchopLocals.Add("UW", 2f);
+                Dictionary<string, int> chipchopLocals2 = new Dictionary<string, int>();
+                chipchopLocals2.Add("SH", 20);
+                chipchopLocals2.Add("SL", 10);
+                chipchopLocals2.Add("UW", 20);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
+                    chipchopType, OptionConfigs.Instance.GetOptionConfig("ChipChopChance")));
+                modCreatureExtras.Add(chipchopType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("ChipChopExtras"), chipchopLocals, chipchopLocals2));
+
+                CreatureTemplate.Type mamaType = new CreatureTemplate.Type("MamaBug");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.EggBug, new ModCreatureReplacement(
+                    mamaType, OptionConfigs.Instance.GetOptionConfig("MamaBugChance")));
+                modCreatureExtras.Add(mamaType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MamaBugExtras")));
 
                 //Mini leviathan
                 Dictionary<string, float> miniLeviDict = new Dictionary<string, float>();
@@ -343,6 +378,78 @@ namespace ApexUpYourSpawns
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlackLizard, new ModCreatureReplacement(
                     salamoleType, OptionConfigs.Instance.GetOptionConfig("BlackSalamoleChance")));
                 horizontalSpawnsList.Add(blizzorType);
+
+                //Mini echo leviathan
+                CreatureTemplate.Type miniEchoLeviType = new CreatureTemplate.Type("MiniFlyingBigEel");
+                CreatureTemplate.Type echoLeviType = new CreatureTemplate.Type("FlyingBigEel");
+
+                AddModCreatureToDictionary(modCreatureReplacements, echoLeviType, new ModCreatureReplacement(
+                        miniEchoLeviType, OptionConfigs.Instance.GetOptionConfig("MiniEchoLeviChance"), true, true));
+                modCreatureExtras.Add(miniEchoLeviType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniEchoLeviExtras"), true));
+
+                //Alpha orange
+                CreatureTemplate.Type alphaOType = new CreatureTemplate.Type("AlphaOrange");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.YellowLizard, new ModCreatureReplacement(
+                    alphaOType, OptionConfigs.Instance.GetOptionConfig("AlphaOrangeChance"), true, true));
+
+                //Scavenger Sentinel
+                Dictionary<string, float> sentinelLocals = new Dictionary<string, float>();
+                sentinelLocals.Add("SU", 2f);
+                sentinelLocals.Add("IC", 2f);
+                sentinelLocals.Add("SL", 1.5f);
+                sentinelLocals.Add("DS", 1.5f);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("ScavengerSentinel"), OptionConfigs.Instance.GetOptionConfig("ScavengerSentinelChance"), sentinelLocals));
+
+                //Miniscuti
+                Dictionary<string, float> miniscutLocals = new Dictionary<string, float>();
+                miniscutLocals.Add("SH", 2f);
+                miniscutLocals.Add("UW", 2f);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SmallCentipede, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("MiniScutigera"), OptionConfigs.Instance.GetOptionConfig("MiniScutigeraChance"), miniscutLocals));
+
+                //Pillars
+                CreatureTemplate.Type killerType = new CreatureTemplate.Type("Killerpillar");
+                ModCreatureReplacement killerRep = new ModCreatureReplacement(killerType, OptionConfigs.Instance.GetOptionConfig("KillerpillarChance"), false, true);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.PinkLizard, killerRep);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlueLizard, killerRep);
+                modCreatureExtras.Add(killerType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("KillerpillarExtras")));
+
+                CreatureTemplate.Type glowType = new CreatureTemplate.Type("Glowpillar");
+                Dictionary<string, float> glowLocals = new Dictionary<string, float>();
+                glowLocals.Add("YellowLizard", 0.5f);
+                ModCreatureReplacement glowRep = new ModCreatureReplacement(glowType, OptionConfigs.Instance.GetOptionConfig("GlowpillarChance"), false, true, glowLocals);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BlackLizard, glowRep);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.YellowLizard, glowRep);
+                modCreatureExtras.Add(glowType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("GlowpillarExtras")));
+
+                //Spark Eye
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.MirosBird, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("SparkEye"), OptionConfigs.Instance.GetOptionConfig("SparkEyeChance")));
+
+                //Diving beetle
+                CreatureTemplate.Type divingType = new CreatureTemplate.Type("DivingBeetle");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.JetFish, new ModCreatureReplacement(
+                    divingType, OptionConfigs.Instance.GetOptionConfig("DivingBeetleChance"), true));
+                modCreatureExtras.Add(divingType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("DivingBeetleExtras")));
+
+                //Common Eel
+                CreatureTemplate.Type eelType = new CreatureTemplate.Type("CommonEel");
+                AddModCreatureToDictionary(modCreatureReplacements, DLCSharedEnums.CreatureTemplateType.EelLizard, new ModCreatureReplacement(
+                    eelType, OptionConfigs.Instance.GetOptionConfig("CommonEelChance")));
+                modCreatureExtras.Add(eelType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("CommonEelExtras")));
+
+                //Denture
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.PoleMimic, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("Denture"), OptionConfigs.Instance.GetOptionConfig("DentureChance")));
+
+                //MiniBlackLeech
+                CreatureTemplate.Type miniLeechType = new CreatureTemplate.Type("MiniBlackLeech");
+                Dictionary<string, int> blackLocals = new Dictionary<string, int>();
+                blackLocals.Add("!", 3);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Leech, new ModCreatureReplacement(
+                    miniLeechType, OptionConfigs.Instance.GetOptionConfig("MiniBlackLeechChance"), null, blackLocals));
+                modCreatureExtras.Add(miniLeechType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniBlackLeechExtras")));
             }
             if (ActiveMods.Contains("ShinyKelp.AngryInspectors"))
             {
@@ -706,7 +813,7 @@ namespace ApexUpYourSpawns
                     bubbleType2 = new CreatureTemplate.Type("SapphiricWeaver");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SpitterSpider, new ModCreatureReplacement(
                     bubbleType1, OptionConfigs.Instance.GetOptionConfig("SpiderWeaverChance")));
-                if (ActiveMods.Contains("lb-fgf-m4r-ik.swalkins"))
+                if (ActiveMods.Contains("lb-fgf-m4r-ik.modpack"))
                 {
                     AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("SurfaceSwimmer"), new ModCreatureReplacement(
                         bubbleType2, OptionConfigs.Instance.GetOptionConfig("SSwimmerWeaverChance")));
@@ -714,7 +821,57 @@ namespace ApexUpYourSpawns
                 modCreatureExtras.Add(bubbleType1, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("BubbleWeaverExtras")));
                 modCreatureExtras.Add(bubbleType2, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("BubbleWeaverExtras")));
             }
+            if (ActiveMods.Contains("com.rainworldgame.shroudedassembly.plugin"))
+            {
+                //Geckos
+                CreatureTemplate.Type geckoType = new CreatureTemplate.Type("Gecko");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.PinkLizard, new ModCreatureReplacement(
+                    geckoType, OptionConfigs.Instance.GetOptionConfig("GeckoChance")));
+                modCreatureExtras.Add(geckoType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("GeckoExtras")));
 
+                //Maraca spiders
+                CreatureTemplate.Type maracaType = new CreatureTemplate.Type("MaracaSpider");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.SpitterSpider, new ModCreatureReplacement(
+                    maracaType, OptionConfigs.Instance.GetOptionConfig("MaracaSpiderChance")));
+                modCreatureExtras.Add(maracaType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MaracaSpiderExtras")));
+
+
+                //Baby croakers
+                CreatureTemplate.Type croakerType = new CreatureTemplate.Type("BabyCroaker");
+                ModCreatureReplacement croakerRep = new ModCreatureReplacement(croakerType, OptionConfigs.Instance.GetOptionConfig("BabyCroakerChance"), true);
+                ModCreatureReplacement croakerRep2 = new ModCreatureReplacement(croakerType, OptionConfigs.Instance.GetOptionConfig("MosquitoBabyCroakerChance"), true, true);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaA, croakerRep);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaB, croakerRep);
+                modCreatureExtras.Add(croakerType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("BabyCroakerExtras")));
+                if(ActiveMods.Contains("mosquitoes"))
+                    AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("Mosquito"), croakerRep2);
+            }
+            if (ActiveMods.Contains("sequoia.luminouscode"))
+            {
+                CreatureTemplate.Type teuType = new CreatureTemplate.Type("Teuthicada");
+                ModCreatureReplacement teuRep = new ModCreatureReplacement(teuType, OptionConfigs.Instance.GetOptionConfig("TeuthicadaChance"));
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaA, teuRep);
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.CicadaB, teuRep);
+                modCreatureExtras.Add(teuType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("TeuthicadaExtras")));
+            }
+            if (ActiveMods.Contains("sequoia.parascutigera-creature"))
+            {
+                AddModCreatureToDictionary(modCreatureReplacements, new CreatureTemplate.Type("Scutigera"), new ModCreatureReplacement(
+                    new CreatureTemplate.Type("Parascutigera"), OptionConfigs.Instance.GetOptionConfig("ParascutigeraChance")));
+            }
+            if (ActiveMods.Contains("mosquitoes"))
+            {
+                CreatureTemplate.Type mosquitoType = new CreatureTemplate.Type("Mosquito");
+                AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BigNeedleWorm, new ModCreatureReplacement(
+                    mosquitoType, OptionConfigs.Instance.GetOptionConfig("MosquitoChance"), false, true));
+                AddModCreatureToDictionary(modCreatureReplacements, mosquitoType, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("ExplodingMosquito"), OptionConfigs.Instance.GetOptionConfig("ExplodingMosquitoChance")));
+                AddModCreatureToDictionary(modCreatureReplacements, mosquitoType, new ModCreatureReplacement(
+                    new CreatureTemplate.Type("AngryMosquito"), OptionConfigs.Instance.GetOptionConfig("AngryMosquitoChance")));
+                Dictionary<string, int> mosLocals = new Dictionary<string, int>();
+                mosLocals.Add("!", 20);
+                modCreatureExtras.Add(mosquitoType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MosquitoExtras"), null, mosLocals, true));
+            }
             HorizontalSpawns = horizontalSpawnsList.ToArray();
         }
 
@@ -771,14 +928,15 @@ namespace ApexUpYourSpawns
 
         public void RefreshModCreatures()
         {
-            UnityEngine.Debug.Log("REFRESHING MOD CREATURES.");
             foreach (CreatureTemplate.Type hType in HorizontalSpawns)
             {
                 if (hType.index == -1)
                 {
                     hType.index = new CreatureTemplate.Type(hType.ToString()).index;
                     if (DebugLogs)
-                        UnityEngine.Debug.Log("Updated Horizontal Spawn Creature: " + hType + " to Index " + hType.index);
+                    {
+                        Debug.Log("Updated Horizontal Spawn Creature: " + hType + " to Index " + hType.index);
+                    }
                 }
 
             }
@@ -797,7 +955,12 @@ namespace ApexUpYourSpawns
                             //UnityEngine.Debug.Log(StaticWorld.GetCreatureTemplate(modRep.type.ToString()));
                             modRep.type = new CreatureTemplate.Type(modRep.type.ToString());
                             if (DebugLogs)
-                                UnityEngine.Debug.Log("Updated Mod Replacement creature " + modRep.type + " to Index " + modRep.type.index);
+                            {
+                                if(modRep.type.index < 0)
+                                    Debug.Log("WARNING: Could not update index of creature type: " +  modRep.type);
+                                else
+                                    Debug.Log("Updated Mod Replacement creature " + modRep.type + " to Index " + modRep.type.index);
+                            }
                         }
                     }
                 }
@@ -816,7 +979,12 @@ namespace ApexUpYourSpawns
                             //UnityEngine.Debug.Log(StaticWorld.GetCreatureTemplate(modRep.type.ToString()));
                             modRep.type = new CreatureTemplate.Type(modRep.type.ToString());
                             if (DebugLogs)
-                                UnityEngine.Debug.Log("Refreshed Mod Replacement Ancestor creature " + modRep.type + " to index " + modRep.type.index);
+                            {
+                                if (modRep.type.index < 0)
+                                    Debug.Log("WARNING: Could not update index of creature type: " + modRep.type);
+                                else
+                                    Debug.Log("Updated Mod Replacement Ancestor creature " + modRep.type + " to Index " + modRep.type.index);
+                            }
                         }
                     }
                 }
@@ -838,7 +1006,12 @@ namespace ApexUpYourSpawns
                     modCreatureExtras.Remove(pair.Key);
                     modCreatureExtras.Add(pair.Key, pair.Value);
                     if (DebugLogs)
-                        UnityEngine.Debug.Log("Updated Mod Extras creature " + pair.Key + " to index " + pair.Key.index);
+                    {
+                        if (pair.Key.index < 0)
+                            Debug.Log("WARNING: Could not update index of creature type: " + pair.Key.ToString());
+                        else
+                            Debug.Log("Updated Mod Extras creature " + pair.Key + " to index " + pair.Key.index);
+                    }
                 }
                 auxDix.Clear();
             }

@@ -6,7 +6,7 @@ namespace ApexUpYourSpawns
     public static class ApexUtils
     {
         //Development only
-        public static bool DebugLogs { get; private set; } = true;
+        public static bool DebugLogs { get; private set; } = false;
 
         //User options
         public static bool BalancedSpawns = false;
@@ -63,7 +63,11 @@ namespace ApexUpYourSpawns
                 "ShinyKelp.AlbinoKings",
                 "bebra.gregtech_lizard",
                 "bry.bubbleweavers",
-                "lb-fgf-m4r-ik.modpack"
+                "lb-fgf-m4r-ik.modpack",
+                "sequoia.luminouscode",
+                "com.rainworldgame.shroudedassembly.plugin",
+                "sequoia.parascutigera-creature",
+                "mosquitoes"
             }
         );
     }

@@ -80,7 +80,7 @@ namespace ApexUpYourSpawns
                                 bool addedSpawner =
                                 AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, BalancedSpawns ? InspectorChance / 2 : InspectorChance, true);
                                 if (addedSpawner)
-                                    (spawners[spawners.Count - 1] as World.SimpleSpawner).spawnDataString = "{Ignorecycle}";
+                                    AddFlagToSpawner((spawners[spawners.Count - 1] as World.SimpleSpawner), "IgnoreCycle");
                             }
                         }
                     }
@@ -249,6 +249,16 @@ namespace ApexUpYourSpawns
                         {
                             AddInvasionSpawner(simpleSpawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, BalancedSpawns ? InspectorChance * 4 : InspectorChance, true);
                         }
+                        if (ActiveMods.Contains("lb-fgf-m4r-ik.modpack"))
+                        {
+                            if (OptionConfigs.Instance.GetOptionConfigValue("BigrubChance") > UnityEngine.Random.value)
+                            {
+                                if (UnityEngine.Random.Range(0f, 1f) > 0.25f)
+                                    AddFlagToSpawner(simpleSpawner, "bigrub");
+                                else
+                                    AddFlagToSpawner(simpleSpawner, "altbigrub");
+                            }
+                        }
                         goto ModCreaturesSpawner;
                     }
 
@@ -310,7 +320,7 @@ namespace ApexUpYourSpawns
 
                     if (simpleSpawner.creatureType == DLCSharedEnums.CreatureTemplateType.Inspector)
                     {
-                        simpleSpawner.spawnDataString = "{Ignorecycle}";
+                        AddFlagToSpawner(simpleSpawner, "Ignorecycle");
                         goto ModCreaturesSpawner;
                     }
 
@@ -489,22 +499,10 @@ namespace ApexUpYourSpawns
         {
             if (ActiveMods.Contains("Outspector") && spawner.creatureType == new CreatureTemplate.Type("Outspector"))
             {
-                spawner.spawnDataString = "{IgnoreCycle}";
+                AddFlagToSpawner(spawner, "Ignorecycle");
                 if (HasAngryInspectors)
                     AddInvasionSpawner(spawner, spawners, DLCSharedEnums.CreatureTemplateType.Inspector, OptionConfigs.Instance.GetOptionConfigValue("InspectorOutspectorInvChance") / 100f);
                 ReplaceMultiSpawner(spawner, spawners, new CreatureTemplate.Type("OutspectorB"), 0.3f);
-            }
-
-            if (ActiveMods.Contains("lb-fgf-m4r-ik.mini-levi") && spawner.creatureType == new CreatureTemplate.Type("MiniLeviathan"))
-            {
-                if (CurrentRegion == "SL")
-                    spawner.spawnDataString = "{AlternateForm}";
-            }
-
-            if (ActiveMods.Contains("lb-fgf-m4r-ik.cool-thorn-bug") && spawner.creatureType == new CreatureTemplate.Type("ThornBug"))
-            {
-                if (CurrentRegion == "UW" || CurrentRegion == "CC" || CurrentRegion == "SH")
-                    spawner.spawnDataString = "{AlternateForm}";
             }
 
             if (ActiveMods.Contains("drainmites") && spawner.creatureType == new CreatureTemplate.Type("DrainMite"))
@@ -559,13 +557,14 @@ namespace ApexUpYourSpawns
                         ReplaceMultiSpawner(spawner, spawners, CreatureTemplate.Type.StandardGroundCreature, OptionConfigs.Instance.GetOptionConfigValue("AlbinoVultureChance") * 0.01f);
                     if (full)
                     {
-                        spawner.spawnDataString = "{AlternateForm}";
+                        AddFlagToSpawner(spawner, "AlternateForm");
                         spawner.creatureType = prevType;
                     }
                     else if (currentCount < spawners.Count)
                     {
                         World.SimpleSpawner newSpawner = spawners[spawners.Count - 1] as World.SimpleSpawner;
-                        newSpawner.spawnDataString = "{AlternateForm}<AUYS_SKIP>";
+                        AddFlagToSpawner(spawner, "AlternateForm");
+                        newSpawner.spawnDataString += "<AUYS_SKIP>";
                         newSpawner.creatureType = prevType;
                     }
                 }
@@ -581,13 +580,27 @@ namespace ApexUpYourSpawns
                     {
                         World.SimpleSpawner echoSpawner = CopySpawner(spawner);
                         echoSpawner.amount = 1;
-                        IncreaseCreatureSpawner(spawner, OptionConfigs.Instance.GetOptionConfigValue("EchoLeviExtras"), true);
                         echoSpawner.inRegionSpawnerIndex = spawners.Count;
-                        echoSpawner.spawnDataString = "<AUYS_SKIP>";
                         echoSpawner.nightCreature = false;
                         echoSpawner.creatureType = new CreatureTemplate.Type("FlyingBigEel");
                         spawners.Add(echoSpawner);
                     }
+                }
+                if(spawner.creatureType.index > -1 && spawner.creatureType == new CreatureTemplate.Type("FlyingBigEel"))
+                {
+                    IncreaseCreatureSpawner(spawner, OptionConfigs.Instance.GetOptionConfigValue("EchoLeviExtras"), true);
+                }
+
+                if (spawner.creatureType == new CreatureTemplate.Type("MiniLeviathan"))
+                {
+                    if (CurrentRegion != "SB")
+                        AddFlagToSpawner(spawner, "AlternateForm");
+                }
+
+                if (spawner.creatureType == new CreatureTemplate.Type("ThornBug"))
+                {
+                    if (CurrentRegion == "UW" || CurrentRegion == "CC" || CurrentRegion == "SH")
+                        AddFlagToSpawner(spawner, "AlternateForm");
                 }
 
             }
@@ -916,7 +929,7 @@ namespace ApexUpYourSpawns
                         if (simpleSpawner.spawnDataString != null && simpleSpawner.spawnDataString.Contains("PreCycle"))
                             localBrotherChance *= 2;
                     }
-                    if (ActiveMods.Contains("Croken.Mimicstarfish") && OptionConfigs.Instance.GetOptionConfigValue("BllMimicstarfishChance") > 0 &&
+                    if (ActiveMods.Contains("Croken.Mimic-Long-Legs") && OptionConfigs.Instance.GetOptionConfigValue("BllMimicstarfishChance") > 0 &&
                         (CurrentRegion == "SL" || CurrentRegion == "LM" || CurrentRegion == "MS" || (CurrentRegion == "DS" && UnityEngine.Random.value > 0.5f)))
                         ReplaceMultiSpawner(simpleSpawner, spawners, new CreatureTemplate.Type("Mimicstar"), localBrotherChance);
                     else
@@ -1146,6 +1159,28 @@ namespace ApexUpYourSpawns
                     }
                 }
             }
+        }
+
+        public void AddFlagToSpawner(World.SimpleSpawner spawner, string flag)
+        {
+            List<string> flags = [flag];
+            AddFlagsToSpawner(spawner, flags);
+        }
+
+        public void AddFlagsToSpawner(World.SimpleSpawner spawner, List<string> flags)
+        {
+            if (spawner.spawnDataString != null && spawner.spawnDataString.Length > 0)
+            {
+                string subString = spawner.spawnDataString.Substring(1, spawner.spawnDataString.Length - 2);
+                string[] splitStrings = subString.Split(',');
+                foreach(string flag in splitStrings)
+                    flags.Add(flag);
+            }
+            string finalString = "";
+            foreach (string flag in flags)
+                finalString += flag + ",";
+            finalString = finalString.Remove(finalString.Length - 1);
+            spawner.spawnDataString = "{" + finalString + "}";
         }
 
         public void SetUpLocalVariables(WorldLoader worldLoader)

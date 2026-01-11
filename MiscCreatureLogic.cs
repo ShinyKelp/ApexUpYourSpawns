@@ -43,6 +43,11 @@ namespace ApexUpYourSpawns
             if (ActiveMods.Contains("lb-fgf-m4r-ik.modpack"))
             {
                 On.LizardGraphics.ctor += ForceBlackMoleSalamander;
+                On.WaterNut.PlaceInRoom += ReplaceWaterNutWithWaterBlob;
+                On.Room.ReadyForAI += ReplaceHazersWithMoms;
+
+                On.AbstractCreature.ctor += ForceFlagsOnBatfly;
+                On.AbstractCreature.setCustomFlags += PutSeedBatFlagOnFly;
             }
             //PupLongLegs
             if (ModManager.MSC)
@@ -60,6 +65,35 @@ namespace ApexUpYourSpawns
                 //On.DaddyGraphics.DaddyDeadLeg.ApplyPalette += GiveHunterDaddyDeadLegPupPallete;
             }
         }
+
+
+
+        private void ForceFlagsOnBatfly(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
+        {
+            orig(self, world, creatureTemplate, realizedCreature, pos, ID);
+            if (creatureTemplate.type == CreatureTemplate.Type.Fly && !CurrentGame.IsArenaSession)
+                self.setCustomFlags();
+        }
+
+        private void PutSeedBatFlagOnFly(On.AbstractCreature.orig_setCustomFlags orig, AbstractCreature self)
+        {
+            if (self.creatureTemplate.type == CreatureTemplate.Type.Fly)
+            {
+                if(OptionConfigs.Instance.GetOptionConfigValue("SeedBatChance")/100f > UnityEngine.Random.value)
+                {
+                    if (self.spawnData != null && self.spawnData.Length > 0)
+                    {
+                        string spawnData = self.spawnData.Remove(self.spawnData.Length - 1);
+                        spawnData += ":seedbat}";
+                        self.spawnData = spawnData;
+                    }
+                    else
+                        self.spawnData = "{seedbat}";
+                }
+            }
+            orig(self);
+        }
+
 
         #region Creature Replacement functions
         private void ReplaceVultureWithSandGrub(On.VultureGrub.orig_PlaceInRoom orig, VultureGrub self, Room placeRoom)
@@ -153,6 +187,17 @@ namespace ApexUpYourSpawns
             }
         }
 
+        private void ReplaceWaterNutWithWaterBlob(On.WaterNut.orig_PlaceInRoom orig, WaterNut self, Room placeRoom)
+        {
+            if (OptionConfigs.Instance.GetOptionConfigValue("WaterBlobChance")/100f > UnityEngine.Random.value)
+            {
+                AbstractCreature blobAbs = new AbstractCreature(placeRoom.world, StaticWorld.GetCreatureTemplate("WaterBlob"), null, new WorldCoordinate(placeRoom.abstractRoom.index, self.abstractPhysicalObject.pos.x, self.abstractPhysicalObject.pos.y - 1, 0), CurrentGame.GetNewID());
+                placeRoom.abstractRoom.AddEntity(blobAbs);
+                blobAbs.RealizeInRoom();
+            }
+            else orig(self, placeRoom);
+        }
+
         private void ReplaceHazerWithTardigrade(On.Hazer.orig_PlaceInRoom orig, Hazer self, Room room)
         {
             if (ModManager.Watcher && !CurrentGame.IsArenaSession && UnityEngine.Random.value < HazerTardigradeChance)
@@ -232,6 +277,34 @@ namespace ApexUpYourSpawns
                 myBug.PlaceInRoom(room);
             }
             orig(self, room);
+        }
+
+        CreatureTemplate.Type hazMomType;
+        private void ReplaceHazersWithMoms(On.Room.orig_ReadyForAI orig, Room self)
+        {
+            if (CurrentGame != null && !CurrentGame.IsArenaSession && ActiveMods.Contains("lb-fgf-m4r-ik.modpack"))
+            {
+                List<AbstractCreature> hazers = new List<AbstractCreature>();
+                foreach (AbstractCreature abstractCreature in self.abstractRoom.creatures)
+                {
+                    if(abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Hazer)
+                        hazers.Add(abstractCreature);
+                }
+                foreach (AbstractCreature hazer in hazers)
+                {
+                    if (OptionConfigs.Instance.GetOptionConfigValue("HazerMomChance") / 100f > UnityEngine.Random.value)
+                    {
+                        if (hazMomType == null)
+                            hazMomType = new CreatureTemplate.Type("HazerMom");
+                        self.abstractRoom.creatures.Remove(hazer);
+                        //For some reason, StaticWorld.GetCreatureTemplate does not work for HazerMom. Using the template type index as work-around.
+                        AbstractCreature hazMomAbs = new AbstractCreature(self.world, StaticWorld.creatureTemplates[hazMomType.Index], null, new WorldCoordinate(self.abstractRoom.index, hazer.pos.x, hazer.pos.y - 1, 0), CurrentGame.GetNewID());
+                        hazMomAbs.superSizeMe = true;
+                        self.abstractRoom.creatures.Add(hazMomAbs);
+                    }
+                }
+            }
+            orig(self);
         }
 
         private void AddScavKings(On.Room.orig_ReadyForAI orig, Room self)

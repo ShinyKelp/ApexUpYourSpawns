@@ -203,7 +203,18 @@ namespace ApexUpYourSpawns
                 OpTab watcherTab = CreateTab(UIWatcherRepConfigs, UIWatcherExtraConfigs, " The Watcher");
                 tabs.Add(watcherTab);
             }
-            
+
+            //M4RBLE PACK TAB
+            if (ApexUtils.ActiveMods.Contains("lb-fgf-m4r-ik.modpack"))
+            {
+                List<Configurable<int>> m4rbleRepConfigs = OpConfigs.M4rbleRepConfigs.Values.ToList();
+                List<Configurable<int>> m4rbleExtraConfigs = OpConfigs.M4rbleExtraConfigs.Values.ToList();
+
+                OpTab m4rbleTab = CreateTab(m4rbleRepConfigs.ToArray(), m4rbleExtraConfigs.ToArray(), " M4rble Pack");
+                tabs.Add(m4rbleTab);
+            }
+
+
             //MODS TAB
             //Set the mod configs
             List<Configurable<int>> enabledModsRepConfigs = OpConfigs.ModRepConfigs.Values.ToList();

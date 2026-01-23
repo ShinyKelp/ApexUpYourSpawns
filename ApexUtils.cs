@@ -15,6 +15,8 @@ namespace ApexUpYourSpawns
 
         public static bool ForceFreshSpawns = false;
 
+        public static bool FixRoomPreferences = false;
+
         //Enabled mods
 
         public static HashSet<string> ActiveMods = new HashSet<string>();

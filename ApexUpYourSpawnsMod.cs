@@ -165,6 +165,8 @@ namespace ApexUpYourSpawns
         {
             //We previously search for the first creature with horizontal screen spawns (miros, deer, etc).
             //And we use that one as the template to set the room attractions for everyone else.
+            if (!FixRoomPreferences)
+                return;
             if (VanillaHorizontalSpawn != null)
             {
                 foreach (AbstractRoom room in self.abstractRooms)

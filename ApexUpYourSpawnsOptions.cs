@@ -17,12 +17,13 @@ namespace ApexUpYourSpawns
         public Configurable<bool> fillLineages;
         public Configurable<bool> forceFreshSpawns;
         public Configurable<bool> balancedSpawns;
+        public Configurable<bool> fixRoomPreferences;
 
         private Configurable<string> comboBoxConfig, presetTextConfig;
 
         private OpSimpleButton replacementDescription, extrasDescription, replacementDescription2, extrasDescription2,
             savePresetButton, loadPresetButton, removePresetButton;
-        private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck;
+        private OpCheckBox fillLineageCheck, forceFreshCheck, balancedSpawnsCheck, fixRoomPreferencesCheck;
         private OpTextBox presetText;
         private OpComboBox presetsComboBox;
         private UIelement[] UIFixed;
@@ -39,10 +40,12 @@ namespace ApexUpYourSpawns
             fillLineages = this.config.Bind<bool>("FillLineages", false);
             forceFreshSpawns = this.config.Bind<bool>("ForceFreshSpawns", false);
             balancedSpawns = this.config.Bind<bool>("BalancedSpawns", true);
+            fixRoomPreferences = this.config.Bind<bool>("FixRoomPreferences", true);
 
             balancedSpawns.OnChange += () => ApexUtils.BalancedSpawns = balancedSpawns.Value;
             fillLineages.OnChange += () => ApexUtils.FillLineages = fillLineages.Value;
             forceFreshSpawns.OnChange += () => ApexUtils.ForceFreshSpawns = forceFreshSpawns.Value;
+            fixRoomPreferences.OnChange += () => ApexUtils.FixRoomPreferences = fixRoomPreferences.Value;
 
             ConfigurableInfo info = null;
             comboBoxConfig = this.config.Bind<string>("PresetComboBox", "Default", info);
@@ -125,6 +128,11 @@ namespace ApexUpYourSpawns
                 description = "Spawns will be reset and randomized every cycle."
             };
 
+            fixRoomPreferencesCheck = new OpCheckBox(fixRoomPreferences, new Vector2(515f, 13f))
+            {
+                description = "Modded offscreen spawns will roam the same rooms as their vanilla equivalents, whenever possible.\n" +
+                "Prevents modded vultures, miros birds, etc; from appearing in rooms they shouldn't."
+            };
 
             replacementDescription = new OpSimpleButton(new Vector2(137, 483), new Vector2(16, 16), "i")
             {
@@ -163,6 +171,8 @@ namespace ApexUpYourSpawns
                 new OpLabel(289f, 16f, "Balanced spawns"),
                 forceFreshCheck,
                 new OpLabel(421f, 16f, "Randomize every cycle"),
+                fixRoomPreferencesCheck,
+                new OpLabel(542f, 16, "Fixed Roams"),
                 presetsComboBox,
                 presetText,
                 loadPresetButton,
@@ -236,7 +246,7 @@ namespace ApexUpYourSpawns
             FillLineages = fillLineages.Value;
             ForceFreshSpawns = forceFreshSpawns.Value;
             BalancedSpawns = balancedSpawns.Value;
-            
+            FixRoomPreferences = fixRoomPreferences.Value;
         }
 
         private OpTab CreateTab(Configurable<int>[] replacementConfigs, Configurable<int>[] extraConfigs, string tabName)
@@ -283,7 +293,6 @@ namespace ApexUpYourSpawns
 
         public void UpdateAllBindings()
         {
-            UnityEngine.Debug.Log("UPDATING ALL BINDINGS.");
             OpConfigs.UpdateBindings();
             OpConfigs.UpdateModBindings();
         }

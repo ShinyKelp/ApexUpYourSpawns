@@ -8,6 +8,7 @@ namespace ApexUpYourSpawns
     using static ApexUtils;
     using static ApexGameInfo;
     using static SpawnerHelperFunctions;
+    using MoreSlugcats;
 
     //Structure for the modded creature system.
     public class ModCreatureLogic
@@ -149,11 +150,36 @@ namespace ApexUpYourSpawns
                 CreatureTemplate.Type.MirosBird,
                 CreatureTemplate.Type.Deer
             };
+            List<CreatureTemplate.Type> skySpawnsList = new List<CreatureTemplate.Type>()
+            {
+                CreatureTemplate.Type.Vulture,
+                CreatureTemplate.Type.KingVulture
+            };
+            List<CreatureTemplate.Type> scavSpawnsList = new List<CreatureTemplate.Type>()
+            {
+                CreatureTemplate.Type.Scavenger
+            };
+            List<CreatureTemplate.Type> abyssSpawnsList = new List<CreatureTemplate.Type>() 
+            {
+                CreatureTemplate.Type.BigEel
+            };
+            if(ModManager.MSC || ModManager.Watcher)
+            {
+                skySpawnsList.Add(DLCSharedEnums.CreatureTemplateType.MirosVulture);
+                scavSpawnsList.Add(DLCSharedEnums.CreatureTemplateType.ScavengerElite);
+            }
+            if (ModManager.MSC)
+            {
+                scavSpawnsList.Add(MoreSlugcatsEnums.CreatureTemplateType.ScavengerKing);
+            }
             if(ModManager.Watcher)
             {
                 horizontalSpawnsList.Add(WatcherEnums.CreatureTemplateType.Loach);
                 horizontalSpawnsList.Add(WatcherEnums.CreatureTemplateType.RotLoach);
                 horizontalSpawnsList.Add(WatcherEnums.CreatureTemplateType.DrillCrab);
+                scavSpawnsList.Add(WatcherEnums.CreatureTemplateType.ScavengerTemplar);
+                scavSpawnsList.Add(WatcherEnums.CreatureTemplateType.ScavengerDisciple);
+                skySpawnsList.Add(WatcherEnums.CreatureTemplateType.BigMoth);
             }
 
             //DO NOT TRY TO USE StaticWorld.GetCreatureTemplate. IT DOES NOT WORK AT MOD LOADING TIME. USE new CreatureTemplate.Type("name")
@@ -246,15 +272,16 @@ namespace ApexUpYourSpawns
                 localAdditionsFFF.Add("BL", 25);
                 localMultipliersFFF.Add("Saint", .5f);
                 localMultipliersFFF.Add("MS", 0.1f);
+                CreatureTemplate.Type fatFireType = new CreatureTemplate.Type("FatFireFly");
                 AddModCreatureToDictionary(modCreatureAncestorReplacements,
                     CreatureTemplate.Type.Vulture,
                     new ModCreatureReplacement(
-                        new CreatureTemplate.Type("FatFireFly"),
+                        fatFireType,
                         OptionConfigs.Instance.GetOptionConfig("FatFireFlyChance"),
                         localMultipliersFFF,
                         localAdditionsFFF
                         ));
-
+                skySpawnsList.Add(fatFireType);
                 //Surface swimmer
                 Dictionary<string, float> localSSMultipliers = new Dictionary<string, float>();
                 localSSMultipliers.Add("GW", 2f);
@@ -340,10 +367,11 @@ namespace ApexUpYourSpawns
                 Dictionary<string, float> miniLeviDict = new Dictionary<string, float>();
                 miniLeviDict.Add("SB", 1.5f);
                 miniLeviDict.Add("MS", 1.5f);
+                CreatureTemplate.Type miniLeviType = new CreatureTemplate.Type("MiniLeviathan");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.BigEel, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("MiniLeviathan"), OptionConfigs.Instance.GetOptionConfig("MiniLeviathanChance"), true, false, miniLeviDict));
-                modCreatureExtras.Add(new CreatureTemplate.Type("MiniLeviathan"), new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniLeviathanExtras"), false));
-
+                    miniLeviType, OptionConfigs.Instance.GetOptionConfig("MiniLeviathanChance"), true, false, miniLeviDict));
+                modCreatureExtras.Add(miniLeviType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniLeviathanExtras"), false));
+                abyssSpawnsList.Add(miniLeviType);
                 //Polliwog
                 CreatureTemplate.Type polliType = new CreatureTemplate.Type("Polliwog");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Salamander, new ModCreatureReplacement(
@@ -382,10 +410,9 @@ namespace ApexUpYourSpawns
                 //Mini echo leviathan
                 CreatureTemplate.Type miniEchoLeviType = new CreatureTemplate.Type("MiniFlyingBigEel");
                 CreatureTemplate.Type echoLeviType = new CreatureTemplate.Type("FlyingBigEel");
-
-                AddModCreatureToDictionary(modCreatureReplacements, echoLeviType, new ModCreatureReplacement(
-                        miniEchoLeviType, OptionConfigs.Instance.GetOptionConfig("MiniEchoLeviChance"), true, true));
-                modCreatureExtras.Add(miniEchoLeviType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniEchoLeviExtras"), true));
+                skySpawnsList.Add(echoLeviType);
+                skySpawnsList.Add(miniEchoLeviType);
+                modCreatureExtras.Add(miniEchoLeviType, new ModCreatureExtras(OptionConfigs.Instance.GetOptionConfig("MiniEchoLeviExtras"), false));
 
                 //Alpha orange
                 CreatureTemplate.Type alphaOType = new CreatureTemplate.Type("AlphaOrange");
@@ -398,9 +425,10 @@ namespace ApexUpYourSpawns
                 sentinelLocals.Add("IC", 2f);
                 sentinelLocals.Add("SL", 1.5f);
                 sentinelLocals.Add("DS", 1.5f);
+                CreatureTemplate.Type sentType = new CreatureTemplate.Type("ScavengerSentinel");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("ScavengerSentinel"), OptionConfigs.Instance.GetOptionConfig("ScavengerSentinelChance"), sentinelLocals));
-
+                    sentType, OptionConfigs.Instance.GetOptionConfig("ScavengerSentinelChance"), sentinelLocals));
+                scavSpawnsList.Add(sentType);
                 //Miniscuti
                 Dictionary<string, float> miniscutLocals = new Dictionary<string, float>();
                 miniscutLocals.Add("SH", 2f);
@@ -720,16 +748,20 @@ namespace ApexUpYourSpawns
                 bombDict.Add("GWSpear", 1.2f);
                 bombDict.Add("LFRed", 1.2f);
                 bombDict.Add("SIRed", 1.2f);
+                CreatureTemplate.Type bombType = new CreatureTemplate.Type("BombardierVulture");
                 AddModCreatureToDictionary(modCreatureAncestorReplacements, CreatureTemplate.Type.Vulture, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("BombardierVulture"), OptionConfigs.Instance.GetOptionConfig("BombVultureChance"), bombDict));
+                    bombType, OptionConfigs.Instance.GetOptionConfig("BombVultureChance"), bombDict));
+                skySpawnsList.Add(bombType);
             }
             if (ActiveMods.Contains("drainmites"))
             {
                 Dictionary<string, float> drainmiteDict = new Dictionary<string, float>();
                 drainmiteDict.Add("!", 1f);
                 drainmiteDict.Add("PreCycle", 0f);
+                CreatureTemplate.Type drainType = new CreatureTemplate.Type("DrainMite");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Scavenger, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("DrainMite"), OptionConfigs.Instance.GetOptionConfig("DrainMiteChance"), true, true, drainmiteDict, null, true));
+                    drainType, OptionConfigs.Instance.GetOptionConfig("DrainMiteChance"), true, true, drainmiteDict, null, true));
+                scavSpawnsList.Add(drainType);
             }
             if (ActiveMods.Contains("myr.moss_fields") || ActiveMods.Contains("ShinyKelp.Udonfly"))
             {
@@ -765,6 +797,7 @@ namespace ApexUpYourSpawns
                     scrType, OptionConfigs.Instance.GetOptionConfig("ScroungerChance"), scroungerDict));
                 modCreatureExtras.Add(scrType, new ModCreatureExtras(
                     OptionConfigs.Instance.GetOptionConfig("ScroungerExtras"), false));
+                scavSpawnsList.Add(scrType);
             }
             if (ActiveMods.Contains("Croken.Mimicstarfish"))
             {
@@ -884,11 +917,16 @@ namespace ApexUpYourSpawns
             }
             if (ActiveMods.Contains("com.rainworldgame.shroudedassembly"))
             {
+                CreatureTemplate.Type fogType = new CreatureTemplate.Type("FogVulture");
                 AddModCreatureToDictionary(modCreatureReplacements, CreatureTemplate.Type.Vulture, new ModCreatureReplacement(
-                    new CreatureTemplate.Type("FogVulture"), OptionConfigs.Instance.GetOptionConfig("FogVultureChance")));
+                    fogType, OptionConfigs.Instance.GetOptionConfig("FogVultureChance")));
+                skySpawnsList.Add(fogType);
             }
 
             HorizontalSpawns = horizontalSpawnsList.ToArray();
+            SkySpawns = skySpawnsList.ToArray();
+            AbyssSpawns = abyssSpawnsList.ToArray();
+            ScavengerSpawns = scavSpawnsList.ToArray();
         }
 
 

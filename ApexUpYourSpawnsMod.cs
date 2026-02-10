@@ -167,9 +167,9 @@ namespace ApexUpYourSpawns
             //And we use that one as the template to set the room attractions for everyone else.
             if (!FixRoomPreferences)
                 return;
-            if (VanillaHorizontalSpawn != null)
+            foreach (AbstractRoom room in self.abstractRooms)
             {
-                foreach (AbstractRoom room in self.abstractRooms)
+                if(VanillaHorizontalSpawn != null)
                 {
                     foreach (CreatureTemplate.Type hSpawn in HorizontalSpawns)
                     {
@@ -179,7 +179,23 @@ namespace ApexUpYourSpawns
                     if (ModManager.Watcher && RegionHasDeers)
                         room.roomAttractions[WatcherEnums.CreatureTemplateType.SkyWhale.Index] = room.roomAttractions[CreatureTemplate.Type.Deer.Index];
                 }
+                if(VanillaSkySpawn != null)
+                {
+                    foreach(CreatureTemplate.Type vSpawn in SkySpawns)
+                        room.roomAttractions[vSpawn.Index] = room.roomAttractions[VanillaSkySpawn.Index];
+                }
+                if(VanillaScavengerSpawn != null)
+                {
+                    foreach(CreatureTemplate.Type sSpawn in ScavengerSpawns)
+                        room.roomAttractions[sSpawn.Index] = room.roomAttractions[VanillaScavengerSpawn.Index];
+                }
+                if(VanillaAbyssSpawn != null)
+                {
+                    foreach(CreatureTemplate.Type aSpawn in AbyssSpawns)
+                        room.roomAttractions[aSpawn.index] = room.roomAttractions[VanillaAbyssSpawn.Index];
+                }
             }
+            
             
         }
         #endregion

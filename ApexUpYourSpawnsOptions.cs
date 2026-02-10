@@ -128,7 +128,7 @@ namespace ApexUpYourSpawns
                 description = "Spawns will be reset and randomized every cycle."
             };
 
-            fixRoomPreferencesCheck = new OpCheckBox(fixRoomPreferences, new Vector2(515f, 13f))
+            fixRoomPreferencesCheck = new OpCheckBox(fixRoomPreferences, new Vector2(49f, 13f))
             {
                 description = "Modded offscreen spawns will roam the same rooms as their vanilla equivalents, whenever possible.\n" +
                 "Prevents modded vultures, miros birds, etc; from appearing in rooms they shouldn't."
@@ -172,7 +172,7 @@ namespace ApexUpYourSpawns
                 forceFreshCheck,
                 new OpLabel(421f, 16f, "Randomize every cycle"),
                 fixRoomPreferencesCheck,
-                new OpLabel(542f, 16, "Fixed Roams"),
+                new OpLabel(76f, 16, "Fixed Roams"),
                 presetsComboBox,
                 presetText,
                 loadPresetButton,

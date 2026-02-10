@@ -29,6 +29,9 @@ namespace ApexUpYourSpawns
 
         //Other
         public static CreatureTemplate.Type[] HorizontalSpawns;
+        public static CreatureTemplate.Type[] SkySpawns;
+        public static CreatureTemplate.Type[] ScavengerSpawns;
+        public static CreatureTemplate.Type[] AbyssSpawns;
 
         public static bool HasUpdatedRefs = false;
 

@@ -208,10 +208,6 @@ namespace ApexUpYourSpawns
                 AddConfigOption(M4rbleRepConfigs, "WingRedHorrorCentiChance", 4, "Centiwing > Red Horror Centi");
                 
                 AddConfigOption(M4rbleRepConfigs, "FatFireFlyChance", 10, "Vultures > Fat Firefly");
-                AddConfigOption(M4rbleRepConfigs, "VultureEchoLeviChance", 10, "Vultures > Echo Leviathan (Den)");
-                AddConfigOption(M4rbleExtraConfigs, "EchoLeviExtras", 0, "Echo Leviathans (/10)");
-                AddConfigOption(M4rbleRepConfigs, "MiniEchoLeviChance", 50, "Echo Levi > Mini Echo Levi (Inv)");
-                AddConfigOption(M4rbleExtraConfigs, "MiniEchoLeviExtras", 20, "Mini Echo Levi (/10)");
 
                 AddConfigOption(M4rbleRepConfigs, "ScavengerSentinelChance", 6, "Scavenger > Sentinel");
 
@@ -246,6 +242,10 @@ namespace ApexUpYourSpawns
                 AddConfigOption(M4rbleRepConfigs, "MiniBlackLeechChance", 20, "Red Leech > Mini Black Leech");
                 AddConfigOption(M4rbleExtraConfigs, "MiniBlackLeechExtras", 4, "Mini Black Leeches", false);
                 AddConfigOption(M4rbleRepConfigs, "DentureChance", 20, "Pole Plant > Denture");
+                AddConfigOption(M4rbleRepConfigs, "VultureEchoLeviChance", 10, "Vultures > Echo Leviathan (Den)");
+                AddConfigOption(M4rbleExtraConfigs, "EchoLeviExtras", 0, "Echo Leviathans (/10)");
+                AddConfigOption(M4rbleRepConfigs, "MiniEchoLeviChance", 50, "Echo Levi > Mini Echo Levi (Inv)");
+                AddConfigOption(M4rbleExtraConfigs, "MiniEchoLeviExtras", 2, "Mini Echo Levi", false);
             }
 
             if (activeMods.Contains("ShinyKelp.AngryInspectors"))

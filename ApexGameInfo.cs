@@ -44,8 +44,13 @@ namespace ApexUpYourSpawns
         public static bool RegionHasDeers = false;
 
         public static CreatureTemplate.Type VanillaHorizontalSpawn = null;
+        public static CreatureTemplate.Type VanillaSkySpawn = null;
+        public static CreatureTemplate.Type VanillaAbyssSpawn = null;
+        public static CreatureTemplate.Type VanillaScavengerSpawn = null;
 
         public static bool TriedEchoLevi = false;
+        public static bool AddedEchoLevi = false;
+        public static bool TriedMiniEchoLevi = false;
 
         public static bool HasBlackLizards = false;
 

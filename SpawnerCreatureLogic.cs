@@ -290,6 +290,7 @@ namespace ApexUpYourSpawns
                     {
                         if (simpleSpawner.inRegionSpawnerIndex >= OriginalSpawnCount)
                             AddInvasionSpawner(simpleSpawner, spawners, CreatureTemplate.Type.SmallNeedleWorm, 1f);
+                        AttemptMiniEchoLeviSpawn(simpleSpawner, spawners);
                         goto ModCreaturesSpawner;
                     }
 
@@ -367,6 +368,7 @@ namespace ApexUpYourSpawns
                                 ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.CicadaA, SmallMothCicadaChance, true);
                             ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.BigNeedleWorm, SmallMothNoodleflyChance, true);
                             ReplaceMultiSpawner(simpleSpawner, spawners, CreatureTemplate.Type.Centiwing, SmallMothCentiwingChance, true);
+                            AttemptMiniEchoLeviSpawn(simpleSpawner, spawners);
                             goto ModCreaturesSpawner;
                         }
                         if (simpleSpawner.creatureType == WatcherEnums.CreatureTemplateType.DrillCrab)
@@ -584,7 +586,10 @@ namespace ApexUpYourSpawns
                         echoSpawner.nightCreature = false;
                         echoSpawner.creatureType = new CreatureTemplate.Type("FlyingBigEel");
                         spawners.Add(echoSpawner);
+                        AddedEchoLevi = true;
                     }
+                    else
+                        AddedEchoLevi = false;
                 }
                 if(spawner.creatureType.index > -1 && spawner.creatureType == new CreatureTemplate.Type("FlyingBigEel"))
                 {
@@ -991,7 +996,7 @@ namespace ApexUpYourSpawns
                     ReplaceMultiSpawner(simpleSpawner, spawners, WatcherEnums.CreatureTemplateType.SmallMoth, CicadaSmallMothChance, true);
                 }
             }
-
+            AttemptMiniEchoLeviSpawn(simpleSpawner, spawners);
         }
 
         private void HandleLeechSpawner(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
@@ -1186,9 +1191,13 @@ namespace ApexUpYourSpawns
         public void SetUpLocalVariables(WorldLoader worldLoader)
         {
             TriedEchoLevi = false;
+            AddedEchoLevi = false;
             HasBlackLizards = false;
             RegionHasDeers = false;
             VanillaHorizontalSpawn = null;
+            VanillaAbyssSpawn = null;
+            VanillaSkySpawn = null;
+            VanillaScavengerSpawn = null;
             WLoader = worldLoader;
             OriginalSpawnCount = SpawnerCount;
 
@@ -1215,16 +1224,27 @@ namespace ApexUpYourSpawns
                         break;
                     }
                 }
-                //We find the first instance of a horizontal spawn.
+                //We find the first instance of each offscreen spawn.
                 //Vanilla creatures should come before modded ones in the list.
                 for (int i = 0; i < worldLoader.spawners.Count; ++i)
                 {
                     if (worldLoader.spawners[i] is World.SimpleSpawner sSpawner)
                     {
-                        if (HorizontalSpawns.Contains(sSpawner.creatureType))
+                        if (VanillaHorizontalSpawn == null && HorizontalSpawns.Contains(sSpawner.creatureType))
                         {
                             VanillaHorizontalSpawn = sSpawner.creatureType;
-                            break;
+                        }
+                        if (VanillaSkySpawn == null && SkySpawns.Contains(sSpawner.creatureType))
+                        {
+                            VanillaSkySpawn = sSpawner.creatureType;
+                        }
+                        if (VanillaAbyssSpawn == null && AbyssSpawns.Contains(sSpawner.creatureType))
+                        {
+                            VanillaAbyssSpawn = sSpawner.creatureType;
+                        }
+                        if (VanillaScavengerSpawn == null && ScavengerSpawns.Contains(sSpawner.creatureType))
+                        {
+                            VanillaScavengerSpawn = sSpawner.creatureType;
                         }
                     }
                 }
@@ -1293,6 +1313,18 @@ namespace ApexUpYourSpawns
             catch (Exception e)
             {
                 return false;
+            }
+        }
+
+        private void AttemptMiniEchoLeviSpawn(World.SimpleSpawner simpleSpawner, List<World.CreatureSpawner> spawners)
+        {
+            if (AddedEchoLevi && !TriedMiniEchoLevi)
+            {
+                if (UnityEngine.Random.value < OptionConfigs.Instance.GetOptionConfigValue("MiniEchoLeviChance") * 0.01f)
+                {
+                    AddInvasionSpawner(simpleSpawner, spawners, new CreatureTemplate.Type("MiniFlyingBigEel"), 1f, true);
+                }
+                TriedMiniEchoLevi = true;
             }
         }
     }
